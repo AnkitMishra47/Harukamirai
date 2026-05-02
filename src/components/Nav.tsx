@@ -5,6 +5,7 @@ import { CloverToggle } from "./CloverToggle";
 const links = [
   { href: "/about", label: "About" },
   { href: "/work", label: "Work" },
+  { href: "/resume", label: "Resume" },
   { href: "/writing", label: "Writing" },
   { href: "/now", label: "Now" },
   { href: "/contact", label: "Contact" },

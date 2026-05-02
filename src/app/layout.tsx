@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Fraunces, Geist, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Geist, JetBrains_Mono, Shippori_Mincho } from "next/font/google";
 import { themeInitScript } from "@/lib/theme-init";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { CursorTrail } from "@/components/effects/CursorTrail";
 import { ThemeBurst } from "@/components/effects/ThemeBurst";
+import { MagicCircle } from "@/components/effects/MagicCircle";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -24,6 +25,12 @@ const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
   display: "swap",
+});
+
+const jp = Shippori_Mincho({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-jp",
 });
 
 export const metadata: Metadata = {
@@ -47,13 +54,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${geist.variable} ${mono.variable}`}
+      className={`${fraunces.variable} ${geist.variable} ${mono.variable} ${jp.variable}`}
       suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="min-h-dvh flex flex-col">
+      <body className="min-h-dvh flex flex-col relative overflow-x-hidden">
+        {/* Global Persistent Magic Circle Background */}
+        <div className="fixed inset-0 -z-50 pointer-events-none flex items-center justify-center overflow-hidden opacity-[0.03] dark:opacity-[0.07]">
+          <MagicCircle size={1400} intensity="full" />
+        </div>
+        
         <CursorTrail />
         <ThemeBurst />
         <Nav />

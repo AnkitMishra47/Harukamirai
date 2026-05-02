@@ -16,33 +16,15 @@ export function MagicReveal({
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <div ref={ref} className={`relative ${className}`}>
-      {/* Summoning Circle Effect */}
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 overflow-visible"
-        initial={{ opacity: 0, scale: 0.2, rotate: -45 }}
-        animate={inView ? { opacity: [0, 0.4, 0], scale: [0.5, 1.2, 1.4], rotate: 45 } : {}}
-        transition={{ duration: 1.2, ease: "easeOut", delay }}
-      >
-        <svg width="240" height="240" viewBox="0 0 100 100" className="text-[var(--accent)] opacity-30">
-          <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" />
-          <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" strokeWidth="0.2" />
-          <path d="M 50 5 L 95 80 L 5 80 Z" fill="none" stroke="currentColor" strokeWidth="0.3" />
-          <path d="M 50 95 L 5 20 L 95 20 Z" fill="none" stroke="currentColor" strokeWidth="0.3" />
-        </svg>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: delay + 0.1 }}
-        className="relative z-10"
-        style={{ willChange: "transform, opacity" }}
-      >
-        {children}
-      </motion.div>
-    </div>
+    <motion.div
+      ref={ref}
+      className={className}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay }}
+    >
+      {children}
+    </motion.div>
   );
 }
 

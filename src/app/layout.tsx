@@ -5,7 +5,6 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { CursorTrail } from "@/components/effects/CursorTrail";
 import { ThemeBurst } from "@/components/effects/ThemeBurst";
-import { ClientBackground } from "@/components/effects/ClientBackground";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -61,7 +60,6 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-dvh flex flex-col relative overflow-x-hidden">
-        <ClientBackground />
         <CursorTrail />
         <ThemeBurst />
         <Nav />

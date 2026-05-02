@@ -41,7 +41,7 @@ export default function HomePage() {
           className="absolute inset-0 -z-10"
           style={{
             background:
-              "radial-gradient(ellipse at center, transparent 30%, var(--bg) 90%)",
+              "radial-gradient(ellipse at center, transparent 55%, var(--bg) 100%)",
           }}
           aria-hidden
         />
@@ -51,42 +51,92 @@ export default function HomePage() {
             <motion.p
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
               className="text-xs uppercase tracking-[0.32em] text-[var(--accent)]"
+            >
+              <span className="font-jp text-base tracking-normal">アスタ</span>
+              <span className="mx-2 opacity-40">·</span>
+              <span className="font-jp text-base tracking-normal">反魔法</span>
+              <span className="mx-3 opacity-40">·</span>
+              ANTI-MAGIC GRIMOIRE
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.25 }}
+              className="mt-1.5 text-xs uppercase tracking-[0.32em] text-[var(--text-subtle)]"
             >
               <span className="font-jp text-base tracking-normal">遥か未来</span>
               <span className="mx-3 opacity-40">·</span>
-              GRIMOIRE No. 17
+              No. 17
             </motion.p>
 
-            {/* Title — two clean lines, never breaks mid-word */}
+            {/* Title — two clean lines, never breaks mid-word.
+                The A and I in ANKIT are colored accent — they spell AI. */}
             <h1 className="font-display text-[clamp(2.6rem,8vw,7rem)] leading-[0.92] tracking-tight text-[var(--text)] mt-6">
               {NAME_LINES.map((line, li) => (
                 <span key={li} className="block whitespace-nowrap">
-                  {Array.from(line).map((c, i) => (
-                    <motion.span
-                      key={i}
-                      initial={{ opacity: 0, y: 60, rotateX: -90 }}
-                      animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                      transition={{
-                        duration: 0.7,
-                        delay: 0.4 + (li * 5 + i) * 0.045,
-                        ease: [0.16, 1, 0.3, 1],
-                      }}
-                      className="inline-block"
-                      style={{ transformOrigin: "50% 100%" }}
-                    >
-                      {c}
-                    </motion.span>
-                  ))}
+                  {Array.from(line).map((c, i) => {
+                    const isAIChar = li === 0 && (i === 0 || i === 3);
+                    return (
+                      <motion.span
+                        key={i}
+                        initial={{ opacity: 0, y: 60, rotateX: -90 }}
+                        animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                        transition={{
+                          duration: 0.7,
+                          delay: 0.4 + (li * 5 + i) * 0.045,
+                          ease: [0.16, 1, 0.3, 1],
+                        }}
+                        className={`inline-block ${
+                          isAIChar ? "text-[var(--accent)]" : ""
+                        }`}
+                        style={{
+                          transformOrigin: "50% 100%",
+                          ...(isAIChar
+                            ? {
+                                textShadow:
+                                  "0 0 28px var(--accent-glow), 0 0 12px var(--accent-glow)",
+                              }
+                            : {}),
+                        }}
+                      >
+                        {c}
+                      </motion.span>
+                    );
+                  })}
                 </span>
               ))}
             </h1>
 
+            {/* AI annotation — the A and the I in ANKIT spell AI on purpose */}
+            <motion.div
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 1.55 }}
+              className="mt-5 inline-flex items-center gap-3"
+            >
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent)]/40 bg-[var(--accent-glow)] px-3 py-1.5">
+                <span className="font-display text-base font-bold text-[var(--accent)]">
+                  A
+                </span>
+                <span className="text-xs text-[var(--text-subtle)]">·</span>
+                <span className="font-display text-base font-bold text-[var(--accent)]">
+                  I
+                </span>
+                <span className="ml-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                  engineer
+                </span>
+              </span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-subtle)] hidden sm:inline">
+                ↑ not a coincidence
+              </span>
+            </motion.div>
+
             <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
-              transition={{ duration: 1.1, delay: 1.4, ease: [0.65, 0, 0.35, 1] }}
+              transition={{ duration: 1.1, delay: 1.75, ease: [0.65, 0, 0.35, 1] }}
               className="mt-6 h-[2px] w-40 origin-left bg-[var(--accent)]"
               style={{ boxShadow: "0 0 18px var(--accent-glow)" }}
             />
@@ -94,13 +144,16 @@ export default function HomePage() {
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.6 }}
+              transition={{ duration: 0.8, delay: 1.95 }}
               className="mt-8 max-w-xl text-lg sm:text-xl text-[var(--text-muted)] leading-relaxed"
             >
               From BCA to{" "}
               <span className="text-[var(--text)] font-medium">Senior&nbsp;L3</span>{" "}
               in three years, with a Master&apos;s earned in the cracks between
-              deploys. I write Java, Angular, and Python for{" "}
+              deploys. I ship{" "}
+              <strong className="text-[var(--text)]">AI features</strong> —
+              RAG, OCR, MCP tooling, DPO fine-tuning — into Java, Angular, and
+              Python platforms at{" "}
               <a
                 href="https://oneit.com.au"
                 target="_blank"
@@ -115,7 +168,7 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 1.9 }}
+              transition={{ duration: 0.6, delay: 2.25 }}
               className="mt-10 flex flex-wrap items-center gap-4 text-sm"
             >
               <Link

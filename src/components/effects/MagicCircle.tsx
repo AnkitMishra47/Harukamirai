@@ -2,9 +2,6 @@
 
 import { motion } from "motion/react";
 
-const RUNES = "魔法騎士団黒夜空遥か未来反魔法五葉";
-const RUNES2 = "ANTIMAGIC·HARUKAMIRAI·GRIMOIRE·";
-
 type Props = {
   size?: number;
   className?: string;
@@ -31,41 +28,29 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
           <stop offset="60%" stopColor="var(--accent)" stopOpacity="0.05" />
           <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
         </radialGradient>
-        <path id="mc-outer-path" d="M 400,400 m -360,0 a 360,360 0 1,1 720,0 a 360,360 0 1,1 -720,0" />
-        <path id="mc-mid-path"   d="M 400,400 m -300,0 a 300,300 0 1,1 600,0 a 300,300 0 1,1 -600,0" />
-        <path id="mc-inner-path" d="M 400,400 m -260,0 a 260,260 0 1,1 520,0 a 260,260 0 1,1 -520,0" />
       </defs>
 
       {/* Glow */}
       <circle cx="400" cy="400" r="380" fill="url(#mc-glow)" />
 
-      {/* Outer rotating ring with kanji */}
+      {/* Outer rotating ring */}
       <motion.g
         animate={{ rotate: 360 }}
         transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
         style={{ transformOrigin: "400px 400px" }}
       >
         <circle cx="400" cy="400" r="360" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeOpacity="0.9" />
-        <circle cx="400" cy="400" r="345" fill="none" stroke="var(--accent)" strokeWidth="0.8" strokeOpacity="0.55" />
-        <text fontSize="22" fill="var(--accent)" fillOpacity="0.5" letterSpacing="14">
-          <textPath href="#mc-outer-path" startOffset="0%">
-            {RUNES.repeat(4)}
-          </textPath>
-        </text>
+        <circle cx="400" cy="400" r="345" fill="none" stroke="var(--accent)" strokeWidth="0.8" strokeOpacity="0.55" strokeDasharray="3 6" />
       </motion.g>
 
-      {/* Mid counter-rotating ring with latin runes */}
+      {/* Mid counter-rotating ring */}
       <motion.g
         animate={{ rotate: -360 }}
         transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
         style={{ transformOrigin: "400px 400px" }}
       >
         <circle cx="400" cy="400" r="300" fill="none" stroke="var(--accent)" strokeWidth="1.2" strokeOpacity="0.7" />
-        <text fontSize="14" fill="var(--accent)" fillOpacity="0.32" letterSpacing="6" fontFamily="monospace">
-          <textPath href="#mc-mid-path" startOffset="0%">
-            {RUNES2.repeat(7)}
-          </textPath>
-        </text>
+        <circle cx="400" cy="400" r="290" fill="none" stroke="var(--accent)" strokeWidth="0.5" strokeOpacity="0.4" strokeDasharray="1 4" />
       </motion.g>
 
       {/* Inner pentagram + clover star */}

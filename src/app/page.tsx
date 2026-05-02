@@ -67,6 +67,18 @@ export default function HomePage() {
           aria-hidden
         />
 
+        {/* Left-column legibility fade — softens the rings behind the title/bio
+            on lg+ where the title sits in the left half. Hidden on mobile
+            because the layout stacks. */}
+        <div
+          className="absolute inset-y-0 left-0 z-0 hidden lg:block w-[55%] pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to right, var(--bg) 0%, color-mix(in oklab, var(--bg) 70%, transparent) 35%, transparent 70%)",
+          }}
+          aria-hidden
+        />
+
         <div className="relative z-10 mx-auto grid min-h-[88vh] max-w-6xl grid-cols-1 items-center gap-12 px-6 pt-24 pb-20 lg:grid-cols-[1.4fr_1fr]">
           <div>
             <motion.p

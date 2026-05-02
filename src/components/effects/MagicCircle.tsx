@@ -32,6 +32,7 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
           <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
         </radialGradient>
         <path id="mc-outer-path" d="M 400,400 m -360,0 a 360,360 0 1,1 720,0 a 360,360 0 1,1 -720,0" />
+        <path id="mc-mid-path"   d="M 400,400 m -300,0 a 300,300 0 1,1 600,0 a 300,300 0 1,1 -600,0" />
         <path id="mc-inner-path" d="M 400,400 m -260,0 a 260,260 0 1,1 520,0 a 260,260 0 1,1 -520,0" />
       </defs>
 
@@ -61,8 +62,8 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
       >
         <circle cx="400" cy="400" r="300" fill="none" stroke="var(--accent)" strokeWidth="1.2" strokeOpacity="0.7" />
         <text fontSize="14" fill="var(--accent)" fillOpacity="0.32" letterSpacing="6" fontFamily="monospace">
-          <textPath href="#mc-outer-path" startOffset="0%">
-            {RUNES2.repeat(8)}
+          <textPath href="#mc-mid-path" startOffset="0%">
+            {RUNES2.repeat(7)}
           </textPath>
         </text>
       </motion.g>

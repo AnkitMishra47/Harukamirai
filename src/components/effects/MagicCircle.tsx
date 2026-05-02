@@ -12,16 +12,17 @@ type Props = {
 };
 
 export function MagicCircle({ size = 720, className = "", intensity = "full" }: Props) {
-  const opacity = intensity === "subtle" ? 0.18 : 0.55;
+  const opacity = intensity === "subtle" ? 0.12 : 0.55;
   return (
     <motion.svg
       viewBox="0 0 800 800"
       width={size}
       height={size}
-      className={`pointer-events-none select-none ${className}`}
-      initial={{ opacity: 0, scale: 0.6 }}
+      className={`pointer-events-none select-none will-change-transform ${className}`}
+      style={{ backfaceVisibility: "hidden", transform: "translateZ(0)" }}
+      initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity, scale: 1 }}
-      transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
       aria-hidden
     >
       <defs>

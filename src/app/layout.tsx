@@ -5,7 +5,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { CursorTrail } from "@/components/effects/CursorTrail";
 import { ThemeBurst } from "@/components/effects/ThemeBurst";
-import { MagicCircle } from "@/components/effects/MagicCircle";
+import { ClientBackground } from "@/components/effects/ClientBackground";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -61,11 +61,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-dvh flex flex-col relative overflow-x-hidden">
-        {/* Global Persistent Magic Circle Background */}
-        <div className="fixed inset-0 -z-50 pointer-events-none flex items-center justify-center overflow-hidden opacity-[0.03] dark:opacity-[0.07]">
-          <MagicCircle size={1400} intensity="full" />
-        </div>
-        
+        <ClientBackground />
         <CursorTrail />
         <ThemeBurst />
         <Nav />

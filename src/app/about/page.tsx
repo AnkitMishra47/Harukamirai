@@ -19,6 +19,24 @@ const arc = [
   { year: "Now", title: "harukamirai.engineer", note: "You're here." },
 ];
 
+const testimonials = [
+  {
+    quote:
+      "He takes full ownership of his work and is a dedicated team member, ensuring tasks are done right, even when they're complex. He makes himself readily available whenever we need support, which makes collaboration much easier and more effective.",
+    attribution: "Peer nomination · OneIT 2025",
+  },
+  {
+    quote:
+      "His build quality is consistently very high — it&apos;s difficult to find issues during testing, which gives me greater confidence on client calls. Whenever I have questions he doesn&apos;t just explain the answer, he encourages me to explore and find it independently. My understanding of the overall system improves after every discussion.",
+    attribution: "Peer nomination · OneIT 2025",
+  },
+  {
+    quote:
+      "Outstanding contribution. He took full ownership and spent extra time, even late nights, to ensure the functionality worked exactly as required. Instead of rejecting good-to-have requests, he patiently worked through them — significantly improving the feature.",
+    attribution: "Peer nomination · OneIT 2025",
+  },
+];
+
 const awards = [
   {
     year: "2025",
@@ -169,6 +187,40 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* PEER TESTIMONIALS ──────────────────── */}
+      <section className="mt-24">
+        <h2 className="font-display text-3xl text-[var(--text)] mb-2">
+          From peers
+        </h2>
+        <p className="text-sm text-[var(--text-muted)] mb-10">
+          Excerpts from internal peer nominations submitted at OneIT in 2025.
+          Names removed; wording is theirs.
+        </p>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {testimonials.map((t) => (
+            <figure
+              key={t.attribution + t.quote.slice(0, 24)}
+              className="relative rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-6 transition-colors hover:border-[var(--accent)]"
+            >
+              <span
+                className="absolute -top-3 left-5 font-display text-5xl leading-none text-[var(--accent)]"
+                aria-hidden
+              >
+                &ldquo;
+              </span>
+              <blockquote
+                className="text-[var(--text-muted)] leading-relaxed text-sm pt-2"
+                dangerouslySetInnerHTML={{ __html: t.quote }}
+              />
+              <figcaption className="mt-5 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-subtle)]">
+                — {t.attribution}
+              </figcaption>
+            </figure>
+          ))}
         </div>
       </section>
 

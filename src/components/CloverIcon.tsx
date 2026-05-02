@@ -56,6 +56,12 @@ export function CloverIcon({ size = 32, className }: Props) {
         className="leaf-fifth"
         d="M 50 50 L 32 32 L 22 16 L 36 22 L 30 6 L 44 18 L 38 4 L 50 14 Z"
       />
+
+      {/* Demon eye — only visible in leaf-5 (Asta) mode, slow pulse */}
+      <g className="demon-eye">
+        <ellipse cx="50" cy="50" rx="3.6" ry="6" />
+        <ellipse cx="50" cy="50" rx="1.2" ry="4.6" className="demon-pupil" />
+      </g>
     </svg>
   );
 }

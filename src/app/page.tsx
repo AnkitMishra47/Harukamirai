@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { MagicCircle } from "@/components/effects/MagicCircle";
 import { ParticleField } from "@/components/effects/ParticleField";
 import { Grimoire } from "@/components/effects/Grimoire";
+import { HeroSwords } from "@/components/effects/HeroSwords";
 import { MagicReveal, BrushDivider } from "@/components/effects/MagicReveal";
 import { Currents } from "@/components/effects/Currents";
 
@@ -35,6 +36,14 @@ export default function HomePage() {
           className="absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2"
         >
           <MagicCircle size={900} />
+        </motion.div>
+
+        {/* Crossed-sword silhouettes — anti-magic motif behind the title */}
+        <motion.div
+          style={{ opacity: circleOpacity }}
+          className="absolute left-[28%] top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 hidden md:flex"
+        >
+          <HeroSwords />
         </motion.div>
 
         <div

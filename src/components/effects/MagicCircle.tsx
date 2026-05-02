@@ -12,7 +12,7 @@ type Props = {
 };
 
 export function MagicCircle({ size = 720, className = "", intensity = "full" }: Props) {
-  const opacity = intensity === "subtle" ? 0.12 : 0.55;
+  const opacity = intensity === "subtle" ? 0.18 : 0.9;
   return (
     <motion.svg
       viewBox="0 0 800 800"
@@ -44,8 +44,8 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
         transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
         style={{ transformOrigin: "400px 400px" }}
       >
-        <circle cx="400" cy="400" r="360" fill="none" stroke="var(--accent)" strokeWidth="1" strokeOpacity="0.7" />
-        <circle cx="400" cy="400" r="345" fill="none" stroke="var(--accent)" strokeWidth="0.5" strokeOpacity="0.4" />
+        <circle cx="400" cy="400" r="360" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeOpacity="0.9" />
+        <circle cx="400" cy="400" r="345" fill="none" stroke="var(--accent)" strokeWidth="0.8" strokeOpacity="0.55" />
         <text fontSize="22" fill="var(--accent)" fillOpacity="0.85" letterSpacing="14">
           <textPath href="#mc-outer-path" startOffset="0%">
             {RUNES.repeat(4)}
@@ -59,7 +59,7 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
         transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
         style={{ transformOrigin: "400px 400px" }}
       >
-        <circle cx="400" cy="400" r="300" fill="none" stroke="var(--accent)" strokeWidth="0.8" strokeOpacity="0.5" />
+        <circle cx="400" cy="400" r="300" fill="none" stroke="var(--accent)" strokeWidth="1.2" strokeOpacity="0.7" />
         <text fontSize="14" fill="var(--accent)" fillOpacity="0.6" letterSpacing="6" fontFamily="monospace">
           <textPath href="#mc-outer-path" startOffset="0%">
             {RUNES2.repeat(8)}
@@ -73,14 +73,14 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
         transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
         style={{ transformOrigin: "400px 400px" }}
       >
-        <circle cx="400" cy="400" r="260" fill="none" stroke="var(--accent)" strokeWidth="0.8" strokeOpacity="0.7" />
+        <circle cx="400" cy="400" r="260" fill="none" stroke="var(--accent)" strokeWidth="1.2" strokeOpacity="0.85" />
         {/* 5-point star — anti-magic */}
         <path
           d="M 400 160 L 461 348 L 658 348 L 499 463 L 561 651 L 400 535 L 239 651 L 301 463 L 142 348 L 339 348 Z"
           fill="none"
           stroke="var(--accent)"
-          strokeWidth="0.8"
-          strokeOpacity="0.5"
+          strokeWidth="1.2"
+          strokeOpacity="0.7"
         />
       </motion.g>
 

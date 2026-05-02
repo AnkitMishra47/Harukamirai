@@ -41,7 +41,7 @@ export default function HomePage() {
           className="absolute inset-0 -z-10"
           style={{
             background:
-              "radial-gradient(ellipse at center, transparent 55%, var(--bg) 100%)",
+              "radial-gradient(ellipse at center, transparent 70%, var(--bg) 100%)",
           }}
           aria-hidden
         />

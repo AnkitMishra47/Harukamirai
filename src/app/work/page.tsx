@@ -1,16 +1,143 @@
 "use client";
 
-import type { Metadata } from "next";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { MagicReveal } from "@/components/effects/MagicReveal";
 
 const oneIT = [
   { year: "Aug 2022", title: "Junior SWE Intern", body: "Joined right after BCA." },
-  { year: "Jan 2023", title: "Junior Software Engineer", body: "First promotion. Java + AngularJS work on the Cougar platform." },
+  { year: "Jan 2023", title: "Junior Software Engineer", body: "First promotion. Java + Angular work on the Cougar platform." },
   { year: "Oct 2023", title: "Software Engineer", body: "Owned Cougar infrastructure features, APIs, JSON/XML transports, Postgres." },
   { year: "Oct 2024", title: "Associate Senior SWE · Mid Developer of the Year 2024", body: "Stack expanded into Python/Flask/Twilio/Ionic. Award signed by MD David Barton." },
   { year: "2025", title: "Senior Software Engineer L3 · Runner-up, Employee of the Year 2025", body: "Company-wide recognition. Lead on integrations and release cycle for the AU engineering team — from Faridabad, six AEDT timezone hours away." },
+];
+
+type CaseStudy = {
+  kicker: string;
+  title: string;
+  domain: string;
+  problem: string;
+  approach: string[];
+  result: string;
+  metrics: { label: string; value: string }[];
+  stack: string[];
+};
+
+const cases: CaseStudy[] = [
+  {
+    kicker: "Multi-site platform · Industrial operations",
+    title: "Hub-and-spoke CMS for a national mining-services operator",
+    domain:
+      "An Australian mining-services operator running independent site instances of the same Java platform across geographically distributed locations.",
+    problem:
+      "Each site needed to run autonomously — collecting equipment telemetry, alerts, and operational events into its own database — while feeding a central server for cross-site analytics, executive dashboards, and disaster-recovery backup.",
+    approach: [
+      "Java + Angular application deployed as independent site instances, each with a local PostgreSQL/TimescaleDB store for time-series equipment data.",
+      "SymmetricDS hub-and-spoke replication: sites act as leaf nodes, replicating writes to a master server asynchronously with conflict resolution and staged onboarding for new sites.",
+      "Ingestion pipeline for device-generated JSON payloads — alerts, telemetry samples, event history — with unit conversions, custom alert-threshold evaluation, and email notifications.",
+      "Grafana dashboards over the central database for cross-site fleet analytics; periodic sync from a secondary MS SQL Server for machine metadata.",
+      "RAG conversational agent on top of live metrics + a PDF manuals knowledge base (embeddings) so on-site staff can ask natural-language questions over equipment history.",
+    ],
+    result:
+      "{TODO: e.g. 'X sites onboarded · Y million events/month replicated · zero-downtime central failover'} — fill in.",
+    metrics: [
+      { label: "Sites in production", value: "{TODO}" },
+      { label: "Events ingested / month", value: "{TODO}" },
+      { label: "Replication lag (p95)", value: "{TODO}" },
+    ],
+    stack: [
+      "Java",
+      "Angular",
+      "PostgreSQL · TimescaleDB",
+      "SymmetricDS",
+      "Grafana",
+      "Docker",
+      "RAG · Embeddings",
+      "Python",
+    ],
+  },
+  {
+    kicker: "Compliance LMS · Australian RTO sector",
+    title: "End-to-end LMS for a national Registered Training Organisation",
+    domain:
+      "A national Australian RTO needing a single platform to author courses, deliver them online, issue regulator-recognised certificates, run their billing, and stay compliant with national identifier rules.",
+    problem:
+      "Replace a fragmented stack (separate course, finance, and certificate tools) with one Angular + Java platform that owned the full learner journey — from enrolment and payment through to government-issued credentialing.",
+    approach: [
+      "Course authoring + delivery surface: lessons, assessments, learner progress, certificate generation on completion.",
+      "Mailouts / lifecycle email: enrolment confirmation, due-date reminders, expiry warnings, certificate dispatch.",
+      "Finance module — invoice generation, reconciliation, refunds — with two-way Xero accounting integration so finance staff never re-key a transaction.",
+      "Eway payment gateway integration for card-on-file enrolments and recurring training subscriptions.",
+      "USI (Unique Student Identifier) integration with the Australian government registry for compliant credential issuance — a hard regulatory requirement for any RTO.",
+    ],
+    result:
+      "{TODO: e.g. 'X learners onboarded · $Y/month routed through Xero · USI verified at enrolment in <Z seconds'} — fill in.",
+    metrics: [
+      { label: "Learners onboarded", value: "{TODO}" },
+      { label: "Monthly Xero volume", value: "{TODO}" },
+      { label: "Certificates issued", value: "{TODO}" },
+    ],
+    stack: [
+      "Angular (modern)",
+      "Java · Spring",
+      "PostgreSQL",
+      "Xero API",
+      "Eway",
+      "USI Registry API",
+      "PrimeNG",
+      "PDF generation",
+    ],
+  },
+  {
+    kicker: "AI-first improvements · Platform-wide",
+    title: "Bringing LLMs into the production stack, end-to-end",
+    domain:
+      "Cross-cutting AI work spanning OneIT's product family — moving from \"we use ChatGPT to draft\" to AI features running inside the products customers pay for.",
+    problem:
+      "Make LLM features cheap, accurate, and testable enough to ship to production: not a demo, not a side-tool — features that real users hit.",
+    approach: [
+      "RAG retrieval over operational corpora — equipment manuals, internal documentation, historical tickets — chunked, embedded, and served behind product-specific assistants.",
+      "OCR pipeline for ingesting paper-trail documents (forms, certificates, invoice PDFs) into structured, queryable records.",
+      "MCP-style tool layer giving the LLM controlled access to live product APIs — read metrics, draft updates, surface evidence — instead of free-form generation.",
+      "DPO (Direct Preference Optimisation) fine-tuning on collected agent responses so the assistant matches the company's voice and business rules without prompt-bloat.",
+      "AI-assisted test automation — generated UI/API tests, regression checks, and assertion synthesis layered onto the existing release pipeline.",
+    ],
+    result:
+      "{TODO: e.g. 'cut analyst look-up time from X→Y · regression suite expanded by Z% with no headcount add'} — fill in.",
+    metrics: [
+      { label: "Look-up time saved", value: "{TODO}" },
+      { label: "Auto-generated tests", value: "{TODO}" },
+      { label: "Models fine-tuned", value: "{TODO}" },
+    ],
+    stack: [
+      "Python",
+      "RAG · Vector DB",
+      "OCR",
+      "MCP tooling",
+      "DPO fine-tuning",
+      "Test automation",
+      "Java integration",
+    ],
+  },
+  {
+    kicker: "Interactive canvas · Payments tooling",
+    title: "Drag-and-drop payment-slip builder on Paper.js",
+    domain:
+      "An internal payments-tooling product where finance users compose interactive payment slips and forms visually — small audience, but a sharp UX problem.",
+    problem:
+      "Standard form builders couldn't express the spatial, drawing-on-paper feel finance staff wanted. Needed a real canvas surface — drag, snap, layer — without dropping out of Angular.",
+    approach: [
+      "Paper.js canvas embedded in an Angular 19 component, with a state bridge so the canvas tree round-trips cleanly to the existing form-definition model.",
+      "Custom snapping, alignment guides, and multi-select; serialisable canvas state so designs version and review like the rest of the product.",
+    ],
+    result:
+      "Niche internal tool — small user base by design. Included here as a clean example of bringing a non-React / non-DOM rendering library into a modern Angular app without leaks.",
+    metrics: [
+      { label: "Surface", value: "Paper.js · Angular 19" },
+      { label: "Audience", value: "Internal · finance" },
+    ],
+    stack: ["Angular 19", "Paper.js", "TypeScript", "PrimeNG"],
+  },
 ];
 
 export default function WorkPage() {
@@ -24,14 +151,20 @@ export default function WorkPage() {
           <h1 className="font-display text-5xl md:text-6xl mt-3 text-[var(--text)] leading-[1.02]">
             Built, shipped, owned.
           </h1>
+          <p className="mt-6 max-w-2xl text-lg text-[var(--text-muted)] leading-relaxed">
+            Most of what I&apos;ve shipped lives behind OneIT customer logins.
+            The case studies below are anonymised — same systems, real
+            architecture, real stack. Metrics are being filled in as I confirm
+            what I&apos;m allowed to publish.
+          </p>
         </MagicReveal>
       </header>
 
       {/* SPRACHKRAFT ─────────────────────────── */}
-      <section className="mb-24">
+      <section className="mb-28">
         <MagicReveal>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
-            Featured · Client work · 2025
+            Featured · Independent client work · 2025
           </p>
           <h2 className="font-display text-4xl mt-3 text-[var(--text)]">
             The Sprachkraft
@@ -71,6 +204,29 @@ export default function WorkPage() {
         </div>
       </section>
 
+      {/* ONEIT CASE STUDIES ─────────────────────── */}
+      <section className="mb-28">
+        <MagicReveal>
+          <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
+            Inside OneIT · Selected work
+          </p>
+          <h2 className="font-display text-4xl mt-3 text-[var(--text)]">
+            Four systems I&apos;ve had my hands on.
+          </h2>
+          <p className="mt-2 max-w-2xl text-[var(--text-muted)]">
+            Client names removed. Architecture, stack, and outcomes are real.
+          </p>
+        </MagicReveal>
+
+        <div className="mt-12 space-y-12">
+          {cases.map((c, i) => (
+            <MagicReveal key={c.title} delay={i * 0.05}>
+              <CaseStudyCard study={c} />
+            </MagicReveal>
+          ))}
+        </div>
+      </section>
+
       {/* ONEIT TIMELINE ─────────────────────── */}
       <section className="mb-24">
         <MagicReveal>
@@ -82,7 +238,7 @@ export default function WorkPage() {
           </h2>
           <p className="mt-2 text-[var(--text-muted)]">
             Senior Software Engineer L3 on OneIT&apos;s Australian engineering
-            team. Backend, integrations, and release cycle.
+            team. Backend, integrations, AI, and release cycle.
           </p>
         </MagicReveal>
 
@@ -115,10 +271,10 @@ export default function WorkPage() {
       <section>
         <MagicReveal>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
-            Also
+            Outside OneIT
           </p>
           <h2 className="font-display text-4xl mt-3 text-[var(--text)]">
-            Other things I&apos;ve built.
+            Side things I&apos;ve built.
           </h2>
         </MagicReveal>
 
@@ -157,6 +313,83 @@ export default function WorkPage() {
             <span className="absolute inset-0 -translate-x-full bg-[var(--accent-hover)] transition-transform duration-500 group-hover:translate-x-0" />
           </Link>
         </MagicReveal>
+      </div>
+    </article>
+  );
+}
+
+function CaseStudyCard({ study }: { study: CaseStudy }) {
+  return (
+    <article className="group relative rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-8 transition-all hover:border-[var(--accent)] hover:shadow-[0_0_30px_var(--accent-glow)]">
+      <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
+        {study.kicker}
+      </p>
+      <h3 className="font-display text-2xl md:text-3xl mt-3 text-[var(--text)] leading-tight">
+        {study.title}
+      </h3>
+      <p className="mt-3 text-[var(--text-muted)] leading-relaxed">
+        {study.domain}
+      </p>
+
+      <div className="mt-7 grid gap-7 md:grid-cols-3">
+        <div className="md:col-span-2 space-y-5">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+              Problem
+            </p>
+            <p className="mt-1.5 text-[var(--text-muted)] leading-relaxed">
+              {study.problem}
+            </p>
+          </div>
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+              Approach
+            </p>
+            <ul className="mt-2 space-y-2 text-[var(--text-muted)]">
+              {study.approach.map((line) => (
+                <li key={line} className="leading-relaxed">
+                  <span className="mr-2 text-[var(--accent)]">▹</span>
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">
+              Result
+            </p>
+            <p className="mt-1.5 text-[var(--text-muted)] leading-relaxed">
+              {study.result}
+            </p>
+          </div>
+        </div>
+
+        <aside className="space-y-3 md:border-l md:border-[var(--border)] md:pl-7">
+          {study.metrics.map((m) => (
+            <div
+              key={m.label}
+              className="rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4"
+            >
+              <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--text-subtle)]">
+                {m.label}
+              </p>
+              <p className="font-display text-xl mt-1 text-[var(--text)] leading-tight">
+                {m.value}
+              </p>
+            </div>
+          ))}
+        </aside>
+      </div>
+
+      <div className="mt-7 flex flex-wrap gap-2">
+        {study.stack.map((s) => (
+          <span
+            key={s}
+            className="rounded-full border border-[var(--border)] bg-[var(--bg)] px-3 py-1 text-xs text-[var(--text-muted)]"
+          >
+            {s}
+          </span>
+        ))}
       </div>
     </article>
   );

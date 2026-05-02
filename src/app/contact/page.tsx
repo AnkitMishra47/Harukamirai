@@ -14,15 +14,15 @@ const channels = [
   },
   {
     label: "LinkedIn",
-    value: "/in/ankitm17",
-    href: "https://www.linkedin.com/in/ankitm17/",
+    value: "/in/ankitmishra47",
+    href: "https://www.linkedin.com/in/ankitmishra47",
     note: "Career arc, recommendations, and a still-too-old About section.",
   },
   {
     label: "GitHub",
-    value: "github.com/AnkitM17",
-    href: "https://github.com/AnkitM17",
-    note: "Where I push, sometimes. More writing than code lately.",
+    value: "github.com/AnkitMishra47",
+    href: "https://github.com/AnkitMishra47",
+    note: "Sandbox and learning repos. Production work lives in private OneIT repos.",
   },
 ];
 

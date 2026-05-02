@@ -32,7 +32,7 @@ export function Footer() {
             <li>
               <a
                 className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
-                href="https://www.linkedin.com/in/ankitm17/"
+                href="https://www.linkedin.com/in/ankitmishra47"
                 target="_blank"
                 rel="noreferrer"
               >

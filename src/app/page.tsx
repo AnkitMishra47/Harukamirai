@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MagicCircle } from "@/components/effects/MagicCircle";
 import { ParticleField } from "@/components/effects/ParticleField";
 import { Grimoire } from "@/components/effects/Grimoire";
@@ -22,6 +22,17 @@ export default function HomePage() {
   const grimoireRotate = useTransform(scrollYProgress, [0, 1], [0, 8]);
   const circleScale = useTransform(scrollYProgress, [0, 1], [1, 1.3]);
   const circleOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  // Disable Grimoire scroll transforms below `lg` — on mobile the layout
+  // stacks vertically and the y/rotate offsets drag the book over the CTAs.
+  const [isLg, setIsLg] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    setIsLg(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setIsLg(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   return (
     <>
@@ -200,8 +211,8 @@ export default function HomePage() {
           </div>
 
           <motion.div
-            style={{ y: grimoireY, rotate: grimoireRotate }}
-            className="relative flex items-center justify-center lg:justify-end"
+            style={isLg ? { y: grimoireY, rotate: grimoireRotate } : undefined}
+            className="relative flex items-center justify-center lg:justify-end mt-8 lg:mt-0"
           >
             <div className="relative">
               <motion.div

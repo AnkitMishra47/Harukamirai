@@ -14,6 +14,16 @@ export function Footer() {
           <p className="font-display text-base italic text-[var(--accent)] mt-5">
             “Push past my limit.”
           </p>
+
+          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/40 bg-[var(--accent-glow)] px-3 py-1.5">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-60" />
+              <span className="relative inline-flex size-2 rounded-full bg-[var(--accent)]" />
+            </span>
+            <span className="text-xs font-medium text-[var(--text)]">
+              Open to senior / staff opportunities
+            </span>
+          </div>
         </div>
 
         <div className="md:text-right">

@@ -128,8 +128,8 @@ export function Grimoire({ size = 400 }: { size?: number }) {
       <AnimatePresence>
         {stage === "open" && (
           <div
-            className="absolute left-1/2 top-0 z-30 flex -translate-x-1/2 gap-2"
-            style={{ transform: "translate(-50%, -28px)" }}
+            className="absolute left-1/2 top-0 z-30 flex gap-2"
+            style={{ transform: "translate(-50%, -62px)" }}
           >
             {CHAPTERS.map((ch, i) => (
               <motion.button

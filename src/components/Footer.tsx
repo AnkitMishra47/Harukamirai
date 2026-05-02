@@ -1,17 +1,9 @@
 import Link from "next/link";
 
-const mentors = [
-  "Akhil Kandpal",
-  "Abirami Thurairajah",
-  "Towhidul Islam (Tuhin)",
-  "Pankaj Vaghasiya",
-  "Harsh Shah",
-];
-
 export function Footer() {
   return (
     <footer className="mt-32 border-t border-[var(--border)]">
-      <div className="mx-auto max-w-6xl px-6 py-14 grid gap-12 md:grid-cols-3">
+      <div className="mx-auto max-w-6xl px-6 py-14 grid gap-12 md:grid-cols-2">
         <div>
           <p className="font-display text-2xl text-[var(--text)]">
             遥か未来
@@ -19,20 +11,12 @@ export function Footer() {
           <p className="font-jp text-sm text-[var(--text-subtle)] mt-1">
             Haruka Mirai — the future, forged.
           </p>
-        </div>
-
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-subtle)] mb-3">
-            Engineers who shaped this craft
+          <p className="font-display text-base italic text-[var(--accent)] mt-5">
+            “Push past my limit.”
           </p>
-          <ul className="text-sm text-[var(--text-muted)] space-y-1">
-            {mentors.map((m) => (
-              <li key={m}>{m}</li>
-            ))}
-          </ul>
         </div>
 
-        <div>
+        <div className="md:text-right">
           <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-subtle)] mb-3">
             Elsewhere
           </p>
@@ -68,8 +52,7 @@ export function Footer() {
       </div>
       <div className="border-t border-[var(--border)]">
         <p className="mx-auto max-w-6xl px-6 py-5 text-xs text-[var(--text-subtle)]">
-          © {new Date().getFullYear()} Ankit Mishra. Built in Faridabad,
-          shipped from a 6-hour timezone gap.
+          © {new Date().getFullYear()} Ankit Mishra · harukamirai.engineer
         </p>
       </div>
     </footer>

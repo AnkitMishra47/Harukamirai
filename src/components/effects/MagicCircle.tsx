@@ -12,7 +12,7 @@ type Props = {
 };
 
 export function MagicCircle({ size = 720, className = "", intensity = "full" }: Props) {
-  const opacity = intensity === "subtle" ? 0.18 : 0.9;
+  const opacity = intensity === "subtle" ? 0.15 : 0.7;
   return (
     <motion.svg
       viewBox="0 0 800 800"
@@ -46,7 +46,7 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
       >
         <circle cx="400" cy="400" r="360" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeOpacity="0.9" />
         <circle cx="400" cy="400" r="345" fill="none" stroke="var(--accent)" strokeWidth="0.8" strokeOpacity="0.55" />
-        <text fontSize="22" fill="var(--accent)" fillOpacity="0.85" letterSpacing="14">
+        <text fontSize="22" fill="var(--accent)" fillOpacity="0.5" letterSpacing="14">
           <textPath href="#mc-outer-path" startOffset="0%">
             {RUNES.repeat(4)}
           </textPath>
@@ -60,7 +60,7 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
         style={{ transformOrigin: "400px 400px" }}
       >
         <circle cx="400" cy="400" r="300" fill="none" stroke="var(--accent)" strokeWidth="1.2" strokeOpacity="0.7" />
-        <text fontSize="14" fill="var(--accent)" fillOpacity="0.6" letterSpacing="6" fontFamily="monospace">
+        <text fontSize="14" fill="var(--accent)" fillOpacity="0.32" letterSpacing="6" fontFamily="monospace">
           <textPath href="#mc-outer-path" startOffset="0%">
             {RUNES2.repeat(8)}
           </textPath>

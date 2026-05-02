@@ -156,6 +156,7 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.95 }}
               className="mt-8 max-w-xl text-lg sm:text-xl text-[var(--text-muted)] leading-relaxed"
+              style={{ textShadow: "0 0 18px var(--bg), 0 0 6px var(--bg)" }}
             >
               From BCA to{" "}
               <span className="text-[var(--text)] font-medium">Senior&nbsp;L3</span>{" "}

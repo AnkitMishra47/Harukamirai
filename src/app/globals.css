@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+/* ============================================================
+   THEME VARIABLES — leaf-4 (default) ↔ leaf-5 (anti-magic dark)
+   Spec: Documentation/clover-toggle-spec.md
+   ============================================================ */
+
+:root,
+[data-theme="leaf-4"] {
+  /* Surface */
+  --bg:              #f4efe3;
+  --bg-elevated:     #fbf8f0;
+  --bg-inset:        #ebe5d4;
+
+  /* Text */
+  --text:            #14110d;
+  --text-muted:      #6b6358;
+  --text-subtle:     #948b7d;
+
+  /* Accent — Magic Knight green */
+  --accent:          #2c5840;
+  --accent-hover:    #3a7152;
+  --accent-glow:     rgba(44, 88, 64, 0.18);
+
+  /* Structure */
+  --border:          #d8d0bc;
+  --border-strong:   #b8ad94;
+
+  /* Clover icon */
+  --clover-leaf:     #2c5840;
+  --clover-stem:     #4a3d2a;
+  --clover-fifth:    transparent;
+  --fifth-opacity:   0;
+  --fifth-scale:     0;
+  --fifth-rotate:    -20deg;
+}
+
+[data-theme="leaf-5"] {
+  --bg:              #0a0907;
+  --bg-elevated:     #14110d;
+  --bg-inset:        #050403;
+
+  --text:            #f0ebde;
+  --text-muted:      #8a8275;
+  --text-subtle:     #5a544a;
+
+  --accent:          #c8102e;
+  --accent-hover:    #e02745;
+  --accent-glow:     rgba(200, 16, 46, 0.40);
+
+  --border:          #2a2520;
+  --border-strong:   #4a4138;
+
+  --clover-leaf:     #f0ebde;
+  --clover-stem:     #6b6358;
+  --clover-fifth:    #c8102e;
+  --fifth-opacity:   1;
+  --fifth-scale:     1;
+  --fifth-rotate:    0deg;
+}
+
+html { color-scheme: light; }
+[data-theme="leaf-5"] { color-scheme: dark; }
+
+/* Tailwind v4: expose CSS vars to utility classes */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-inset: var(--bg-inset);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+* { border-color: var(--border); }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  transition:
+    background-color 280ms cubic-bezier(0.4, 0, 0.2, 1),
+    color           280ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* Reduced motion — instant swap */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* View Transitions API polish */
+@supports (view-transition-name: none) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 320ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* ============================================================
+   CLOVER ICON
+   ============================================================ */
+.clover-icon { display: block; }
+.clover-icon .leaf  { fill: var(--clover-leaf); transition: fill 280ms ease; }
+.clover-icon .stem  { fill: var(--clover-stem); transition: fill 280ms ease; }
+.clover-icon .leaf-fifth {
+  fill: var(--clover-fifth);
+  opacity: var(--fifth-opacity);
+  transform: scale(var(--fifth-scale)) rotate(var(--fifth-rotate));
+  transform-origin: 50px 50px;
+  transform-box: fill-box;
+  transition:
+    opacity 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ============================================================
+   TYPOGRAPHIC RHYTHM
+   ============================================================ */
+.font-display {
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+  letter-spacing: -0.02em;
+}
+.font-jp {
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP",
+    "Shippori Mincho", "Times New Roman", serif;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+/* Subtle reveal */
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal { animation: reveal 600ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.reveal-1 { animation-delay: 80ms; }
+.reveal-2 { animation-delay: 160ms; }
+.reveal-3 { animation-delay: 240ms; }
+.reveal-4 { animation-delay: 320ms; }
+
+/* Dotted divider — manga page break */
+.divider-dots {
+  display: flex; gap: 6px; align-items: center; justify-content: center;
+}
+.divider-dots span {
+  width: 4px; height: 4px; border-radius: 999px;
+  background: var(--text-subtle);
+}

@@ -12,6 +12,7 @@ type BurstEvent = {
 
 export function ThemeBurst() {
   const [bursts, setBursts] = useState<BurstEvent[]>([]);
+  const [isDistorting, setIsDistorting] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -19,21 +20,24 @@ export function ThemeBurst() {
       const { x, y, to } = ce.detail;
       const id = Date.now() + Math.random();
       setBursts((b) => [...b, { x, y, to, id }]);
+      
+      setIsDistorting(true);
+      setTimeout(() => setIsDistorting(false), 800);
+
       setTimeout(() => {
         setBursts((b) => b.filter((x) => x.id !== id));
       }, 1200);
 
-      // Brief screen shake when going dark
       if (to === "leaf-5") {
         document.body.animate(
           [
             { transform: "translate(0,0)" },
-            { transform: "translate(-2px, 1px)" },
-            { transform: "translate(3px, -2px)" },
-            { transform: "translate(-1px, 2px)" },
+            { transform: "translate(-4px, 2px)" },
+            { transform: "translate(4px, -2px)" },
+            { transform: "translate(-2px, 4px)" },
             { transform: "translate(0,0)" },
           ],
-          { duration: 320, easing: "cubic-bezier(0.36, 0.07, 0.19, 0.97)" }
+          { duration: 400, easing: "cubic-bezier(0.36, 0.07, 0.19, 0.97)" }
         );
       }
     };
@@ -42,13 +46,44 @@ export function ThemeBurst() {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[70]" aria-hidden>
-      <AnimatePresence>
-        {bursts.map((b) => (
-          <BurstLayer key={b.id} burst={b} />
-        ))}
-      </AnimatePresence>
-    </div>
+    <>
+      <div className="pointer-events-none fixed inset-0 z-[70]" aria-hidden>
+        <AnimatePresence>
+          {bursts.map((b) => (
+            <BurstLayer key={b.id} burst={b} />
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* Reality Distortion Filter */}
+      <svg className="sr-only" aria-hidden="true">
+        <defs>
+          <filter id="reality-warp">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.01 0.05"
+              numOctaves="2"
+              result="noise"
+            >
+              <animate
+                attributeName="baseFrequency"
+                values="0.01 0.05; 0.05 0.2; 0.01 0.05"
+                dur="0.4s"
+                repeatCount="1"
+              />
+            </feTurbulence>
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale={isDistorting ? "40" : "0"} />
+          </filter>
+        </defs>
+      </svg>
+
+      <style jsx global>{`
+        body {
+          filter: ${isDistorting ? "url(#reality-warp)" : "none"};
+          transition: filter 0.3s ease-out;
+        }
+      `}</style>
+    </>
   );
 }
 

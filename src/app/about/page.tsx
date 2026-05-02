@@ -13,8 +13,8 @@ const arc = [
   { year: "Jan 2023", title: "Junior Software Engineer", note: "First step up. Java, Angular." },
   { year: "Oct 2023", title: "Software Engineer", note: "Owned Cougar infrastructure work, APIs, JSON/XML, Postgres." },
   { year: "Sep 2024", title: "MCA completed", note: "While shipping production code." },
-  { year: "Oct 2024", title: "Associate Senior + Mid-Tier Developer of the Year 2024", note: "Recognized by MD David Barton. Stack expanded into Python/Flask/Twilio/Ionic." },
-  { year: "2025", title: "Senior Software Engineer L3 + Employee of the Year 2025", note: "Company-wide award, across all engineering tiers." },
+  { year: "Oct 2024", title: "Associate Senior + Mid Developer of the Year 2024", note: "Recognized by MD David Barton. Stack expanded into Python/Flask/Twilio/Ionic." },
+  { year: "2025", title: "Senior Software Engineer L3 + Runner-up Employee of the Year 2025", note: "Company-wide recognition, across all engineering tiers." },
   { year: "Now", title: "harukamirai.engineer", note: "You're here." },
 ];
 
@@ -57,9 +57,9 @@ export default function AboutPage() {
           <strong className="text-[var(--text)]">Senior Software Engineer L3</strong>{" "}
           over three years, mostly on backend systems (Java, Spring Boot,
           Postgres) and increasingly on integrations (Twilio, Flask, Ionic).
-          In 2024 I was named Mid-Tier Developer of the Year. In 2025, I was
-          named <strong className="text-[var(--text)]">Employee of the Year</strong> —
-          company-wide, not tier-restricted.
+          In 2024 I was named <strong className="text-[var(--text)]">Mid Developer of the Year</strong>.
+          In 2025, I placed <strong className="text-[var(--text)]">Runner-up for Employee of the Year</strong> —
+          company-wide, across all engineering tiers.
         </p>
         <p>
           I picked up an MCA from Chandigarh University while doing this. The

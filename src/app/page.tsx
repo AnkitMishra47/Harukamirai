@@ -177,8 +177,8 @@ export default function HomePage() {
           <MagicCircle size={1200} intensity="subtle" />
         </div>
         <div className="relative mx-auto max-w-6xl px-6 py-14 grid gap-10 md:grid-cols-3">
-          <Stat kicker="2025" value="Employee of the Year" note="Company-wide, OneIT." delay={0} />
-          <Stat kicker="2024" value="Mid-Tier Developer of the Year" note="Signed by MD David Barton." delay={0.15} />
+          <Stat kicker="2025" value="Runner-up · Employee of the Year" note="Company-wide award, OneIT." delay={0} />
+          <Stat kicker="2024" value="Mid Developer of the Year" note="Signed by MD David Barton." delay={0.15} />
           <Stat kicker="3 in 3" value="Promotions in three years" note="Junior Intern → Senior L3." delay={0.3} />
         </div>
       </section>

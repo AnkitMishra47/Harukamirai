@@ -9,8 +9,8 @@ const oneIT = [
   { year: "Aug 2022", title: "Junior SWE Intern", body: "Joined right after BCA." },
   { year: "Jan 2023", title: "Junior Software Engineer", body: "First promotion. Java + AngularJS work on the Cougar platform." },
   { year: "Oct 2023", title: "Software Engineer", body: "Owned Cougar infrastructure features, APIs, JSON/XML transports, Postgres." },
-  { year: "Oct 2024", title: "Associate Senior SWE · Mid-Tier Developer of the Year 2024", body: "Stack expanded into Python/Flask/Twilio/Ionic. Award signed by MD David Barton." },
-  { year: "2025", title: "Senior Software Engineer L3 · Employee of the Year 2025", body: "Company-wide award. Lead on integrations and release cycle for the AU engineering team — from Faridabad, six AEDT timezone hours away." },
+  { year: "Oct 2024", title: "Associate Senior SWE · Mid Developer of the Year 2024", body: "Stack expanded into Python/Flask/Twilio/Ionic. Award signed by MD David Barton." },
+  { year: "2025", title: "Senior Software Engineer L3 · Runner-up, Employee of the Year 2025", body: "Company-wide recognition. Lead on integrations and release cycle for the AU engineering team — from Faridabad, six AEDT timezone hours away." },
 ];
 
 export default function WorkPage() {

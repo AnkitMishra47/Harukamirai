@@ -35,7 +35,7 @@ const jp = Shippori_Mincho({
 export const metadata: Metadata = {
   title: "Ankit Mishra — Software Engineer",
   description:
-    "Senior Software Engineer at OneIT (AU). Java, Angular, Python — and whatever the next ticket needs. Employee of the Year 2025.",
+    "Senior Software Engineer at OneIT (AU). Java, Angular, Python — and whatever the next ticket needs. Runner-up Employee of the Year 2025.",
   metadataBase: new URL("https://harukamirai.engineer"),
   openGraph: {
     title: "Ankit Mishra — harukamirai.engineer",

@@ -27,35 +27,36 @@ export default function HomePage() {
     <>
       {/* HERO */}
       <section ref={heroRef} className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 z-0">
           <ParticleField />
         </div>
 
+        {/* Crossed-sword silhouettes — anti-magic motif behind the title */}
+        <div
+          aria-hidden
+          className="absolute left-[26%] top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 hidden md:block pointer-events-none"
+        >
+          <HeroSwords />
+        </div>
+
+        {/* Magic circle — rotating ring layer */}
         <motion.div
           style={{ scale: circleScale, opacity: circleOpacity }}
-          className="absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2"
+          className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
         >
           <MagicCircle size={900} />
         </motion.div>
 
-        {/* Crossed-sword silhouettes — anti-magic motif behind the title */}
-        <motion.div
-          style={{ opacity: circleOpacity }}
-          className="absolute left-[28%] top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 hidden md:flex"
-        >
-          <HeroSwords />
-        </motion.div>
-
         <div
-          className="absolute inset-0 -z-10"
+          className="absolute inset-0 z-0 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse at center, transparent 70%, var(--bg) 100%)",
+              "radial-gradient(ellipse at center, transparent 75%, var(--bg) 100%)",
           }}
           aria-hidden
         />
 
-        <div className="relative mx-auto grid min-h-[88vh] max-w-6xl grid-cols-1 items-center gap-12 px-6 pt-24 pb-20 lg:grid-cols-[1.4fr_1fr]">
+        <div className="relative z-10 mx-auto grid min-h-[88vh] max-w-6xl grid-cols-1 items-center gap-12 px-6 pt-24 pb-20 lg:grid-cols-[1.4fr_1fr]">
           <div>
             <motion.p
               initial={{ opacity: 0, y: 8 }}

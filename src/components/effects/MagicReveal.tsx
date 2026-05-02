@@ -34,10 +34,11 @@ export function MagicReveal({
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 28, filter: "blur(8px)", scale: 0.98 }}
-        animate={inView ? { opacity: 1, y: 0, filter: "blur(0px)", scale: 1 } : {}}
-        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: delay + 0.1 }}
+        initial={{ opacity: 0, y: 24 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: delay + 0.1 }}
         className="relative z-10"
+        style={{ willChange: "transform, opacity" }}
       >
         {children}
       </motion.div>

@@ -23,11 +23,25 @@ export function ParticleField() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     let W = 0;
     let H = 0;
     let raf = 0;
     const particles: Particle[] = [];
+    const MAX_PARTICLES = 50;
+    let accent =
+      getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() ||
+      "#2c5840";
+
+    const themeObserver = new MutationObserver(() => {
+      accent =
+        getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() ||
+        "#2c5840";
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
 
     function resize() {
       W = canvas!.clientWidth;
@@ -46,20 +60,15 @@ export function ParticleField() {
         vy: -0.2 - Math.random() * 0.6,
         life: 0,
         maxLife: 220 + Math.random() * 280,
-        size: 0.6 + Math.random() * 1.8,
+        size: 0.8 + Math.random() * 1.6,
       });
-    }
-
-    function getAccent(): string {
-      const v = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
-      return v || "#2c5840";
     }
 
     function frame() {
       ctx!.clearRect(0, 0, W, H);
-      const accent = getAccent();
+      ctx!.fillStyle = accent;
 
-      if (particles.length < 90 && Math.random() < 0.6) spawn();
+      if (particles.length < MAX_PARTICLES && Math.random() < 0.4) spawn();
 
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
@@ -69,14 +78,11 @@ export function ParticleField() {
         p.vx += (Math.random() - 0.5) * 0.02;
 
         const t = p.life / p.maxLife;
-        const alpha = Math.sin(t * Math.PI) * 0.85;
+        const alpha = Math.sin(t * Math.PI) * 0.7;
 
+        ctx!.globalAlpha = alpha;
         ctx!.beginPath();
         ctx!.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx!.fillStyle = accent;
-        ctx!.globalAlpha = alpha;
-        ctx!.shadowColor = accent;
-        ctx!.shadowBlur = 8;
         ctx!.fill();
 
         if (p.life >= p.maxLife || p.y < -20) {
@@ -84,7 +90,6 @@ export function ParticleField() {
         }
       }
       ctx!.globalAlpha = 1;
-      ctx!.shadowBlur = 0;
       raf = requestAnimationFrame(frame);
     }
 
@@ -94,6 +99,7 @@ export function ParticleField() {
 
     return () => {
       cancelAnimationFrame(raf);
+      themeObserver.disconnect();
       window.removeEventListener("resize", resize);
     };
   }, []);

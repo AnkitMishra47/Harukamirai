@@ -9,7 +9,7 @@ export default function ResumePage() {
   return (
     <div className="relative min-h-[90vh] flex flex-col items-center justify-center px-6 py-20 overflow-hidden">
       
-      <MagicReveal delay={0.2} className="text-center mb-12">
+      <MagicReveal delay={0.2} className="text-center mb-28">
         <p className="text-xs uppercase tracking-[0.3em] text-[var(--accent)] mb-4">
           Interactive Chronology
         </p>
@@ -17,7 +17,7 @@ export default function ResumePage() {
           The Grimoire of Ankit
         </h1>
         <p className="mt-4 text-[var(--text-muted)] max-w-xl mx-auto">
-          Flip through the chapters of my career. From the first line of code 
+          Flip through the chapters of my career. From the first line of code
           to leading engineering cycles at OneIT.
         </p>
       </MagicReveal>
@@ -26,7 +26,7 @@ export default function ResumePage() {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 0.5 }}
-        className="relative z-10"
+        className="relative z-10 mt-4"
       >
         <Grimoire size={450} />
       </motion.div>

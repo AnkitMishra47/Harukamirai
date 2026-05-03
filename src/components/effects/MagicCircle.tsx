@@ -60,9 +60,9 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
         style={{ transformOrigin: "400px 400px" }}
       >
         <circle cx="400" cy="400" r="260" fill="none" stroke="var(--accent)" strokeWidth="1.2" strokeOpacity="0.85" />
-        {/* 5-point star — anti-magic */}
+        {/* 5-point star — anti-magic. Outer R=240, inner R=91.7, centred (400,400). */}
         <path
-          d="M 400 160 L 461 348 L 658 348 L 499 463 L 561 651 L 400 535 L 239 651 L 301 463 L 142 348 L 339 348 Z"
+          d="M 400 160 L 454 326 L 628 326 L 487 428 L 541 594 L 400 492 L 259 594 L 313 428 L 172 326 L 346 326 Z"
           fill="none"
           stroke="var(--accent)"
           strokeWidth="1.2"

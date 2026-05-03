@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CloverIcon } from "./CloverIcon";
 import { CloverToggle } from "./CloverToggle";
-import { SwordLine } from "./effects/SwordLine";
 
 const links = [
   { href: "/about", label: "About" },
@@ -42,12 +41,7 @@ export function Nav() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[color-mix(in_oklab,var(--bg)_92%,transparent)] backdrop-blur-md">
-      {/* Decorative sword line — sits at the very top edge of the navbar */}
-      <div className="mx-auto max-w-6xl px-6 pt-2">
-        <SwordLine className="h-3 opacity-50" />
-      </div>
-
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link
           href="/"
           aria-label="Home"

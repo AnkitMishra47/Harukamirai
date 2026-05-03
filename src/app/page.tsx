@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import { MagicCircle } from "@/components/effects/MagicCircle";
 import { ParticleField } from "@/components/effects/ParticleField";
 import { Grimoire } from "@/components/effects/Grimoire";
-import { HeroSwords } from "@/components/effects/HeroSwords";
 import { MagicReveal, BrushDivider } from "@/components/effects/MagicReveal";
 import { Currents } from "@/components/effects/Currents";
 
@@ -40,14 +39,6 @@ export default function HomePage() {
       <section ref={heroRef} className="relative overflow-hidden">
         <div className="absolute inset-0 z-0">
           <ParticleField />
-        </div>
-
-        {/* Crossed-sword silhouettes — anti-magic motif behind the title */}
-        <div
-          aria-hidden
-          className="absolute left-[26%] top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 hidden md:block pointer-events-none"
-        >
-          <HeroSwords />
         </div>
 
         {/* Magic circle — rotating ring layer */}

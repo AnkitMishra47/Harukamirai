@@ -80,10 +80,10 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
       <motion.circle
         cx="400"
         cy="400"
-        r="120"
         fill="none"
         stroke="var(--accent)"
         strokeWidth="1.5"
+        initial={{ r: 120, opacity: 0.6 }}
         animate={{ r: [120, 138, 120], opacity: [0.6, 0.2, 0.6] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />

@@ -5,3 +5,8 @@ out
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts
+
+# Confidential OneIT / client documents — never publish.
+# Specific filenames + a blanket PDF rule under /public/photos.
+public/photos/*.pdf
+public/photos/*SWI*

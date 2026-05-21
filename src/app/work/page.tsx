@@ -39,11 +39,11 @@ const cases: CaseStudy[] = [
       "RAG conversational agent on top of live metrics + a PDF manuals knowledge base (embeddings) so on-site staff can ask natural-language questions over equipment history.",
     ],
     result:
-      "{TODO: e.g. 'X sites onboarded · Y million events/month replicated · zero-downtime central failover'} — fill in.",
+      "Sites run autonomously and survive WAN drops; replicated state catches up to the central server when connectivity returns. New-site onboarding became a staged checklist, not a one-off engineering project.",
     metrics: [
-      { label: "Sites in production", value: "{TODO}" },
-      { label: "Events ingested / month", value: "{TODO}" },
-      { label: "Replication lag (p95)", value: "{TODO}" },
+      { label: "Pattern", value: "Hub-and-spoke" },
+      { label: "Data model", value: "Time-series + replication" },
+      { label: "My role", value: "Backend + integrations" },
     ],
     stack: [
       "Java",
@@ -71,11 +71,11 @@ const cases: CaseStudy[] = [
       "USI (Unique Student Identifier) integration with the Australian government registry for compliant credential issuance — a hard regulatory requirement for any RTO.",
     ],
     result:
-      "{TODO: e.g. 'X learners onboarded · $Y/month routed through Xero · USI verified at enrolment in <Z seconds'} — fill in.",
+      "One platform owns the full learner journey — enrolment, payment, delivery, credentialing — so finance never re-keys a transaction and USIs are verified inline at enrolment.",
     metrics: [
-      { label: "Learners onboarded", value: "{TODO}" },
-      { label: "Monthly Xero volume", value: "{TODO}" },
-      { label: "Certificates issued", value: "{TODO}" },
+      { label: "Compliance", value: "USI · regulator-recognised" },
+      { label: "Integrations", value: "Xero · Eway · USI" },
+      { label: "Surface", value: "Author → enrol → certify" },
     ],
     stack: [
       "Angular (modern)",
@@ -103,11 +103,11 @@ const cases: CaseStudy[] = [
       "AI-assisted test automation — generated UI/API tests, regression checks, and assertion synthesis layered onto the existing release pipeline.",
     ],
     result:
-      "{TODO: e.g. 'cut analyst look-up time from X→Y · regression suite expanded by Z% with no headcount add'} — fill in.",
+      "LLM features that live inside the products users pay for — not a side-tool. RAG, OCR, MCP-style tool access, and DPO-tuned responses, all running against real product APIs.",
     metrics: [
-      { label: "Look-up time saved", value: "{TODO}" },
-      { label: "Auto-generated tests", value: "{TODO}" },
-      { label: "Models fine-tuned", value: "{TODO}" },
+      { label: "Patterns", value: "RAG · MCP · DPO" },
+      { label: "Stage", value: "In production" },
+      { label: "Scope", value: "Cross-product" },
     ],
     stack: [
       "Python",
@@ -154,8 +154,8 @@ export default function WorkPage() {
           <p className="mt-6 max-w-2xl text-lg text-[var(--text-muted)] leading-relaxed">
             Most of what I&apos;ve shipped lives behind OneIT customer logins.
             The case studies below are anonymised — same systems, real
-            architecture, real stack. Metrics are being filled in as I confirm
-            what I&apos;m allowed to publish.
+            architecture, real stack. Numbers are kept off the page because the
+            work is under NDA; the patterns and integrations are honest.
           </p>
         </MagicReveal>
       </header>
@@ -173,6 +173,15 @@ export default function WorkPage() {
             Language &amp; study-abroad consultancy. Multi-page Next.js
             production site, end-to-end in one day.
           </p>
+          <a
+            href="https://thesprachkraft.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.16em] text-[var(--accent)] transition-colors hover:text-[var(--accent-hover)]"
+          >
+            thesprachkraft.com
+            <span aria-hidden>↗</span>
+          </a>
         </MagicReveal>
 
         <div className="mt-10 grid gap-8 md:grid-cols-5">

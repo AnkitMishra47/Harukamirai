@@ -120,23 +120,26 @@ const cases: CaseStudy[] = [
     ],
   },
   {
-    kicker: "Interactive canvas · Payments tooling",
-    title: "Drag-and-drop payment-slip builder on Paper.js",
+    kicker: "Interactive canvas · Construction takeoff",
+    title: "Drawing-based takeoff, measure sheets & BOQ on Paper.js",
     domain:
-      "An internal payments-tooling product where finance users compose interactive payment slips and forms visually — small audience, but a sharp UX problem.",
+      "An estimating surface for construction / quantity-surveying workflows — estimators mark up plan drawings to extract quantities into measure sheets, SOR (Schedule of Rates), and BOQ (Bill of Quantities) outputs.",
     problem:
-      "Standard form builders couldn't express the spatial, drawing-on-paper feel finance staff wanted. Needed a real canvas surface — drag, snap, layer — without dropping out of Angular.",
+      "Takeoffs were being done by hand on PDFs and re-keyed into spreadsheets, with no audit trail back to the drawing. The team needed a canvas where lines, areas, and count markers trace directly on the plan and flow into a typed measure sheet that rolls up into SOR / BOQ totals.",
     approach: [
-      "Paper.js canvas embedded in an Angular 19 component, with a state bridge so the canvas tree round-trips cleanly to the existing form-definition model.",
-      "Custom snapping, alignment guides, and multi-select; serialisable canvas state so designs version and review like the rest of the product.",
+      "Paper.js canvas embedded in an Angular 19 component, with linear-measure, polygon-area, and count-marker tools each tied to a rate-coded item in the catalogue.",
+      "Drawing-scale calibration and multi-page plan support so measurements come out in real-world units, not pixels.",
+      "Live measure sheet: every shape on the canvas writes back to a typed measurement row that rolls into SOR and BOQ totals — no re-keying into Excel.",
+      "Serialisable canvas state so a takeoff can be reopened, audited, and revised; state-bridged into the wider Angular form/data model without DOM leaks.",
     ],
     result:
-      "Niche internal tool — small user base by design. Included here as a clean example of bringing a non-React / non-DOM rendering library into a modern Angular app without leaks.",
+      "Replaced the manual drawing → spreadsheet handoff with a single auditable surface. Included here as a clean example of bringing a non-React, non-DOM rendering library into a modern Angular app and modelling a real quantitative workflow on top of it.",
     metrics: [
       { label: "Surface", value: "Paper.js · Angular 19" },
-      { label: "Audience", value: "Internal · finance" },
+      { label: "Domain", value: "Takeoff · SOR · BOQ" },
+      { label: "Output", value: "Measure sheets" },
     ],
-    stack: ["Angular 19", "Paper.js", "TypeScript", "PrimeNG"],
+    stack: ["Angular 19", "Paper.js", "TypeScript", "PrimeNG", "PDF rendering"],
   },
 ];
 

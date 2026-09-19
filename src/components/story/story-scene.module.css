@@ -376,3 +376,35 @@
     margin-top: 0.45rem;
   }
 }
+
+/* Shutter Gate Entrance & Autonomous Teaser Lift Peek */
+@keyframes shutterSelfLiftPeek {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-80px);
+  }
+  60% {
+    transform: translateY(-80px);
+  }
+  80% {
+    transform: translateY(0);
+  }
+}
+
+.shutterGate {
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.shutterTeaser {
+  animation: shutterSelfLiftPeek 3.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.shutterLifted {
+  transform: translateY(-100%) !important;
+  animation: none !important;
+  pointer-events: none !important;
+}
+

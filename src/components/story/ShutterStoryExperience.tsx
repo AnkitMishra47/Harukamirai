@@ -1366,30 +1366,13 @@ export function ShutterStoryExperience() {
         LAYER 2: PHYSICAL ARCHITECTURAL SHUTTER GATE (Sits on top at z-50)
         ========================================================================
       */}
-      <motion.div
-        initial={false}
-        animate={
-          isShutterLifted
-            ? { y: "-100%" }
-            : {
-                y: shouldReduceMotion ? 0 : [0, -80, -80, 0],
-              }
-        }
-        transition={
-          isShutterLifted
-            ? { duration: 0.9, ease: [0.16, 1, 0.3, 1] }
-            : {
-                duration: 3.2,
-                times: [0, 0.25, 0.7, 1],
-                repeat: Infinity,
-                repeatDelay: 1.2,
-                ease: [0.22, 1, 0.36, 1],
-              }
-        }
+      <div
         onPointerDown={handleShutterPointerDown}
         onPointerUp={handleShutterPointerUp}
         onWheel={handleShutterWheel}
-        className="fixed inset-0 z-50 flex flex-col justify-between bg-[#08090c] text-[var(--text)] select-none pointer-events-auto h-[100dvh] border-b-2 border-amber-400/30 shadow-[0_25px_60px_rgba(0,0,0,0.95)]"
+        className={`fixed inset-0 z-50 flex flex-col justify-between bg-[#08090c] text-[var(--text)] select-none pointer-events-auto h-[100dvh] border-b-2 border-amber-400/30 shadow-[0_25px_60px_rgba(0,0,0,0.95)] ${
+          styles.shutterGate
+        } ${isShutterLifted ? styles.shutterLifted : styles.shutterTeaser}`}
         style={{
           backgroundImage:
             "linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px)",
@@ -1514,7 +1497,7 @@ export function ShutterStoryExperience() {
           </span>
           <span className="hidden sm:inline">OneIT Australia</span>
         </footer>
-      </motion.div>
+      </div>
     </div>
   );
 }

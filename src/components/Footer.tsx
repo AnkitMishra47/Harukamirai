@@ -80,10 +80,21 @@ export function Footer() {
 
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors flex items-center gap-1 cursor-pointer"
+            className="text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors inline-flex items-center gap-1.5 cursor-pointer group"
           >
             <span>Back to top</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="shrink-0 transition-transform group-hover:-translate-y-0.5"
+              aria-hidden
+            >
               <path d="M12 19V5M5 12l7-7 7 7" />
             </svg>
           </button>

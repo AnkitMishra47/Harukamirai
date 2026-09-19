@@ -87,34 +87,41 @@ export function HeroIntro() {
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto grid min-h-[70vh] md:min-h-[88vh] max-w-7xl grid-cols-1 items-center gap-8 md:gap-12 px-6 lg:px-12 pt-10 md:pt-24 pb-12 md:pb-20 lg:grid-cols-[1.3fr_1fr]">
+      <div className="relative z-10 mx-auto grid min-h-[70vh] md:min-h-[88vh] max-w-7xl grid-cols-1 md:grid-cols-[1.15fr_0.85fr] lg:grid-cols-[1.3fr_1fr] items-center gap-8 md:gap-12 px-6 lg:px-12 pt-10 md:pt-24 pb-12 md:pb-20">
         <div>
 
-          <p className="hero-in hero-in-1 flex flex-wrap items-center text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--accent)]">
-            <span className="font-jp text-sm tracking-normal">アスタ</span>
-            <span className="mx-2 opacity-50">·</span>
-            <span className="font-jp text-sm tracking-normal">反魔法</span>
-            <span className="mx-3 opacity-50">·</span>
-            <span className="whitespace-nowrap">ANTI-MAGIC GRIMOIRE</span>
+          <p className="flex flex-wrap items-center text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--accent)]">
+            <span className="hero-in-left hero-in-1 inline-flex items-center">
+              <span className="font-jp text-sm tracking-normal">アスタ</span>
+              <span className="mx-2 opacity-50">·</span>
+              <span className="font-jp text-sm tracking-normal">反魔法</span>
+            </span>
+            <span className="hero-in-right hero-in-2 inline-flex items-center">
+              <span className="mx-3 opacity-50">·</span>
+              <span className="whitespace-nowrap">ANTI-MAGIC GRIMOIRE</span>
+            </span>
           </p>
-          <p className="hero-in hero-in-2 mt-2 flex flex-wrap items-center text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--text-subtle)]">
-            <span className="font-jp text-sm tracking-normal">遥か未来</span>
-            <span className="mx-3 opacity-50">·</span>
-            <span>NO. 17</span>
+          <p className="mt-2 flex flex-wrap items-center text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--text-subtle)]">
+            <span className="hero-in-left hero-in-2 font-jp text-sm tracking-normal">遥か未来</span>
+            <span className="hero-in-right hero-in-3 inline-flex items-center">
+              <span className="mx-3 opacity-50">·</span>
+              <span>NO. 17</span>
+            </span>
           </p>
 
-          {/* Title - the A and I in ANKIT are accent-coloured: they spell AI. */}
-          <h1 className="font-display text-[clamp(2.6rem,8vw,7rem)] leading-[0.92] tracking-tight text-[var(--text)] mt-6">
+          {/* Title - ANKIT slides from left, MISHRA slides from right; they merge in the center. */}
+          <h1 className="font-display text-[clamp(2.6rem,8vw,7rem)] leading-[0.92] tracking-tight text-[var(--text)] mt-6 overflow-hidden">
             {[first, second].map((line, li) => (
               <span key={line} className="block whitespace-nowrap">
                 {Array.from(line).map((c, i) => {
                   const isAIChar = li === 0 && (i === 0 || i === 3);
+                  const letterClass = li === 0 ? "hero-letter-left" : "hero-letter-right";
                   return (
                     <span
                       key={i}
-                      className={`hero-letter inline-block ${isAIChar ? "text-[var(--accent)]" : ""}`}
+                      className={`${letterClass} inline-block ${isAIChar ? "text-[var(--accent)]" : ""}`}
                       style={{
-                        animationDelay: `${0.25 + (li * 5 + i) * 0.045}s`,
+                        animationDelay: `${0.22 + (li * 4 + i) * 0.04}s`,
                         ...(isAIChar
                           ? { textShadow: "0 0 28px var(--accent-glow), 0 0 12px var(--accent-glow)" }
                           : {}),
@@ -128,8 +135,8 @@ export function HeroIntro() {
             ))}
           </h1>
 
-          <div className="hero-in hero-in-4 mt-6 flex flex-wrap items-center gap-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--bg-elevated)_70%,var(--accent-glow))] py-1.5 pl-2 pr-3.5 shadow-[0_2px_12px_var(--accent-glow)] backdrop-blur-sm">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <div className="hero-in-left hero-in-4 inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--bg-elevated)_70%,var(--accent-glow))] py-1.5 pl-2 pr-3.5 shadow-[0_2px_12px_var(--accent-glow)] backdrop-blur-sm">
               <span className="inline-flex items-center gap-0.5 rounded-full bg-[var(--accent)] px-2 py-0.5 font-display text-xs font-bold leading-none text-[var(--bg)] shadow-[0_0_8px_var(--accent)]">
                 <span>A</span>
                 <span className="opacity-70">·</span>
@@ -139,7 +146,7 @@ export function HeroIntro() {
                 Software Engineer
               </span>
             </div>
-            <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+            <span className="hero-in-right hero-in-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
               <span className="size-1 rounded-full bg-[var(--accent)]" aria-hidden />
               <span>Not a coincidence</span>
             </span>
@@ -163,12 +170,12 @@ export function HeroIntro() {
             .
           </p>
 
-          <div className="hero-in hero-in-6 mt-10 flex flex-col items-start gap-5">
+          <div className="hero-in-6 mt-10 flex flex-col items-start gap-5">
             <div className="flex flex-wrap items-center gap-3 text-sm">
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new CustomEvent("open-shutter-story"))}
-                className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-[var(--accent)] px-6 py-3.5 font-sans font-medium text-[var(--bg)] shadow-[0_4px_20px_var(--accent-glow)] transition-all hover:shadow-[0_0_30px_var(--accent-glow)] cursor-pointer"
+                className="hero-in-left group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-[var(--accent)] px-6 py-3.5 font-sans font-medium text-[var(--bg)] shadow-[0_4px_20px_var(--accent-glow)] transition-all hover:shadow-[0_0_30px_var(--accent-glow)] cursor-pointer"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="relative z-10">
                   <polygon points="5 3 19 12 5 21 5 3" />
@@ -179,10 +186,23 @@ export function HeroIntro() {
 
               <Link
                 href="/work"
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg)] px-5 py-3.5 font-sans font-medium text-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] hover:text-[var(--text)]"
+                className="hero-in-right group inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg)] px-5 py-3.5 font-sans font-medium text-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] hover:text-[var(--text)]"
               >
                 <span>View My Work</span>
-                <span aria-hidden>→</span>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="shrink-0 transition-transform group-hover:translate-x-1"
+                  aria-hidden
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
               </Link>
             </div>
 
@@ -200,7 +220,7 @@ export function HeroIntro() {
           </div>
         </div>
 
-        <div className="hero-book relative flex items-center justify-center lg:justify-end mt-8 lg:mt-0">
+        <div className="hero-book relative flex items-center justify-center md:justify-end mt-8 md:mt-0">
           <div className="relative">
             {/*
               Mobile seal: sized off the book rather than the viewport, and

@@ -71,7 +71,7 @@
   outline-offset: 2px;
 }
 
-/* ---- Ruled "page" card for the closing note ------------------ */
+/* ---- Ruled "page" card for form, channels, and closing note -- */
 
 .ruled {
   position: relative;
@@ -85,7 +85,7 @@
   z-index: -1;
   border-radius: inherit;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.45;
   background: repeating-linear-gradient(
     to bottom,
     transparent 0,
@@ -93,8 +93,27 @@
     var(--border) 31px,
     var(--border) 32px
   );
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 78%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 15%, #000 85%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 15%, #000 85%, transparent 100%);
+}
+
+.channelCard {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), border-color 200ms ease, box-shadow 220ms ease;
+}
+
+.channelCard:nth-child(odd) {
+  transform: rotate(-0.4deg);
+}
+
+.channelCard:nth-child(even) {
+  transform: rotate(0.4deg);
+}
+
+.channelCard:hover,
+.channelCard:focus-visible {
+  transform: translateY(-4px) rotate(0deg) scale(1.01);
+  border-color: var(--accent);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 0 16px var(--accent-glow);
 }
 
 /* ---- Understated link underline (transform only) ------------- */

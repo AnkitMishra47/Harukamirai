@@ -75,18 +75,42 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
       <button
         type="button"
         onClick={() => setCurrentIndex((prev) => (prev > 0 ? prev - 1 : testimonials.length - 1))}
-        className="absolute left-3 top-1/2 -translate-y-1/2 p-2 text-[var(--text-subtle)] hover:text-[var(--accent)] transition-colors hidden md:block"
+        className="absolute left-3 top-1/2 -translate-y-1/2 p-2 text-[var(--text-subtle)] hover:text-[var(--accent)] transition-colors hidden md:inline-flex items-center justify-center cursor-pointer"
         aria-label="Previous testimonial"
       >
-        ←
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
       </button>
       <button
         type="button"
         onClick={() => setCurrentIndex((prev) => (prev + 1) % testimonials.length)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-[var(--text-subtle)] hover:text-[var(--accent)] transition-colors hidden md:block"
+        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-[var(--text-subtle)] hover:text-[var(--accent)] transition-colors hidden md:inline-flex items-center justify-center cursor-pointer"
         aria-label="Next testimonial"
       >
-        →
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
       </button>
     </div>
   );

@@ -36,7 +36,7 @@ const MODES: {
     id: "work",
     tab: "Work, or anything",
     blurb:
-      "Work, hiring, freelance, or a question you would rather ask a person than a search box.",
+      "Work inquiries, hiring, senior engineering roles, or a direct question. I read and reply to every message.",
     messageLabel: "Message",
     messagePlaceholder: "I'm gonna be the Wizard King!",
     submit: "Send message",
@@ -46,7 +46,7 @@ const MODES: {
     id: "site",
     tab: "This site itself",
     blurb:
-      "You have spent a few minutes inside something built on evenings and weekends, and I have no idea how it reads from the outside. A page that broke, a font you could not read, a section that dragged, or just the bit you remember. One line is plenty, and the unflattering ones are the useful ones.",
+      "Feedback on anything that broke, a font that felt off, or the part you remember most. One honest line is plenty.",
     messageLabel: "Your note",
     messagePlaceholder: "The dark theme is lovely, but that red is loud at 1am.",
     submit: "Send the note",
@@ -255,16 +255,18 @@ export function ContactForm() {
                   ))}
                 </div>
 
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.p
-                    key={active.id}
-                    {...fade}
-                    transition={{ duration: reduceMotion ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-sm leading-relaxed text-[var(--text-muted)]"
-                  >
-                    {active.blurb}
-                  </motion.p>
-                </AnimatePresence>
+                <div className="min-h-[3.5rem] flex items-center">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.p
+                      key={active.id}
+                      {...fade}
+                      transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.16, 1, 0.3, 1] }}
+                      className="text-sm leading-relaxed text-[var(--text-muted)]"
+                    >
+                      {active.blurb}
+                    </motion.p>
+                  </AnimatePresence>
+                </div>
               </fieldset>
 
               <div className="space-y-4">
@@ -352,23 +354,30 @@ export function ContactForm() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-2">
                 <button
                   type="submit"
-                  className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-7 py-3.5 text-sm font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:shadow-[0_0_20px_var(--accent-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+                  className="group inline-flex min-h-12 items-center justify-center gap-2.5 whitespace-nowrap shrink-0 rounded-xl border border-[var(--border-strong)] bg-gradient-to-r from-[var(--bg-elevated)] to-[var(--bg)] px-8 py-3.5 text-sm font-medium text-[var(--text)] transition-all duration-200 hover:border-[var(--accent)] hover:text-[var(--accent)] hover:shadow-[0_0_24px_var(--accent-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] cursor-pointer"
                 >
-                  {active.submit}
-                  <span className="transition-transform group-hover:translate-x-1" aria-hidden>
-                    →
-                  </span>
+                  <span className="tracking-wide">{active.submit}</span>
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="shrink-0 transition-transform duration-200 group-hover:translate-x-1.5"
+                    aria-hidden
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </button>
 
-                <div className="text-sm text-[var(--text-muted)] sm:max-w-xs sm:text-right">
-                  <p>
-                    This opens your own email client with everything filled in. Nothing leaves this
-                    page until you send it from there.
-                  </p>
-                  <p className="mt-1 font-mono text-xs text-[var(--text-subtle)]">
+                <div className="text-sm text-[var(--text-muted)] sm:text-right">
+                  <p className="font-mono text-xs text-[var(--text-subtle)]">
                     No autoresponder, no ticket number. I read everything that lands there.
                   </p>
                 </div>

@@ -61,7 +61,21 @@ export default function HomePage() {
                         in the DOM for screen readers and crawlers. */}
                     <p className="mt-4 text-[var(--text-muted)] leading-relaxed line-clamp-2">{c.domain}</p>
                     <div className="mt-auto pt-6 flex items-center text-sm font-medium text-[var(--accent)]">
-                      Read case study <span className="ml-1 transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+                      <span>Read case study</span>
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="ml-1 shrink-0 transition-transform group-hover:translate-x-1"
+                        aria-hidden
+                      >
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
                     </div>
                   </article>
                 </Link>
@@ -76,7 +90,20 @@ export default function HomePage() {
             className="group inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-7 py-3.5 text-sm font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:shadow-[0_0_20px_var(--accent-glow)]"
           >
             <span>All work, full timeline</span>
-            <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="shrink-0 transition-transform group-hover:translate-x-1"
+              aria-hidden
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </Link>
         </div>
       </section>
@@ -102,8 +129,21 @@ export default function HomePage() {
             href="/about"
             className="group inline-flex items-center gap-2 text-sm font-medium text-[var(--text)] hover:text-[var(--accent)] transition-colors"
           >
-            More about {profile.name.split(" ")[0]}
-            <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+            <span>More about {profile.name.split(" ")[0]}</span>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="shrink-0 transition-transform group-hover:translate-x-1"
+              aria-hidden
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </Link>
         </div>
       </section>

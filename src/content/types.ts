@@ -1,4 +1,12 @@
-export type Link = { label: string; href: string; external?: boolean };
+export type Link = {
+  label: string;
+  href: string;
+  external?: boolean;
+  /** Display value, e.g. the handle, when it differs from the label. */
+  value?: string;
+  /** One-line note shown under the link on the Contact page. */
+  note?: string;
+};
 
 export type Profile = {
   name: string;
@@ -8,6 +16,9 @@ export type Profile = {
   employer: { name: string; href: string; country: string };
   summary: string;
   heroLine: string;
+  /** About-page paragraphs. `**text**` renders bold. */
+  bio: string[];
+  motto: { en: string; jp: string };
   email: string;
   links: Link[];
   resumePdf: string;
@@ -34,6 +45,7 @@ export type Metric = { label: string; value: string };
 
 export type CaseStudy = {
   slug: string;
+  org: "oneit" | "independent";
   kicker: string;
   title: string;
   domain: string;
@@ -45,3 +57,7 @@ export type CaseStudy = {
   links?: Link[];
   featured?: boolean;
 };
+
+export type SideProject = { title: string; stack: string; body: string; muted?: boolean };
+
+export type Photo = { src: string; alt: string; caption?: string };

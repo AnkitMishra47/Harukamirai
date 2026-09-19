@@ -1,63 +1,39 @@
 import type { Metadata } from "next";
+import { profile } from "@/content";
 
 export const metadata: Metadata = {
-  title: "Contact — Ankit Mishra",
+  title: `Contact - ${profile.name}`,
   description: "Email, LinkedIn, GitHub, and the rest.",
 };
-
-const channels = [
-  {
-    label: "Email",
-    value: "ankitm17.2001@gmail.com",
-    href: "mailto:ankitm17.2001@gmail.com",
-    note: "The fastest way. I read everything.",
-  },
-  {
-    label: "LinkedIn",
-    value: "/in/ankitmishra47",
-    href: "https://www.linkedin.com/in/ankitmishra47",
-    note: "Career arc, recommendations, and a still-too-old About section.",
-  },
-  {
-    label: "GitHub",
-    value: "github.com/AnkitMishra47",
-    href: "https://github.com/AnkitMishra47",
-    note: "Sandbox and learning repos. Production work lives in private OneIT repos.",
-  },
-];
 
 export default function ContactPage() {
   return (
     <article className="mx-auto max-w-2xl px-6 py-24 md:py-32">
       <header className="mb-16">
-        <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">
-          Contact
-        </p>
+        <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">Contact</p>
         <h1 className="font-display text-5xl md:text-6xl mt-3 text-[var(--text)] leading-[1.02]">
           Send a message.
         </h1>
         <p className="mt-6 text-lg text-[var(--text-muted)]">
-          Backend architecture, telephony integrations, freelance work, the{" "}
-          <em>Black Clover</em> anime adaptation pacing problem — all welcome.
+          Backend architecture, enterprise integrations, AI in production, freelance work, the{" "}
+          <em>Black Clover</em> anime adaptation pacing problem - all welcome.
         </p>
       </header>
 
       <ul className="space-y-6">
-        {channels.map((c) => (
+        {profile.links.map((c) => (
           <li key={c.label}>
             <a
               href={c.href}
-              target={c.href.startsWith("http") ? "_blank" : undefined}
-              rel={c.href.startsWith("http") ? "noreferrer" : undefined}
+              target={c.external ? "_blank" : undefined}
+              rel={c.external ? "noreferrer" : undefined}
               className="group block rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-6 hover:border-[var(--accent)] transition-colors"
             >
-              <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--text-subtle)]">
-                {c.label}
-              </p>
+              <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--text-subtle)]">{c.label}</p>
               <p className="font-display text-2xl mt-1 text-[var(--text)] group-hover:text-[var(--accent)] transition-colors">
-                {c.value}
+                {c.value ?? c.href}
               </p>
-              <p className="text-sm text-[var(--text-muted)] mt-2">{c.note}</p>
+              {c.note && <p className="text-sm text-[var(--text-muted)] mt-2">{c.note}</p>}
             </a>
           </li>
         ))}

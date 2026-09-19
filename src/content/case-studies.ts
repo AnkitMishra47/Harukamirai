@@ -8,6 +8,7 @@ import type { CaseStudy } from "./types";
 export const caseStudies: CaseStudy[] = [
   {
     slug: "rag-platform",
+    org: "oneit",
     kicker: "AI platform · Enterprise knowledge retrieval",
     title: "RAG over 25M+ embeddings on PostgreSQL",
     domain:
@@ -33,6 +34,7 @@ export const caseStudies: CaseStudy[] = [
   },
   {
     slug: "mining-cms",
+    org: "oneit",
     kicker: "Multi-site platform · Industrial operations",
     title: "Hub-and-spoke CMS for a national mining-services operator",
     domain:
@@ -57,6 +59,7 @@ export const caseStudies: CaseStudy[] = [
   },
   {
     slug: "integration-middleware",
+    org: "oneit",
     kicker: "Enterprise integration · Accounting and logistics",
     title: "MYOB and CargoWise middleware over XML/EDI",
     domain:
@@ -80,6 +83,7 @@ export const caseStudies: CaseStudy[] = [
   },
   {
     slug: "rto-lms",
+    org: "oneit",
     kicker: "Compliance LMS · Australian RTO sector",
     title: "End-to-end LMS for a national Registered Training Organisation",
     domain:
@@ -104,6 +108,7 @@ export const caseStudies: CaseStudy[] = [
   },
   {
     slug: "construction-takeoff",
+    org: "oneit",
     kicker: "Interactive canvas · Construction takeoff",
     title: "Drawing-based takeoff, measure sheets & BOQ on Paper.js",
     domain:
@@ -127,6 +132,7 @@ export const caseStudies: CaseStudy[] = [
   },
   {
     slug: "service-desk-automation",
+    org: "oneit",
     kicker: "Internal tooling · Service desk",
     title: "Twilio call workflows and a HaloPSA Chrome extension",
     domain: "Automation for OneIT's support teams working in HaloPSA.",
@@ -146,15 +152,19 @@ export const caseStudies: CaseStudy[] = [
   },
   {
     slug: "sprachkraft",
+    org: "independent",
     kicker: "Client · Next.js · 2025",
     title: "The Sprachkraft",
     domain: "A language institute and study-abroad consultancy.",
     problem: "The client needed a public site with lead capture, live in a day.",
     approach: [
-      "Seven-page Next.js site scoped, designed and shipped end-to-end in a single day.",
-      "Lead-capture form and responsive layout.",
+      "7-page Next.js production site, App Router + TypeScript, scoped and shipped end-to-end in a single day.",
+      "Bilingual content scaffolding for English / German routes.",
+      "Contact + lead-capture flow with WhatsApp deep-link CTA.",
+      "Deployed to Vercel; custom domain on day one.",
+      "Wrote the README and handed off the keys.",
     ],
-    result: "Live at thesprachkraft.com.",
+    result: "Live at thesprachkraft.com, handed over with documentation the client can maintain.",
     metrics: [
       { label: "Pages", value: "7" },
       { label: "Time", value: "1 day" },

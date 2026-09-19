@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import { CursorTrail } from "@/components/effects/CursorTrail";
 import { ThemeBurst } from "@/components/effects/ThemeBurst";
 import { AmbientCircle } from "@/components/effects/AmbientCircle";
+import { profile } from "@/content";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -38,14 +39,12 @@ const jp = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Ankit Mishra — Software Engineer",
-  description:
-    "Senior Software Engineer at OneIT (AU). Java, Angular, Python — and whatever the next ticket needs. Runner-up Employee of the Year 2025.",
-  metadataBase: new URL("https://harukamirai.engineer"),
+  title: `${profile.name} - Software Engineer`,
+  description: `${profile.title} at ${profile.employer.name} (${profile.employer.country}). ${profile.summary.split(". ")[1]}.`,
+  metadataBase: new URL(`https://${profile.domain}`),
   openGraph: {
-    title: "Ankit Mishra — harukamirai.engineer",
-    description:
-      "From BCA to Senior L3 in three years, with a Master's earned in the cracks between deploys.",
+    title: `${profile.name} - ${profile.domain}`,
+    description: profile.heroLine.split(". ")[0] + ".",
     type: "website",
   },
 };

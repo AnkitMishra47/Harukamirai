@@ -1,126 +1,42 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { RichText } from "@/components/RichText";
+import { awards, photos, profile, skills, testimonials, timeline } from "@/content";
 
 export const metadata: Metadata = {
-  title: "About — Ankit Mishra",
-  description:
-    "From BCA to Senior L3 in three years, with a Master's earned in the cracks between deploys.",
-};
-
-const arc = [
-  { year: "2019 – 2022", title: "BCA, GGSIPU (USMS)", note: "Graduated with 86%. First portfolio shipped in 2022." },
-  { year: "Aug 2022", title: "Junior SWE Intern, OneIT", note: "Joined right after graduation." },
-  { year: "Sep 2022", title: "MCA begins, Chandigarh University", note: "Two-year Master's, started while working full-time." },
-  { year: "Jan 2023", title: "Junior Software Engineer", note: "First step up. Java, Angular." },
-  { year: "Oct 2023", title: "Software Engineer", note: "Owned Cougar infrastructure work, APIs, JSON/XML, Postgres." },
-  { year: "Sep 2024", title: "MCA completed", note: "While shipping production code." },
-  { year: "Oct 2024", title: "Associate Senior + Mid Developer of the Year 2024", note: "Recognized by MD David Barton. Stack expanded into Python/Flask/Twilio/Ionic." },
-  { year: "2025", title: "Senior Software Engineer L3 + Runner-up Employee of the Year 2025", note: "Company-wide recognition, across all engineering tiers." },
-  { year: "Now", title: "harukamirai.engineer", note: "You're here." },
-];
-
-const testimonials = [
-  {
-    quote:
-      "He takes full ownership of his work and is a dedicated team member, ensuring tasks are done right, even when they're complex. He makes himself readily available whenever we need support, which makes collaboration much easier and more effective.",
-    attribution: "Peer nomination · OneIT 2025",
-  },
-  {
-    quote:
-      "His build quality is consistently very high — it&apos;s difficult to find issues during testing, which gives me greater confidence on client calls. Whenever I have questions he doesn&apos;t just explain the answer, he encourages me to explore and find it independently. My understanding of the overall system improves after every discussion.",
-    attribution: "Peer nomination · OneIT 2025",
-  },
-  {
-    quote:
-      "Outstanding contribution. He took full ownership and spent extra time, even late nights, to ensure the functionality worked exactly as required. Instead of rejecting good-to-have requests, he patiently worked through them — significantly improving the feature.",
-    attribution: "Peer nomination · OneIT 2025",
-  },
-];
-
-const awards = [
-  {
-    year: "2025",
-    title: "Runner-up — Employee of the Year",
-    body: "Company-wide recognition at OneIT, across all engineering tiers. Signed by Managing Director David Barton.",
-  },
-  {
-    year: "2024",
-    title: "Mid Developer of the Year",
-    body: "Recognised for contribution across the OneIT engineering team in 2024. Signed by Managing Director David Barton.",
-  },
-];
-
-const skills = {
-  daily: [
-    "Java + Spring Boot",
-    "Angular (modern)",
-    "TypeScript",
-    "PostgreSQL",
-    "REST APIs · JSON/XML",
-    "Jenkins · SmartGit · Git",
-    "Linux · bash",
-  ],
-  recent: [
-    "Python + Flask",
-    "Twilio (telephony / SMS)",
-    "Ionic Framework",
-    "Docker",
-    "Xero · Eway integrations",
-    "PrimeNG · Paper.js",
-  ],
-  growing: ["Kubernetes", "Next.js", "RAG · MCP tooling", "DPO fine-tuning"],
+  title: `About - ${profile.name}`,
+  description: profile.heroLine.split(". ")[0] + ".",
 };
 
 export default function AboutPage() {
+  const emailLink = profile.links.find((l) => l.label === "Email")!;
+
   return (
     <article className="mx-auto max-w-5xl px-6 py-20 md:py-28">
       <header className="mb-16">
-        <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">
-          About
-        </p>
+        <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">About</p>
         <h1 className="font-display text-5xl md:text-6xl mt-3 text-[var(--text)] leading-[1.02]">
           The grind, plainspoken.
         </h1>
       </header>
 
-      {/* PORTRAIT + BIO ─────────────────────────── */}
+      {/* PORTRAIT + BIO */}
       <div className="grid gap-12 md:grid-cols-[1fr_280px] md:gap-14 items-start">
         <div className="prose-lg space-y-6 text-lg leading-relaxed text-[var(--text-muted)] order-2 md:order-1">
+          {profile.bio.map((para) => (
+            <p key={para.slice(0, 32)}>
+              <RichText text={para} />
+            </p>
+          ))}
           <p>
-            I&apos;m Ankit, a software engineer based in Faridabad. I work
-            full-time at <strong className="text-[var(--text)]">OneIT</strong> — an
-            Australian software firm — where I&apos;ve moved from intern to{" "}
-            <strong className="text-[var(--text)]">Senior Software Engineer L3</strong>{" "}
-            over three years, mostly on backend systems (Java, Spring Boot,
-            Postgres) and increasingly on integrations (Twilio, Flask, Ionic) and
-            AI tooling (RAG, OCR, MCP, DPO fine-tuning). In 2024 I was named{" "}
-            <strong className="text-[var(--text)]">Mid Developer of the Year</strong>.
-            In 2025, I placed{" "}
-            <strong className="text-[var(--text)]">Runner-up for Employee of the Year</strong> —
-            company-wide, across all engineering tiers.
-          </p>
-          <p>
-            I picked up an MCA from Chandigarh University while doing this. The
-            two years overlapped completely with my full-time work, which means
-            I&apos;ve debugged production at 11pm on a Tuesday before a 9am exam
-            more times than I&apos;d like to admit. I&apos;m not sure I&apos;d
-            recommend it — but it taught me how to ship.
-          </p>
-          <p>
-            Outside work, I like quiet things — chess, manga, long-format anime,
-            the kind of coffee that takes ten minutes to make. I read more than I
-            post. The five-leaf clover at the top of this page is not a logo;
-            it&apos;s a switch. Click it.
-          </p>
-          <p>
-            If you want to talk about backend architecture, telephony
-            integrations, AI in production, the <em>Black Clover</em> anime
-            adaptation pacing problem, or freelance work —{" "}
+            If you want to talk about backend architecture, enterprise integrations, AI in
+            production, the <em>Black Clover</em> anime adaptation pacing problem, or freelance
+            work -{" "}
             <a
-              href="mailto:ankitm17.2001@gmail.com"
+              href={emailLink.href}
               className="text-[var(--text)] underline decoration-[var(--accent)] decoration-1 underline-offset-4 hover:text-[var(--accent)]"
             >
-              ankitm17.2001@gmail.com
+              {emailLink.value}
             </a>
             .
           </p>
@@ -129,40 +45,34 @@ export default function AboutPage() {
         <div className="order-1 md:order-2 md:sticky md:top-28">
           <div className="relative aspect-[3/4] w-full max-w-[280px] mx-auto overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)]">
             <Image
-              src="/photos/portrait.jpeg"
-              alt="Ankit Mishra"
+              src={photos.portrait.src}
+              alt={photos.portrait.alt}
               fill
               sizes="(min-width: 768px) 280px, 80vw"
               className="object-cover grayscale-[0.15] transition-all duration-500 hover:grayscale-0"
               priority
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent p-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/85">
-                Faridabad · IST
-              </p>
-              <p className="font-display text-sm text-white/95 mt-0.5">
-                Working AEDT hours.
-              </p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/85">Faridabad · IST</p>
+              <p className="font-display text-sm text-white/95 mt-0.5">Working AEDT hours.</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* AWARDS ─────────────────────────────────── */}
+      {/* AWARDS */}
       <section className="mt-24">
-        <h2 className="font-display text-3xl text-[var(--text)] mb-2">
-          Recognition
-        </h2>
+        <h2 className="font-display text-3xl text-[var(--text)] mb-2">Recognition</h2>
         <p className="text-sm text-[var(--text-muted)] mb-10">
-          Two consecutive years of named recognition at OneIT — both signed
-          by Managing Director David Barton.
+          Two consecutive years of named recognition at OneIT - both signed by Managing Director
+          David Barton.
         </p>
 
         <div className="grid gap-8 md:grid-cols-[260px_1fr] items-start">
           <div className="relative aspect-[3/4] w-full max-w-[260px] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)]">
             <Image
-              src="/photos/award-trophy.jpeg"
-              alt="Ankit Mishra holding the OneIT Runner-up Employee of the Year 2025 trophy"
+              src={photos.awardTrophy.src}
+              alt={photos.awardTrophy.alt}
               fill
               sizes="(min-width: 768px) 260px, 80vw"
               className="object-cover"
@@ -175,107 +85,128 @@ export default function AboutPage() {
                 key={a.title}
                 className="rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-6 transition-colors hover:border-[var(--accent)]"
               >
-                <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
-                  {a.year}
-                </p>
-                <p className="font-display text-xl mt-2 text-[var(--text)]">
-                  {a.title}
-                </p>
-                <p className="text-sm text-[var(--text-muted)] mt-2 leading-relaxed">
-                  {a.body}
-                </p>
+                <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{a.year}</p>
+                <p className="font-display text-xl mt-2 text-[var(--text)]">{a.title}</p>
+                <p className="text-sm text-[var(--text-muted)] mt-2 leading-relaxed">{a.body}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* PEER TESTIMONIALS ──────────────────── */}
+      {/* PEER TESTIMONIALS */}
       <section className="mt-24">
-        <h2 className="font-display text-3xl text-[var(--text)] mb-2">
-          From peers
-        </h2>
+        <h2 className="font-display text-3xl text-[var(--text)] mb-2">From peers</h2>
         <p className="text-sm text-[var(--text-muted)] mb-10">
-          Excerpts from internal peer nominations submitted at OneIT in 2025.
-          Names removed; wording is theirs.
+          Excerpts from internal peer nominations submitted at OneIT in 2025. Names removed;
+          wording is theirs.
         </p>
 
         <div className="grid gap-6 md:grid-cols-3">
           {testimonials.map((t) => (
             <figure
-              key={t.attribution + t.quote.slice(0, 24)}
+              key={t.quote.slice(0, 24)}
               className="relative rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-6 transition-colors hover:border-[var(--accent)]"
             >
-              <span
-                className="absolute -top-3 left-5 font-display text-5xl leading-none text-[var(--accent)]"
-                aria-hidden
-              >
+              <span className="absolute -top-3 left-5 font-display text-5xl leading-none text-[var(--accent)]" aria-hidden>
                 &ldquo;
               </span>
-              <blockquote
-                className="text-[var(--text-muted)] leading-relaxed text-sm pt-2"
-                dangerouslySetInnerHTML={{ __html: t.quote }}
-              />
+              <blockquote className="text-[var(--text-muted)] leading-relaxed text-sm pt-2">{t.quote}</blockquote>
               <figcaption className="mt-5 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-subtle)]">
-                — {t.attribution}
+                - {t.attribution}
               </figcaption>
             </figure>
           ))}
         </div>
       </section>
 
-      {/* ARC ─────────────────────────────────── */}
+      {/* ARC */}
       <section className="mt-24">
-        <h2 className="font-display text-3xl text-[var(--text)] mb-2">
-          The arc
-        </h2>
+        <h2 className="font-display text-3xl text-[var(--text)] mb-2">The arc</h2>
         <p className="text-sm text-[var(--text-muted)] mb-10">
-          Three promotions in three years, while completing a Master&apos;s.
-          That&apos;s the headline — not &ldquo;proficient in Java, Angular,
-          TypeScript.&rdquo;
+          Three promotions in three years, while completing a Master&apos;s. That&apos;s the
+          headline - not &ldquo;proficient in Java, Angular, TypeScript.&rdquo;
         </p>
 
         <ol className="relative border-l border-[var(--border)] pl-6 space-y-7">
-          {arc.map((step) => (
-            <li key={step.title}>
+          {timeline.map((step) => (
+            <li key={step.id}>
               <span
                 className="absolute -left-[5px] mt-1.5 block size-2.5 rounded-full bg-[var(--accent)] ring-4 ring-[var(--bg)]"
                 aria-hidden
               />
-              <p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--text-subtle)]">
-                {step.year}
-              </p>
-              <p className="font-display text-xl text-[var(--text)] mt-0.5">
-                {step.title}
-              </p>
-              <p className="text-sm text-[var(--text-muted)] mt-1">
-                {step.note}
-              </p>
+              <p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--text-subtle)]">{step.date}</p>
+              <p className="font-display text-xl text-[var(--text)] mt-0.5">{step.title}</p>
+              <p className="text-sm text-[var(--text-muted)] mt-1">{step.note}</p>
             </li>
           ))}
         </ol>
       </section>
 
-      {/* SKILLS ────────────────────────────────── */}
+      {/* SKILLS */}
       <section className="mt-24">
-        <h2 className="font-display text-3xl text-[var(--text)] mb-2">
-          Stack, segmented for honesty
-        </h2>
+        <h2 className="font-display text-3xl text-[var(--text)] mb-2">Stack, as on the resume</h2>
         <p className="text-sm text-[var(--text-muted)] mb-10">
-          No wall of logos. Group by depth.
+          No wall of logos. Grouped the way I actually use them.
         </p>
 
-        <SkillBlock title="Daily drivers" subtitle="The ones I&apos;d defend in a code review." items={skills.daily} />
-        <SkillBlock title="Recently in production" subtitle="Last 12 months." items={skills.recent} />
-        <SkillBlock title="Tinkering · want to grow" subtitle="Weekends and side projects." items={skills.growing} />
+        <div className="grid gap-x-10 gap-y-8 md:grid-cols-2">
+          {skills.map((g) => (
+            <div key={g.id}>
+              <p className="font-display text-xl text-[var(--text)] mb-3">{g.label}</p>
+              <ul className="flex flex-wrap gap-2">
+                {g.items.map((s) => (
+                  <li
+                    key={s}
+                    className="rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3.5 py-1.5 text-sm text-[var(--text-muted)]"
+                  >
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* SLOGAN BANNER ─────────────────────────── */}
+      {/* OFF THE CLOCK */}
+      <section className="mt-24">
+        <h2 className="font-display text-3xl text-[var(--text)] mb-2">Off the clock</h2>
+        <p className="text-sm text-[var(--text-muted)] mb-10">
+          Hills, rivers, and the occasional barefoot walk. Faridabad is flat; the mountains are a
+          night&apos;s drive.
+        </p>
+        <div className="grid gap-4 grid-cols-3">
+          {photos.offTheClock.map((p, i) => (
+            <figure
+              key={p.src}
+              className={`relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] ${
+                i === 0 ? "aspect-[4/3] col-span-3 md:col-span-2 md:row-span-2 md:aspect-auto" : "aspect-[3/4]"
+              }`}
+            >
+              <Image
+                src={p.src}
+                alt={p.alt}
+                fill
+                sizes={i === 0 ? "(min-width: 768px) 640px, 100vw" : "(min-width: 768px) 320px, 33vw"}
+                className="object-cover transition-transform duration-700 hover:scale-[1.03]"
+              />
+              {p.caption && (
+                <figcaption className="absolute bottom-3 left-3 rounded-full bg-black/45 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-white/90">
+                  {p.caption}
+                </figcaption>
+              )}
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      {/* SLOGAN BANNER */}
       <section className="mt-28 -mx-6">
         <div className="relative h-[420px] overflow-hidden md:rounded-3xl">
           <Image
-            src="/photos/open-road.jpeg"
-            alt="On an open road"
+            src={photos.openRoad.src}
+            alt={photos.openRoad.alt}
             fill
             sizes="(min-width: 1024px) 1024px, 100vw"
             className="object-cover object-center"
@@ -283,49 +214,15 @@ export default function AboutPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
           <div className="absolute inset-0 flex items-end p-8 md:p-12">
             <div>
-              <p className="font-mono text-xs uppercase tracking-[0.28em] text-white/75">
-                Personal motto
-              </p>
+              <p className="font-mono text-xs uppercase tracking-[0.28em] text-white/75">Personal motto</p>
               <p className="font-display text-4xl md:text-5xl text-white mt-3 leading-tight">
-                &ldquo;Push past my limit.&rdquo;
+                &ldquo;{profile.motto.en}&rdquo;
               </p>
-              <p className="font-jp text-base text-white/70 mt-2">
-                限界を超える
-              </p>
+              <p className="font-jp text-base text-white/70 mt-2">{profile.motto.jp}</p>
             </div>
           </div>
         </div>
       </section>
     </article>
-  );
-}
-
-function SkillBlock({
-  title,
-  subtitle,
-  items,
-}: {
-  title: string;
-  subtitle: string;
-  items: string[];
-}) {
-  return (
-    <div className="mb-10">
-      <p className="font-display text-xl text-[var(--text)]">{title}</p>
-      <p
-        className="text-sm text-[var(--text-subtle)] mb-4"
-        dangerouslySetInnerHTML={{ __html: subtitle }}
-      />
-      <ul className="flex flex-wrap gap-2">
-        {items.map((s) => (
-          <li
-            key={s}
-            className="rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3.5 py-1.5 text-sm text-[var(--text-muted)]"
-          >
-            {s}
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }

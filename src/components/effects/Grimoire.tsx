@@ -1,5 +1,6 @@
 "use client";
 
+import { timeline } from "@/content";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 
@@ -20,53 +21,23 @@ type Chapter = {
   sigil: "asta" | "spade" | "trophy" | "crown" | "dawn";
 };
 
-const CHAPTERS: Chapter[] = [
-  {
-    year: "2019",
-    ribbon: "var(--text-muted)",
-    romaji: "Hajimari",
-    kanji: "始まり",
-    title: "The Beginning",
-    body: "BCA at GGSIPU. First lines of code. 86% by the end.",
-    sigil: "dawn",
-  },
-  {
-    year: "2022",
-    ribbon: "var(--accent)",
-    romaji: "Nyuudan",
-    kanji: "入団",
-    title: "Joined the Order",
-    body: "Junior SWE intern at OneIT. MCA begins same month — two paths, one life.",
-    sigil: "asta",
-  },
-  {
-    year: "2024",
-    ribbon: "#d4a017",
-    romaji: "Hyoushou",
-    kanji: "表彰",
-    title: "First Recognition",
-    body: "Mid Developer of the Year. MCA completed. Stack expanded into Python, Twilio, Ionic.",
-    sigil: "trophy",
-  },
-  {
-    year: "2025",
-    ribbon: "#c8102e",
-    romaji: "Eiyo",
-    kanji: "栄誉",
-    title: "Recognition",
-    body: "Runner-up, Employee of the Year — company-wide, across all engineering tiers. Promoted to Senior L3.",
-    sigil: "crown",
-  },
-  {
-    year: "今",
-    ribbon: "var(--accent-hover)",
-    romaji: "Ima",
-    kanji: "現在",
-    title: "Now",
-    body: "Building harukamirai.engineer. Java, Angular, Python — and whatever the next ticket needs.",
-    sigil: "spade",
-  },
-];
+/** Decoration per timeline entry. Only entries listed here become chapters. */
+const DECOR: Record<string, Pick<Chapter, "ribbon" | "romaji" | "kanji" | "sigil">> = {
+  bca: { ribbon: "var(--text-muted)", romaji: "Hajimari", kanji: "始まり", sigil: "dawn" },
+  "oneit-intern": { ribbon: "var(--accent)", romaji: "Nyuudan", kanji: "入団", sigil: "asta" },
+  "award-2024": { ribbon: "#d4a017", romaji: "Hyoushou", kanji: "表彰", sigil: "trophy" },
+  "award-2025": { ribbon: "#c8102e", romaji: "Eiyo", kanji: "栄誉", sigil: "crown" },
+  now: { ribbon: "var(--accent-hover)", romaji: "Ima", kanji: "現在", sigil: "spade" },
+};
+
+const CHAPTERS: Chapter[] = timeline
+  .filter((t) => t.id in DECOR)
+  .map((t) => ({
+    year: t.id === "now" ? "今" : t.date.slice(-4),
+    title: t.title,
+    body: t.note,
+    ...DECOR[t.id],
+  }));
 
 type Stage = "closed" | "opening" | "open";
 

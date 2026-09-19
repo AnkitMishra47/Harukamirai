@@ -69,3 +69,26 @@ describe("case studies", () => {
     expect(s?.links?.[0].href).toBe("https://thesprachkraft.com/");
   });
 });
+
+import { sideProjects, photos, profile as prof } from "@/content";
+import { existsSync } from "node:fs";
+import path from "node:path";
+
+describe("case study org", () => {
+  it("marks Sprachkraft as independent and the rest as OneIT", () => {
+    for (const c of caseStudies) {
+      expect(c.org).toBe(c.slug === "sprachkraft" ? "independent" : "oneit");
+    }
+  });
+});
+
+describe("photos and side projects", () => {
+  it("point at files that exist under public/", () => {
+    const all = [photos.portrait, photos.awardTrophy, photos.openRoad, ...photos.offTheClock];
+    for (const p of all) {
+      expect(existsSync(path.join(process.cwd(), "public", p.src))).toBe(true);
+    }
+    expect(sideProjects.length).toBeGreaterThan(0);
+    expect(prof.bio.join(" ")).toMatch(/Runner-up for Employee of the Year/);
+  });
+});

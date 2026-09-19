@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import styles from "./lightbox.module.css";
@@ -37,10 +38,31 @@ interface LightboxProps {
  * Chrome here is drawn from the fixed grimoire materials (--gilt, --parchment)
  * rather than the theme tokens, because the backdrop is ink in both themes and
  * leaf-4's --gold is far too dark to sit on it.
+ *
+ * IT RENDERS INTO `document.body`, THROUGH A PORTAL.
+ *
+ * `position: fixed` is only fixed to the viewport while no ancestor has made
+ * itself a containing block, and a transform of ANY kind does exactly that -
+ * including `matrix(1, 0, 0, 1, 0, 0)`, which is the identity, moves nothing,
+ * and is what `MagicReveal` leaves behind on every element it has finished
+ * revealing. Opened from inside one, this dialog laid itself out against that
+ * div rather than the screen: measured at 1440x900, a backdrop 1184x659 at
+ * (123, 188), with the page still showing around it and the close button and
+ * arrows pinned to the wrong box.
+ *
+ * A portal is the fix rather than hunting transforms out of ancestors, because
+ * the next transform someone adds anywhere above a gallery would bring the bug
+ * straight back.
  */
 export function Lightbox({ images, currentIndex, isOpen, onClose, onNavigate }: LightboxProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const restoreTo = useRef<HTMLElement | null>(null);
+  /**
+   * The portal host, resolved after mount. `document` does not exist while this
+   * renders on the server, and the dialog has nothing to contribute to the
+   * initial HTML anyway - it is closed until somebody clicks a photograph.
+   */
+  const [portalHost, setPortalHost] = useState<HTMLElement | null>(null);
   const reduce = useReducedMotion();
   const many = images.length > 1;
 
@@ -100,9 +122,15 @@ export function Lightbox({ images, currentIndex, isOpen, onClose, onNavigate }: 
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen, currentIndex, images.length, many, onClose, onNavigate]);
 
+  useEffect(() => {
+    setPortalHost(document.body);
+  }, []);
+
   const image = images[currentIndex];
 
-  return (
+  if (!portalHost) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && image && (
         <motion.div
@@ -193,7 +221,8 @@ export function Lightbox({ images, currentIndex, isOpen, onClose, onNavigate }: 
           </motion.figure>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    portalHost,
   );
 }
 

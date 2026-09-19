@@ -27,12 +27,20 @@
  * off outright, so a seal you cannot see costs nothing per frame.
  */
 
-/* The seal is 54px across; these two keep it off the page furniture. */
+/* On mobile, completely hide floating center runes to avoid obstructing the text column */
+@media (max-width: 768px) {
+  .dock {
+    display: none !important;
+  }
+}
+
+/* On desktop, dock the ancient scroll rune cleanly to the bottom right corner */
 .dock {
   position: fixed;
-  left: 50%;
+  right: 2rem;
+  left: auto;
   z-index: 30;
-  translate: -50% 0;
+  translate: none;
   opacity: 0;
   pointer-events: none;
   transition: opacity 280ms ease;
@@ -51,15 +59,7 @@
 }
 
 /*
- * WITHDRAWN. The page column and the seals are both centred, so anything that
- * scrolls through the band at the middle of the screen passes under a seal;
- * moving the seal up or down only picks a different victim. So when the
- * reader is still and there is ink underneath, ScrollRunes sets data-veiled
- * and the seal leaves altogether - no opacity left to tint the type, and no
- * pointer either, so a click lands on the link it was sitting on. Reaching
- * for it (the component watches the pointer, since a seal that takes no
- * pointer cannot be hovered), tabbing to it, or simply scrolling brings it
- * straight back, and over empty page it never withdraws at all.
+ * WITHDRAWN. If ink is detected or during quiet periods, adjust visibility gracefully.
  */
 .dock[data-show="true"][data-veiled="true"] {
   opacity: 0;
@@ -80,27 +80,15 @@
 }
 
 /*
- * Below the sticky header, which measures 75px tall from lg down to md and
- * 77px on a phone. 6rem leaves 14px of air under it even at the top of the
- * bob, which is the closest the seal ever gets.
+ * Docked cleanly to bottom-right corner out of the reading lane
  */
 .top {
-  top: 6rem;
+  bottom: 5.5rem;
+  top: auto;
 }
 
 /*
- * Off the bottom edge, clear of the iOS home indicator.
- *
- * KNOWN CONFLICT. The home hero carries its own "scroll down" hint, centred
- * like this seal, 32px off the bottom of a section whose height is driven by
- * its content rather than the viewport. Its distance from the bottom of the
- * screen therefore moves with the window: measured across fourteen viewport
- * sizes it lands anywhere from 370px below the fold to 129px above it, so no
- * fixed offset here clears it everywhere - the window in which the two collide
- * is 75px wide and the hint sweeps straight through it. This offset is the
- * conventional one and has the fewest collisions of any sane value: one of the
- * fourteen, at 1920x950. The real fix is to delete that hint - it now says the
- * same thing this seal does, from the same place.
+ * Off the bottom-right corner, clear of the iOS home indicator.
  */
 .bottom {
   bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));

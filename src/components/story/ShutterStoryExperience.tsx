@@ -204,8 +204,8 @@ const SCENES: StoryScene[] = [
     narrativeLead:
       "A proven track record of shipping production AI and backend systems with calm ownership.",
     narrativeBody:
-      "Three years. Three promotions. A Master's degree earned alongside full-time production delivery. Fast ramp-up, clean code, and reliable communication across global timezones. Ready to step in and solve high-stakes challenges from day one.",
-    chips: ["3 Promotions in 3 Years", "25M+ Vector Infrastructure", "Full-Time Remote (AWST)"],
+      "Three years. Three major milestones. A Master's degree earned alongside full-time production delivery. Fast ramp-up, clean code, and reliable communication across global timezones. Ready to step in and solve high-stakes challenges from day one.",
+    chips: ["Rapid Career Progression", "25M+ Vector Infrastructure", "Full-Time Remote (AWST)"],
     type: "dossier",
   },
 ];
@@ -1214,7 +1214,7 @@ export function ShutterStoryExperience() {
                     <div className={`grid grid-cols-2 gap-2 text-left text-xs ${styles.dossierTiles}`}>
                       <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
                         <span className="text-[10px] text-white/50 block font-mono">TRAJECTORY</span>
-                        <span className="font-semibold text-white">3 Promotions in 3 Yrs</span>
+                        <span className="font-semibold text-white">Rapid Progression</span>
                       </div>
                       <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
                         <span className="text-[10px] text-white/50 block font-mono">SCALE</span>
@@ -1346,13 +1346,37 @@ export function ShutterStoryExperience() {
       */}
       <motion.div
         initial={false}
-        animate={{ y: isShutterLifted ? "-100%" : "0%" }}
-        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed inset-0 z-50 flex flex-col justify-between bg-[#08090c] text-[var(--text)] select-none pointer-events-auto h-[100dvh]"
+        drag={!isShutterLifted && !isExitingTheater ? "y" : false}
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={{ top: 0.35, bottom: 0 }}
+        onDragEnd={(_, info) => {
+          if (info.offset.y < -45 || info.velocity.y < -250) {
+            liftShutter();
+          }
+        }}
+        animate={
+          isShutterLifted
+            ? { y: "-100%" }
+            : {
+                y: shouldReduceMotion ? 0 : [0, -16, 0],
+              }
+        }
+        transition={
+          isShutterLifted
+            ? { duration: 0.9, ease: [0.16, 1, 0.3, 1] }
+            : {
+                duration: 4.5,
+                repeat: Infinity,
+                repeatDelay: 3.5,
+                ease: "easeInOut",
+              }
+        }
+        className="fixed inset-0 z-50 flex flex-col justify-between bg-[#08090c] text-[var(--text)] select-none pointer-events-auto h-[100dvh] cursor-grab active:cursor-grabbing"
         style={{
           backgroundImage:
             "linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px)",
           backgroundSize: "100% 32px",
+          touchAction: "pan-x",
         }}
       >
         {/* Subtle Ambient Radial Backlight */}
@@ -1446,18 +1470,35 @@ export function ShutterStoryExperience() {
           </div>
 
           <p className="mt-4 font-mono text-[11px] text-white/35">
-            Press Space or Enter to lift
+            Slide up or press Space / Enter to lift
           </p>
           </div>
         </main>
 
-        {/* Shutter Bottom Architectural Grip Lip */}
+        {/* Shutter Bottom Architectural Grip Lip (Draggable & Clickable) */}
         <footer
-          className={`relative z-10 flex items-center justify-between gap-3 pt-3 sm:pt-4 border-t border-white/10 bg-black/40 font-mono text-[11px] text-white/40 ${styles.gutter} ${styles.bottomInset}`}
+          onClick={liftShutter}
+          className={`relative z-10 flex items-center justify-between gap-3 pt-3 sm:pt-4 border-t border-white/10 bg-black/50 hover:bg-white/[0.04] font-mono text-[11px] text-white/50 hover:text-white/80 transition-colors cursor-pointer ${styles.gutter} ${styles.bottomInset} group`}
         >
           <span>Ankit Mishra · Senior SWE</span>
-          <span className="hidden sm:inline">▲ ARCHITECTURAL SHUTTER · PULL UP TO ENTER</span>
-          <span>OneIT Australia</span>
+          <span className="inline-flex items-center gap-1.5 font-semibold text-[var(--accent)] tracking-wider">
+            <svg
+              width="11"
+              height="11"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="animate-bounce"
+              aria-hidden
+            >
+              <polyline points="18 15 12 9 6 15" />
+            </svg>
+            <span>SLIDE UP OR CLICK TO ENTER</span>
+          </span>
+          <span className="hidden sm:inline">OneIT Australia</span>
         </footer>
       </motion.div>
     </div>

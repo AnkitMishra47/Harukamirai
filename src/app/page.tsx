@@ -16,7 +16,10 @@ export default function HomePage() {
 
       {/* CREDIBILITY */}
       <section className="relative border-y border-[var(--border)] bg-[var(--bg-elevated)] overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
+        {/* Wallpaper, and only that. Below `lg` the hero's own seal is already
+            on screen and a second 1200px one behind the band is a whole extra
+            seal's worth of rasterising for something at 4% opacity. */}
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none hidden lg:block">
           <MagicCircle size={1200} intensity="subtle" />
         </div>
         {/* Banded section: padding sits inside the tinted box, so it takes both sides. */}

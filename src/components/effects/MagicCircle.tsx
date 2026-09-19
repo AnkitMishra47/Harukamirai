@@ -15,8 +15,17 @@ type Props = {
  * Every loop is one of the three CSS keyframes already in globals.css
  * (`.spin-cw`, `.spin-ccw`, `.ring-pulse`), which animate `transform` only.
  * No filters, no blur, no JavaScript, no per-frame work: it renders
- * server-side and the compositor owns it from then on. `prefers-reduced-motion`
- * is honoured globally, which parks every band where it starts.
+ * server-side. `prefers-reduced-motion` is honoured globally, which parks every
+ * band where it starts.
+ *
+ * "The compositor owns it from then on" was the claim here, and it is not true
+ * of an SVG. A transform on an HTML element can be promoted to its own layer; a
+ * transform on a `<g>` inside an SVG is a paint, and five of them turning at
+ * five rates means the whole seal is re-rasterised every frame. On a desktop
+ * that is free. On a phone, with two seals on the page carrying 60 vector
+ * elements between them, it measured a third of the homepage's main-thread
+ * time. The `.magic-seal` hook exists so globals.css can park the bands on a
+ * touch screen and keep the drawing.
  */
 
 /** 90 teeth on a circle of r=364: circumference 2287.1 / 90 = 25.412 per tooth. */
@@ -82,7 +91,7 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
       viewBox="0 0 800 800"
       width={size}
       height={size}
-      className={`circle-in pointer-events-none select-none will-change-transform ${className}`}
+      className={`magic-seal circle-in pointer-events-none select-none will-change-transform ${className}`}
       style={{ opacity, backfaceVisibility: "hidden", transform: "translateZ(0)" }}
       aria-hidden
     >

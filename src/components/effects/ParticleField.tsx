@@ -19,6 +19,17 @@ export function ParticleField() {
     const canvas = ref.current;
     if (!canvas) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    /*
+     * Not on a touch screen, for the same reason `CursorTrail` is not: the
+     * effect costs more there than it is worth. This one is the homepage's
+     * single most expensive thing to draw - a canvas the height of the hero,
+     * cleared and repainted whole on every frame (measured: a 618x1755 backing
+     * store at 412px of viewport). Skipping it on a coarse pointer took
+     * main-thread long-task time across a scripted scroll from 6838ms to
+     * 3279ms, more than every other effect on the page put together. Desktop,
+     * which has the frames to spend, is unchanged.
+     */
+    if (window.matchMedia("(pointer: coarse)").matches) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;

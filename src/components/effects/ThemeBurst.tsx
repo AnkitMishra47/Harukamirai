@@ -15,6 +15,7 @@ export function ThemeBurst() {
   useEffect(() => {
     const handler = (e: Event) => {
       const ce = e as CustomEvent<{ x: number; y: number; to: "leaf-4" | "leaf-5" }>;
+      if (!ce || !ce.detail) return;
       const { x, y, to } = ce.detail;
       const id = Date.now() + Math.random();
       setBursts((b) => [...b, { x, y, to, id }]);

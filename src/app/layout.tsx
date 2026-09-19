@@ -11,6 +11,7 @@ import { AmbientCircle } from "@/components/effects/AmbientCircle";
 import { CommandPalette } from "@/components/command/CommandPalette";
 import { ShutterStoryExperience } from "@/components/story/ShutterStoryExperience";
 import { RecruiterBriefModal } from "@/components/story/RecruiterBriefModal";
+import { AdventureQuest } from "@/components/adventure/AdventureQuest";
 import { profile } from "@/content";
 import "./globals.css";
 
@@ -74,6 +75,7 @@ export default function RootLayout({
         <main className="flex-1">
           <PageTransition>{children}</PageTransition>
         </main>
+        <AdventureQuest />
         <ScrollRunes />
         <Footer />
       </body>

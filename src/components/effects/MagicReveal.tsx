@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/** True once the element has entered the viewport; never flips back. */
-function useInViewOnce<T extends Element>(margin = "100px") {
+/** Continuous viewport observer for bidirectional scroll animations */
+function useInView<T extends Element>(margin = "0px") {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
@@ -15,12 +15,9 @@ function useInViewOnce<T extends Element>(margin = "100px") {
     }
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting) {
-          setInView(true);
-          io.disconnect();
-        }
+        setInView(e.isIntersecting);
       },
-      { rootMargin: margin }
+      { rootMargin: margin, threshold: 0.08 }
     );
     io.observe(el);
     return () => io.disconnect();
@@ -31,17 +28,31 @@ function useInViewOnce<T extends Element>(margin = "100px") {
 export function MagicReveal({
   children,
   delay = 0,
+  direction = "up",
+  index,
   className = "",
 }: {
   children: React.ReactNode;
   delay?: number;
+  direction?: "up" | "left" | "right" | "alternate";
+  index?: number;
   className?: string;
 }) {
-  const { ref, inView } = useInViewOnce<HTMLDivElement>();
+  const { ref, inView } = useInView<HTMLDivElement>();
+  
+  let revealClass = "reveal-up";
+  if (direction === "left") {
+    revealClass = "reveal-left";
+  } else if (direction === "right") {
+    revealClass = "reveal-right";
+  } else if (direction === "alternate") {
+    revealClass = (index ?? 0) % 2 === 0 ? "reveal-left" : "reveal-right";
+  }
+
   return (
     <div
       ref={ref}
-      className={`reveal-up ${inView ? "is-in" : ""} ${className}`}
+      className={`${revealClass} ${inView ? "is-in" : ""} ${className}`}
       style={{ transitionDelay: `${delay}s` }}
     >
       {children}
@@ -50,7 +61,7 @@ export function MagicReveal({
 }
 
 export function BrushDivider() {
-  const { ref, inView } = useInViewOnce<SVGSVGElement>("-50px");
+  const { ref, inView } = useInView<SVGSVGElement>("-50px");
   return (
     <svg
       ref={ref}

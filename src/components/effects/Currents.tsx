@@ -59,21 +59,34 @@ export function Currents() {
         </MagicReveal>
 
         <MagicReveal delay={0.32} className="h-full">
-          <Card label="Playing" jp="将棋">
-            <ChessBoard />
-            {/* The platform name is read off the same link entry the chip below
-                points at, so the card and the link can never drift apart - that
-                drift is what left "Lichess" sitting above a chess.com profile.
-                RATING: "2000-ish" is a figure Ankit confirmed. It has no home in
-                the content module, and ratings go stale, so check it with him
-                rather than assume it still holds. */}
-            <CardMeta
-              title="Chess - Sicilian, mostly"
-              meta={[chessProfile?.label, "2000-ish"].filter(Boolean).join(" · ")}
-              line="Analysis after losses is where the hobby actually lives."
-              link={chessProfile}
-            />
-          </Card>
+          <div
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(
+                  new CustomEvent("grimoire-relic-discover", {
+                    detail: { relicId: "chess" },
+                  })
+                );
+              }
+            }}
+            className="h-full cursor-pointer"
+          >
+            <Card label="Playing" jp="将棋">
+              <ChessBoard />
+              {/* The platform name is read off the same link entry the chip below
+                  points at, so the card and the link can never drift apart - that
+                  drift is what left "Lichess" sitting above a chess.com profile.
+                  RATING: "2000-ish" is a figure Ankit confirmed. It has no home in
+                  the content module, and ratings go stale, so check it with him
+                  rather than assume it still holds. */}
+              <CardMeta
+                title="Chess - Sicilian, mostly"
+                meta={[chessProfile?.label, "2000-ish"].filter(Boolean).join(" · ")}
+                line="Analysis after losses is where the hobby actually lives."
+                link={chessProfile}
+              />
+            </Card>
+          </div>
         </MagicReveal>
       </div>
     </section>

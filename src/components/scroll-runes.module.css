@@ -18,9 +18,13 @@
  * light, through --accent on the inner rule and the hover halo. Foil on
  * leather measures 7.0:1.
  *
- * COST. Only opacity and transform are animated, both compositor properties.
- * A hidden seal has its bob switched off outright, so an off-screen control
- * costs nothing per frame.
+ * KEEPING OFF THE WORDS. A seal withdraws - opacity and pointer both - while
+ * the reader is still and there is ink under it. See the data-veiled rules
+ * below; ScrollRunes decides, this file only draws the two states.
+ *
+ * COST. Only opacity, transform and scale are animated, all three compositor
+ * properties, and no filters. A hidden or withdrawn seal has its bob switched
+ * off outright, so a seal you cannot see costs nothing per frame.
  */
 
 /* The seal is 54px across; these two keep it off the page furniture. */
@@ -44,6 +48,35 @@
   opacity: 1;
   pointer-events: auto;
   animation: sr-in 320ms ease;
+}
+
+/*
+ * WITHDRAWN. The page column and the seals are both centred, so anything that
+ * scrolls through the band at the middle of the screen passes under a seal;
+ * moving the seal up or down only picks a different victim. So when the
+ * reader is still and there is ink underneath, ScrollRunes sets data-veiled
+ * and the seal leaves altogether - no opacity left to tint the type, and no
+ * pointer either, so a click lands on the link it was sitting on. Reaching
+ * for it (the component watches the pointer, since a seal that takes no
+ * pointer cannot be hovered), tabbing to it, or simply scrolling brings it
+ * straight back, and over empty page it never withdraws at all.
+ */
+.dock[data-show="true"][data-veiled="true"] {
+  opacity: 0;
+  pointer-events: none;
+}
+.dock[data-show="true"][data-veiled="true"] .seal {
+  scale: 0.82;
+  animation: none;
+}
+.dock[data-show="true"]:hover,
+.dock[data-show="true"]:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
+.dock[data-show="true"]:hover .seal,
+.dock[data-show="true"]:focus-within .seal {
+  scale: 1;
 }
 
 /*
@@ -83,14 +116,24 @@
   color: var(--foil);
   cursor: pointer;
   background: linear-gradient(160deg, var(--leather-b) 0%, var(--leather-a) 46%, var(--leather-edge) 100%);
+  /*
+   * The last shadow is the readable treatment: a soft ring of page colour
+   * around the plate, so that in the moments the seal IS over type - while
+   * you scroll, or while you reach for it - it reads as something laid
+   * deliberately on top rather than a blot that ate two letters.
+   */
   box-shadow:
     inset 0 0 0 1px color-mix(in oklab, var(--foil) 55%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    0 6px 18px rgba(0, 0, 0, 0.38);
-  transition: color 200ms ease;
+    0 6px 18px rgba(0, 0, 0, 0.38),
+    0 0 0 6px color-mix(in oklab, var(--bg) 66%, transparent);
+  transition:
+    color 200ms ease,
+    scale 280ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .seal:hover { color: var(--foil-hi); }
-.seal:active { scale: 0.94; }
+/* Specific enough, and late enough, to beat the withdraw and hover scales. */
+.dock[data-show="true"] .seal:active { scale: 0.94; }
 .seal:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;

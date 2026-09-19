@@ -95,7 +95,7 @@ const MATTER: Record<string, Pick<Chapter, "marks" | "aside"> & { body?: string 
   bca: {
     // timeline.bca.title "BCA, GGSIPU (USMS)" and .note "Graduated with 86%.
     // First portfolio shipped in 2022."
-    marks: ["BCA", "86%", "Portfolio, 2022"],
+    marks: ["Bachelor's", "86%", "Portfolio, 2022"],
     // The other two education entries in timeline.ts, which the book never
     // showed: timeline.mca-start and timeline.mca-done, dates and titles whole.
     aside: { caption: "Studies", lines: [...fromTimeline("mca-start"), ...fromTimeline("mca-done")] },

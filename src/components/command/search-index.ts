@@ -11,13 +11,20 @@ export interface SearchResultItem {
   actionId?: "open-recruiter-brief" | "open-shutter-story";
 }
 
-export const SUGGESTED_QUERIES = [
-  "Executive Brief",
-  "Storyline",
-  "RAG & pgvector",
-  "3 Promotions",
-  "Resume PDF",
-  "Sprachkraft",
+export interface SuggestionChip {
+  id: string;
+  label: string;
+  query: string;
+  icon: string;
+}
+
+export const SUGGESTED_QUERIES: SuggestionChip[] = [
+  { id: "sug-exec", label: "Executive Recruiter Brief", query: "Executive Brief", icon: "✦" },
+  { id: "sug-story", label: "Storyline (6 Cinematic Acts)", query: "Storyline", icon: "📖" },
+  { id: "sug-resume", label: "Official Resume PDF", query: "Resume PDF", icon: "📄" },
+  { id: "sug-rag", label: "PostgreSQL 25M+ Vectors", query: "RAG Systems", icon: "⚡" },
+  { id: "sug-sprach", label: "1-Day Client Delivery", query: "Sprachkraft", icon: "🚀" },
+  { id: "sug-email", label: "Send Direct Email", query: "Email Ankit", icon: "✉" },
 ];
 
 export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
@@ -31,15 +38,15 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
         type: "action",
         title: "Executive Recruiter Brief",
         subtitle: "Executive Summary · 3 Promotions · OneIT",
-        description: "Fast high-level overview of Ankit's career arc, 25M+ vector scale, awards, and direct download links.",
-        badge: "Executive Summary",
+        description: "High-level overview of Ankit's career arc, 25M+ vector scale, awards, and direct download links.",
+        badge: "Executive Brief",
         actionId: "open-recruiter-brief",
       },
       {
         id: "action-shutter-story",
         type: "action",
-        title: "Experience Cinematic Storyline",
-        subtitle: "The Sanctuary of Haruka Mirai · 6 Acts",
+        title: "The Sanctuary of Haruka Mirai",
+        subtitle: "Cinematic Storyline · 6 Acts",
         description: "Atmospheric narrative through early ambition, the battlestation, production scale, and firm honours.",
         badge: "Storyline",
         actionId: "open-shutter-story",
@@ -47,17 +54,17 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
       {
         id: "action-resume-pdf",
         type: "action",
-        title: "Download Official Resume PDF",
+        title: "Official Resume PDF",
         subtitle: "Verified Credentials · Latest Version",
         description: "Official PDF resume matching all production engineering roles, metrics, and academic honours.",
-        badge: "PDF Document",
+        badge: "Resume PDF",
         url: profile.resumePdf,
       },
       {
         id: "cs-rag",
         type: "case-study",
         title: "RAG over 25M+ Embeddings on PostgreSQL",
-        subtitle: "Enterprise Knowledge Retrieval · OneIT",
+        subtitle: "Knowledge Retrieval · OneIT",
         description: "HNSW index tuning, sub-15ms filtered cosine search, bloat and VACUUM stall mitigation in production.",
         badge: "25M+ Vectors",
         url: "/work#rag-platform",
@@ -94,31 +101,31 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
       title: "Executive Recruiter Brief",
       subtitle: "Executive Overview · 3 Promotions · OneIT",
       description: "Quick scannable summary designed for hiring managers and recruiters.",
-      badge: "Executive Summary",
+      badge: "Executive Brief",
       actionId: "open-recruiter-brief",
     });
   }
 
-  if (query.includes("story") || query.includes("tour") || query.includes("play") || query.includes("journey") || query.includes("shutter")) {
+  if (query.includes("story") || query.includes("lore") || query.includes("tour") || query.includes("play") || query.includes("journey") || query.includes("shutter")) {
     items.push({
       id: "action-shutter-story",
       type: "action",
-      title: "Experience Cinematic Storyline",
-      subtitle: "The Sanctuary of Haruka Mirai · 6 Acts",
+      title: "The Sanctuary of Haruka Mirai",
+      subtitle: "Cinematic Storyline · 6 Acts",
       description: "Atmospheric narrative through early ambition, the battlestation, production scale, and firm honours.",
       badge: "Storyline",
       actionId: "open-shutter-story",
     });
   }
 
-  if (query.includes("resume") || query.includes("cv") || query.includes("pdf") || query.includes("download")) {
+  if (query.includes("resume") || query.includes("cv") || query.includes("pdf") || query.includes("download") || query.includes("scroll")) {
     items.push({
       id: "action-resume-pdf",
       type: "action",
-      title: "Download Official Resume PDF",
-      subtitle: "Verified Credentials Document",
+      title: "Official Resume PDF",
+      subtitle: "Verified Credentials · Latest Version",
       description: "Direct download of Ankit Mishra's verified resume PDF.",
-      badge: "PDF Document",
+      badge: "Resume PDF",
       url: profile.resumePdf,
     });
   }
@@ -128,7 +135,7 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
       id: "action-contact",
       type: "action",
       title: "Email Ankit Mishra",
-      subtitle: "ankitm17.2001@gmail.com",
+      subtitle: "Direct Contact · ankitm17.2001@gmail.com",
       description: "Send an email directly to Ankit.",
       badge: "Direct Email",
       url: `mailto:${profile.links.find((l) => l.label === "Email")?.value || "ankitm17.2001@gmail.com"}`,
@@ -147,7 +154,7 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
         title: cs.title,
         subtitle: `${cs.kicker} · ${cs.org.toUpperCase()}`,
         description: cs.problem,
-        badge: cs.metrics[0]?.value || "Project",
+        badge: cs.metrics[0]?.value || "Case Study",
         url: `/work#${cs.slug}`,
       });
     }
@@ -179,7 +186,7 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
           id: `skill-${skill.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
           type: "skill",
           title: skill,
-          subtitle: `Technical Stack · ${g.label}`,
+          subtitle: `Technical Discipline · ${g.label}`,
           description: `Part of verified technical stack at OneIT and production systems.`,
           badge: g.label,
           url: "/about",

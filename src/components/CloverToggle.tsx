@@ -32,6 +32,13 @@ export function CloverToggle() {
     const next: Theme = getCurrent() === "leaf-4" ? "leaf-5" : "leaf-4";
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    // Trigger adventure relic discovery for clover switch
+    window.dispatchEvent(
+      new CustomEvent("grimoire-relic-discover", {
+        detail: { relicId: "clover" },
+      })
+    );
+
     if (!reduced && btnRef.current) {
       const r = btnRef.current.getBoundingClientRect();
       window.dispatchEvent(

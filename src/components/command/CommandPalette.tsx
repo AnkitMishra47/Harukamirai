@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { searchCareerIndex, SUGGESTED_QUERIES, SearchResultItem } from "./search-index";
+import styles from "./command-palette.module.css";
 
 export function CommandPalette() {
   const router = useRouter();
@@ -103,139 +104,157 @@ export function CommandPalette() {
   return (
     <AnimatePresence>
       {isOpen && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.15 }}
-      className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 sm:pt-24"
-    >
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/75 backdrop-blur-sm"
-        onClick={() => setIsOpen(false)}
-        aria-hidden
-      />
-
-      {/* Dialog */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: -10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: -10 }}
-        transition={{ duration: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
-        className="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-[var(--bg-elevated)] shadow-[0_25px_70px_-15px_rgba(0,0,0,0.7)]"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Spotlight Command Search"
-      >
-        {/* Search Header */}
-        <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3.5 bg-[var(--bg)]">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-[var(--accent)]/15 text-[var(--accent)]">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </span>
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setSelectedIndex(0);
-            }}
-            onKeyDown={handleInputKeyDown}
-            placeholder="Search projects, career arc, skills, or quick actions..."
-            className="w-full bg-transparent text-sm sm:text-base text-[var(--text)] placeholder-[var(--text-subtle)] focus:outline-none"
-          />
-          {query && (
-            <button
-              type="button"
-              onClick={() => setQuery("")}
-              className="rounded-md p-1 text-xs text-[var(--text-subtle)] hover:text-[var(--text)]"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+          className={styles.backdrop}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Grimoire Scroll Search"
+        >
+          <div className={styles.scrollWrapper}>
+            {/* Top Scroll Roller */}
+            <motion.div
+              initial={{ y: -12, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -12, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className={styles.scrollTopRoller}
             >
-              Clear
-            </button>
-          )}
-          <kbd className="hidden sm:inline rounded border border-[var(--border)] bg-[var(--bg-elevated)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-subtle)]">
-            ESC
-          </kbd>
-        </div>
+              <span className={styles.rollerKnobLeft} aria-hidden />
+              <span className={styles.rollerText}>✦ Grimoire Scroll · Haruka Mirai ✦</span>
+              <span className={styles.rollerKnobRight} aria-hidden />
+            </motion.div>
 
-        {/* Quick Suggestion Pills */}
-        <div className="border-b border-[var(--border)] bg-[color-mix(in_oklab,var(--bg)_85%,transparent)] px-4 py-2 flex items-center gap-2 overflow-x-auto text-[11px] no-scrollbar">
-          <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--text-subtle)] whitespace-nowrap font-semibold">
-            Try:
-          </span>
-          {SUGGESTED_QUERIES.map((q) => (
-            <button
-              key={q}
-              type="button"
-              onClick={() => setQuery(q)}
-              className="whitespace-nowrap rounded-full border border-[var(--border)] bg-[var(--bg)] px-2.5 py-1 text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--text)] transition-colors cursor-pointer"
+            {/* Scroll Body */}
+            <motion.div
+              initial={{ scaleY: 0.2, opacity: 0 }}
+              animate={{ scaleY: 1, opacity: 1 }}
+              exit={{ scaleY: 0.2, opacity: 0 }}
+              transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+              style={{ transformOrigin: "top center" }}
+              className={styles.scrollBody}
             >
-              {q}
-            </button>
-          ))}
-        </div>
+              {/* Search Inscription Header */}
+              <div className={styles.searchHeader}>
+                <span className={styles.quillBadge} title="Spell Inscription">
+                  ✦
+                </span>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setSelectedIndex(0);
+                  }}
+                  onKeyDown={handleInputKeyDown}
+                  placeholder="Inscribe search, career arc, skills, or spells..."
+                  className={styles.searchInput}
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    className={styles.clearBtn}
+                  >
+                    Clear
+                  </button>
+                )}
+                <kbd className={styles.escBadge}>ESC</kbd>
+              </div>
 
-        {/* Results List */}
-        <div className="max-h-[60vh] overflow-y-auto p-2 space-y-1">
-          {results.length === 0 ? (
-            <div className="p-8 text-center text-sm text-[var(--text-muted)]">
-              No matching items found for &ldquo;{query}&rdquo;. Try &ldquo;recruiter&rdquo;, &ldquo;RAG&rdquo;, or &ldquo;resume&rdquo;.
-            </div>
-          ) : (
-            results.map((item, idx) => {
-              const isSelected = idx === selectedIndex;
-              return (
-                <div
-                  key={item.id}
-                  onClick={() => selectItem(item)}
-                  onMouseEnter={() => setSelectedIndex(idx)}
-                  className={`group flex cursor-pointer items-center justify-between gap-4 rounded-xl p-3 text-left transition-all ${
-                    isSelected
-                      ? "bg-[color-mix(in_oklab,var(--accent-glow)_30%,var(--bg))] border border-[var(--accent)]/50"
-                      : "hover:bg-[var(--bg)] border border-transparent"
-                  }`}
-                >
-                  <div className="space-y-0.5 flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--accent)] font-semibold">
-                        {item.subtitle}
-                      </span>
-                    </div>
-                    <h4 className="font-display text-sm sm:text-base font-medium text-[var(--text)] group-hover:text-[var(--accent)] transition-colors">
-                      {item.title}
-                    </h4>
-                    <p className="text-xs text-[var(--text-muted)] line-clamp-1 leading-relaxed">
-                      {item.description}
-                    </p>
+              {/* Tilted Spell Charms */}
+              <div className={styles.tiltedCharmsBar}>
+                <span className={styles.charmsLabel}>Suggestions:</span>
+                {SUGGESTED_QUERIES.map((q) => (
+                  <button
+                    key={q.id}
+                    type="button"
+                    onClick={() => setQuery(q.query)}
+                    className={styles.tiltedCharm}
+                  >
+                    <span aria-hidden>{q.icon}</span> <span>{q.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Results Inscription List */}
+              <div className={styles.resultsList}>
+                {results.length === 0 ? (
+                  <div className="p-8 text-center text-sm font-sans text-[var(--text-muted)]">
+                    No matching spells or records for &ldquo;{query}&rdquo;. Try seeking &ldquo;recruiter&rdquo;, &ldquo;RAG&rdquo;, or &ldquo;resume&rdquo;.
                   </div>
+                ) : (
+                  results.map((item, idx) => {
+                    const isSelected = idx === selectedIndex;
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => selectItem(item)}
+                        onMouseEnter={() => setSelectedIndex(idx)}
+                        className={`${styles.spellRow} ${isSelected ? styles.spellRowSelected : ""}`}
+                      >
+                        <div className="space-y-0.5 flex-1 min-w-0">
+                          <p className={styles.rubricKicker}>
+                            {item.subtitle}
+                          </p>
+                          <h4 className={styles.spellTitle}>
+                            {item.title}
+                          </h4>
+                          <p className={`${styles.spellDescription} line-clamp-1`}>
+                            {item.description}
+                          </p>
+                        </div>
 
-                  {item.badge && (
-                    <div className="text-right shrink-0">
-                      <span className="inline-block rounded-full border border-[var(--border)] bg-[var(--bg)] px-2.5 py-0.5 font-mono text-[10px] text-[var(--text-subtle)] group-hover:border-[var(--accent)]/40 group-hover:text-[var(--text)] transition-colors">
-                        {item.badge}
-                      </span>
-                    </div>
-                  )}
+                        {item.badge && (
+                          <div className="text-right shrink-0">
+                            <span className={styles.tiltedBadge}>
+                              {item.badge}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Scroll Colophon Footer */}
+              <div className={styles.scrollFooter}>
+                <div className="flex items-center gap-3">
+                  <span>
+                    <kbd className={styles.kbd}>↑↓</kbd> Turn Scroll
+                  </span>
+                  <span>
+                    <kbd className={styles.kbd}>↵</kbd> Cast / Open
+                  </span>
                 </div>
-              );
-            })
-          )}
-        </div>
+                <span>
+                  Press <kbd className={styles.kbd}>Esc</kbd> to roll up
+                </span>
+              </div>
+            </motion.div>
 
-        {/* Footer Shortcuts */}
-        <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-2 font-mono text-[11px] text-[var(--text-subtle)] bg-[var(--bg)]">
-          <div className="flex items-center gap-3">
-            <span><kbd className="rounded bg-[var(--bg-elevated)] px-1 border border-[var(--border)]">↑↓</kbd> Navigate</span>
-            <span><kbd className="rounded bg-[var(--bg-elevated)] px-1 border border-[var(--border)]">↵</kbd> Open</span>
+            {/* Bottom Scroll Roller */}
+            <motion.div
+              initial={{ y: 12, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 12, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className={styles.scrollBottomRoller}
+            >
+              <span className={styles.rollerKnobLeft} aria-hidden />
+              <span className={styles.rollerText}>✦ 遥か未来 · Tome of Arcana ✦</span>
+              <span className={styles.rollerKnobRight} aria-hidden />
+            </motion.div>
           </div>
-          <span className="text-[10px] text-[var(--text-subtle)]">Press Esc to exit</span>
-        </div>
-      </motion.div>
-    </motion.div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

@@ -9,9 +9,7 @@ import styles from "./scroll-runes.module.css";
  *
  * WHAT THEY ARE. The top seal takes you back to the cover. The bottom seal
  * moves you on by roughly a screen. Each drifts gently the way it will send
- * you, as an invitation to press it. They were one clasp on the right edge
- * before; centred, they no longer sit in the reader's margin, and the split
- * puts each one where the reader is already looking when they want it.
+ * you, as an invitation to press it.
  *
  * ONE SEAL, ONE JOB. The old bottom-right "back to the top" button and the
  * old up ring did nearly the same thing from two places. There is now exactly
@@ -22,24 +20,36 @@ import styles from "./scroll-runes.module.css";
  * absent on a page too short to be worth a control at all. They fade rather
  * than pop.
  *
+ * NEVER ON THE WORDS. This is the part that earns the complexity below. The
+ * page is a centred column and so are the seals, so anything that scrolls
+ * through the band at the viewport's centre passes under one of them. Moving
+ * the seals up or down only picks a different victim. So a seal withdraws
+ * instead: whenever the reader is still and there is ink under the seal - a
+ * line of type, a picture, something you can click - it fades right out and
+ * stops taking the pointer, so clicks land on the page beneath it. It comes
+ * straight back when the reader scrolls (they are navigating, not reading),
+ * when the pointer comes within REACH of it (they are going for it), or when
+ * it takes focus. Over empty page it never withdraws at all, so on most
+ * screens it keeps the presence it is supposed to have.
+ *
  * MATERIALS. Leather, foil and gilt, from the fixed --leather-a, --foil and
  * --gilt tokens rather than the surface tokens, for the same reason the book
  * uses them: a seal is one object in both themes and the theme reaches it as
  * light, through --accent on the inner rule and the hover halo.
  *
- * COST. Always mounted while the page is scrollable, so it does no per-frame
- * work of its own. The one scroll listener is passive and rAF-coalesced, and
- * it writes nothing but three booleans that change a handful of times per
- * page, so a scroll never re-renders React in the common case. Nothing loops
- * except the bob, which is pure transform, is switched off while a seal is
- * hidden and never runs under prefers-reduced-motion.
+ * COST. One passive scroll listener, rAF-coalesced, exactly as before. The
+ * pointer listener added for REACH does nothing but compare two numbers
+ * against a cached centre and only wakes the frame when the answer changes,
+ * so moving the mouse across the page costs no layout. Inside the frame the
+ * occlusion test is at most six hit tests against points we already have, on
+ * a frame that already reads the document height. Nothing loops except the
+ * bob, which is pure transform, is switched off while a seal is hidden or
+ * withdrawn, and never runs under prefers-reduced-motion.
  *
  * STAYING OUT OF THE WAY. Both seals sit at z-30: above the page, below the
  * sticky nav (z-40), below every full-screen overlay (z-50) and below the
  * cursor trail and theme burst. `blocked` then unmounts them outright so they
- * are not reachable by keyboard while an overlay is up. All widths: a seal at
- * the centre top or centre bottom sits on the page's own edges rather than in
- * the reading column, which is what kept the old right-hand rail off phones.
+ * are not reachable by keyboard while an overlay is up.
  */
 
 /** Slack at either end of the document that still counts as the end. */
@@ -51,8 +61,81 @@ const STEP = 0.9;
 /** 24 teeth on a circle of r=17.5: circumference 109.96 / 24 = 4.58 per tooth. */
 const TEETH = "1.4 3.18";
 
+/**
+ * How long after the last scroll a seal keeps its full presence. Long enough
+ * that a seal does not blink during a paused flick, short enough that it is
+ * gone by the time anyone has read a line.
+ */
+const QUIET = 1100;
+
+/** How near the pointer has to come before a seal counts as reached for. */
+const REACH = 120;
+
+/**
+ * The grid sampled for ink, in px from the seal's centre.
+ *
+ * The rows run to +/-34 rather than the plate's own 27, because the bob
+ * carries the seal 5px past its box and type clipping that sliver is still
+ * type with a seal on it. Both of those were measured misses. The spacing is
+ * the other half of it: no gap between neighbouring points exceeds 12px, so
+ * nothing 13px or larger can sit under a seal unseen, which is every line of
+ * type on the site and every picture. A miss of an 18x16 section numeral is
+ * what set that figure.
+ *
+ * Thirty-five points is affordable because the probe only runs once the reader has
+ * settled, never during a scroll: while the page is moving the seal is kept
+ * present anyway, so there is nothing to decide. It also stops at the first
+ * hit, and the case that runs all thirty is the one where nothing is there,
+ * which is the case with the shallowest stacks.
+ */
+const PROBE_X = [-24, -12, 0, 12, 24];
+const PROBE_Y = [-34, -23, -11, 0, 11, 23, 34];
+
+/** Tags that are ink in their own right, whatever text they do or do not own. */
+const INK = new Set([
+  "IMG",
+  "VIDEO",
+  "CANVAS",
+  "SVG",
+  "A",
+  "BUTTON",
+  "INPUT",
+  "TEXTAREA",
+  "SELECT",
+  "PICTURE",
+]);
+
 function instantScroll() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/**
+ * Is there anything worth reading directly under this seal?
+ *
+ * Hit-tests a short vertical line down the seal and walks each stack from the
+ * front, skipping the seal's own nodes. An element counts as ink if it is a
+ * picture or something you can click, or if it owns text directly - the last
+ * test is what keeps a bare wrapper or a full-bleed wash from reading as
+ * content, since those own no text of their own. Layers marked
+ * pointer-events: none never come back from a hit test at all, which is
+ * exactly right: the ambient art is meant to be passed over.
+ */
+function inkUnder(dock: HTMLElement, cx: number, cy: number) {
+  for (const dy of PROBE_Y) {
+    for (const dx of PROBE_X) {
+      const stack = document.elementsFromPoint(cx + dx, cy + dy);
+      for (const el of stack) {
+        if (el === dock || dock.contains(el)) continue;
+        const tag = el.tagName.toUpperCase();
+        if (tag === "BODY" || tag === "HTML") break;
+        if (INK.has(tag)) return true;
+        for (let n = el.firstChild; n; n = n.nextSibling) {
+          if (n.nodeType === 3 && (n.nodeValue || "").trim()) return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 export function ScrollRunes() {
@@ -68,7 +151,21 @@ export function ScrollRunes() {
    */
   const [blocked, setBlocked] = useState(true);
 
+  const upRef = useRef<HTMLDivElement | null>(null);
+  const downRef = useRef<HTMLDivElement | null>(null);
   const rafRef = useRef(0);
+  const idleRef = useRef(0);
+  /** When the reader last scrolled. Seeded on mount so a seal says hello. */
+  const activeAt = useRef(0);
+  /** Cached seal centres, refreshed in the frame, read by the pointer. */
+  const centres = useRef([
+    { x: -1e4, y: -1e4 },
+    { x: -1e4, y: -1e4 },
+  ]);
+  /** Whether the pointer is currently within REACH of each seal. */
+  const near = useRef([false, false]);
+  /** schedule(), reachable from measure() without a dependency cycle. */
+  const wake = useRef(() => {});
 
   const measure = useCallback(() => {
     rafRef.current = 0;
@@ -81,6 +178,42 @@ export function ScrollRunes() {
     setArmed(max > vh * 0.5);
     setCanUp(y > EDGE);
     setCanDown(y < max - EDGE);
+
+    // The veil is written straight to the DOM rather than held in state: it
+    // changes many times during a single scroll and none of it is React's
+    // business.
+    const quietFor = performance.now() - activeAt.current;
+    const settled = quietFor >= QUIET;
+    let waiting = false;
+    const docks = [upRef.current, downRef.current];
+    for (let i = 0; i < docks.length; i++) {
+      const dock = docks[i];
+      if (!dock) continue;
+      const rect = dock.getBoundingClientRect();
+      const cx = (rect.left + rect.right) / 2;
+      const cy = (rect.top + rect.bottom) / 2;
+      centres.current[i].x = cx;
+      centres.current[i].y = cy;
+      if (dock.dataset.show !== "true" || near.current[i]) {
+        dock.dataset.veiled = "false";
+        continue;
+      }
+      if (!settled) {
+        // Still moving, so the seal stays present whatever is under it, and
+        // there is no reason to pay for the probe at all.
+        dock.dataset.veiled = "false";
+        waiting = true;
+        continue;
+      }
+      dock.dataset.veiled = inkUnder(dock, cx, cy) ? "true" : "false";
+    }
+
+    // A seal held out only by the quiet period needs one more look once that
+    // period is up, because by then nothing else will be firing.
+    if (waiting) {
+      clearTimeout(idleRef.current);
+      idleRef.current = window.setTimeout(() => wake.current(), QUIET - quietFor + 40);
+    }
   }, []);
 
   const schedule = useCallback(() => {
@@ -88,18 +221,60 @@ export function ScrollRunes() {
   }, [measure]);
 
   useEffect(() => {
+    wake.current = schedule;
+  }, [schedule]);
+
+  useEffect(() => {
+    activeAt.current = performance.now();
+    const onScroll = () => {
+      activeAt.current = performance.now();
+      schedule();
+    };
+    /**
+     * Pure arithmetic against the cached centres: the frame is only woken
+     * when the pointer crosses into or out of a seal's reach, so sweeping the
+     * mouse across the page costs nothing.
+     */
+    const onPointer = (e: PointerEvent) => {
+      let changed = false;
+      for (let i = 0; i < 2; i++) {
+        const c = centres.current[i];
+        const n = Math.abs(e.clientX - c.x) <= REACH && Math.abs(e.clientY - c.y) <= REACH;
+        if (n !== near.current[i]) {
+          near.current[i] = n;
+          changed = true;
+        }
+      }
+      if (changed) schedule();
+    };
+
+    /**
+     * A lazy picture arriving in a box that was already the right size adds
+     * ink under a seal without moving anything: no scroll, no resize, no
+     * mutation the body observer can see. Measured, that was most of the
+     * misses. A capturing listener picks up every img and iframe load event
+     * as it bubbles nowhere, and costs nothing on a page that has finished
+     * loading.
+     */
+    const onLoad = () => schedule();
+
     schedule();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    window.addEventListener("pointermove", onPointer, { passive: true });
+    window.addEventListener("load", onLoad, true);
     // The document grows and shrinks between routes and as images settle, and
     // neither of those fires scroll or resize.
     const ro = new ResizeObserver(schedule);
     ro.observe(document.documentElement);
     return () => {
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("pointermove", onPointer);
+      window.removeEventListener("load", onLoad, true);
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
+      clearTimeout(idleRef.current);
     };
   }, [schedule]);
 
@@ -136,9 +311,13 @@ export function ScrollRunes() {
 
   const visible = armed && !blocked;
 
-  // Settle the two directions the moment the seals (re)appear.
+  // Settle both seals the moment they (re)appear, and give them their say
+  // before the veil can take them.
   useEffect(() => {
-    if (visible) schedule();
+    if (visible) {
+      activeAt.current = performance.now();
+      schedule();
+    }
   }, [visible, schedule]);
 
   if (!visible) return null;
@@ -147,7 +326,11 @@ export function ScrollRunes() {
 
   return (
     <>
-      <div className={`${styles.dock} ${styles.top} print:hidden`} data-show={canUp}>
+      <div
+        ref={upRef}
+        className={`${styles.dock} ${styles.top} print:hidden`}
+        data-show={canUp}
+      >
         <button
           type="button"
           className={styles.seal}
@@ -163,7 +346,11 @@ export function ScrollRunes() {
         </button>
       </div>
 
-      <div className={`${styles.dock} ${styles.bottom} print:hidden`} data-show={canDown}>
+      <div
+        ref={downRef}
+        className={`${styles.dock} ${styles.bottom} print:hidden`}
+        data-show={canDown}
+      >
         <button
           type="button"
           className={styles.seal}

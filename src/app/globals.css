@@ -312,3 +312,16 @@ body {
     transform: translateY(calc(var(--hero-p, 0) * -120px)) rotate(calc(var(--hero-p, 0) * 8deg));
   }
 }
+
+/* Grimoire decoration - sparks rise from the spine, aura breathes */
+@keyframes spark {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0); }
+  45%  { opacity: 1; transform: translate(calc(var(--dx) * 0.45), calc(var(--dy) * 0.45)) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+}
+.spark { animation: spark 1.6s ease-out infinite both; }
+@keyframes aura {
+  0%, 100% { opacity: .55; transform: scale(.96); }
+  50%      { opacity: .95; transform: scale(1.05); }
+}
+.aura { animation: aura 5s ease-in-out infinite; }

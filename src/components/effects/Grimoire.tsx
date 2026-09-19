@@ -77,11 +77,9 @@ export function Grimoire({ size = 400 }: { size?: number }) {
       }}
     >
       {/* Pulsing aura */}
-      <motion.div
+      <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        animate={{ opacity: [0.55, 0.95, 0.55], scale: [0.96, 1.05, 0.96] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        className="aura pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
             "radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 65%)",
@@ -198,35 +196,27 @@ export function Grimoire({ size = 400 }: { size?: number }) {
               background:
                 "linear-gradient(to bottom, transparent 0%, var(--accent) 50%, transparent 100%)",
               mixBlendMode: "screen",
-              filter: "blur(8px)",
+              filter: "blur(4px)",
             }}
           />
         )}
 
-        {/* Sparks */}
+        {/* Sparks - CSS keyframe, deterministic spread so nothing re-randomises on re-render */}
         {stage === "open" &&
-          Array.from({ length: 14 }).map((_, i) => (
-            <motion.span
+          Array.from({ length: 10 }).map((_, i) => (
+            <span
               key={i}
               aria-hidden
-              className="absolute left-1/2 top-1/2 h-1 w-1 rounded-full"
-              style={{
-                background: "var(--accent)",
-                boxShadow: "0 0 8px var(--accent)",
-              }}
-              initial={{ opacity: 0, x: 0, y: 0 }}
-              animate={{
-                opacity: [0, 1, 0],
-                x: (Math.random() - 0.5) * 80,
-                y: -100 - Math.random() * 100,
-              }}
-              transition={{
-                duration: 2.4 + Math.random() * 2,
-                delay: 1.5 + i * 0.2,
-                repeat: Infinity,
-                repeatDelay: Math.random() * 1.2,
-                ease: "easeOut",
-              }}
+              className="spark absolute left-1/2 top-1/2 h-1 w-1 rounded-full"
+              style={
+                {
+                  background: "var(--accent)",
+                  boxShadow: "0 0 8px var(--accent)",
+                  "--dx": `${((i * 37) % 80) - 40}px`,
+                  "--dy": `${-100 - ((i * 53) % 100)}px`,
+                  animationDelay: `${1.5 + i * 0.2}s`,
+                } as React.CSSProperties
+              }
             />
           ))}
       </div>
@@ -505,12 +495,12 @@ function Sigil({ kind }: { kind: Chapter["sigil"] }) {
   const fill = "var(--accent)";
   const sz = 90;
   return (
-    <motion.svg
+    <svg
       width={sz}
       height={sz}
       viewBox="0 0 100 100"
-      animate={{ rotate: 360 }}
-      transition={{ duration: 32, repeat: Infinity, ease: "linear" }}
+      className="spin-cw"
+      style={{ "--spin": "32s", transformOrigin: "50% 50%" } as React.CSSProperties}
       aria-hidden
     >
       <circle cx="50" cy="50" r="46" fill="none" stroke={stroke} strokeWidth="0.8" opacity="0.7" />
@@ -558,6 +548,6 @@ function Sigil({ kind }: { kind: Chapter["sigil"] }) {
           <line x1="22" y1="76" x2="78" y2="76" stroke={fill} strokeWidth="1.5" strokeLinecap="round" />
         </g>
       )}
-    </motion.svg>
+    </svg>
   );
 }

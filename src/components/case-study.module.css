@@ -1,0 +1,94 @@
+/*
+ * Work-page case study grid: equal card heights, and a detail panel that opens
+ * without the grid re-flowing.
+ *
+ * 1. Equal heights. The grid stretches its cells (default `align-items:
+ *    stretch`), each cell is a flex column, and the card is the flex child that
+ *    grows. Both cards in a row therefore end up the same height whatever the
+ *    length of the copy, and the card's footer sits on the bottom edge.
+ *
+ * 2. No re-flow on open. The detail lives in its own full-width grid item
+ *    ordered straight after its card's row, and it opens by transitioning
+ *    `grid-template-rows: 0fr -> 1fr`. No card changes column, span or height,
+ *    so nothing is ever snapped to a new position: the cards below are pushed
+ *    down by the panel row growing, continuously, over the same 420ms.
+ *
+ *      collapsed                       card 0 expanded
+ *      +--------+ +--------+           +--------+ +--------+
+ *      | card 0 | | card 1 |           | card 0 | | card 1 |  <- unchanged
+ *      +--------+ +--------+           +--------+ +--------+
+ *      +--------+ +--------+           +---------------------+
+ *      | card 2 | | card 3 |           | detail  0fr -> 1fr  |
+ *      +--------+ +--------+           +---------------------+
+ *                                      +--------+ +--------+
+ *                                      | card 2 | | card 3 |
+ *                                      +--------+ +--------+
+ *
+ *    Every card keeps a panel mounted (collapsed to a zero-height row), so
+ *    closing animates exactly like opening instead of unmounting mid-flight.
+ *
+ * Row spacing is `padding-bottom` on the cells rather than `row-gap`, because a
+ * row gap would also be applied to the collapsed zero-height panel rows and pop
+ * the layout by 1.5rem the moment a panel mounts.
+ *
+ * The global `prefers-reduced-motion` rule in globals.css zeroes the transition
+ * durations below, which leaves the open/close working as an instant swap.
+ */
+
+.grid {
+  row-gap: 0;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 1.5rem;
+}
+
+.panel {
+  /* Ordered after the last card of its row; see CaseStudyGrid for the maths. */
+  order: var(--cs-order-sm);
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 420ms;
+}
+
+@media (min-width: 768px) {
+  .panel {
+    order: var(--cs-order-md);
+  }
+}
+
+.panelOpen {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition:
+    grid-template-rows 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0s;
+}
+
+.panelInner {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+/*
+ * Row spacing under an open panel. It has to be a margin on the content rather
+ * than padding on .panelInner: with `box-sizing: border-box` a collapsed item
+ * cannot shrink below its own padding, so padding here would leave every
+ * collapsed panel 1.5rem tall (measured: 48px of dead space per card row).
+ */
+.panelInner > * {
+  margin-bottom: 1.5rem;
+}
+
+.panelOpen .panelInner {
+  opacity: 1;
+  transition: opacity 320ms ease 120ms;
+}

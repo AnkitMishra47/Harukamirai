@@ -1,37 +1,65 @@
 "use client";
 
-import { useState } from "react";
-import { motion, LayoutGroup } from "motion/react";
+import { Fragment, useState } from "react";
 import { MagicReveal } from "@/components/effects/MagicReveal";
-import { CaseStudyCard } from "@/components/CaseStudyCard";
+import { CaseStudyCard, CaseStudyDetail, cardTitleId, detailPanelId } from "@/components/CaseStudyCard";
 import type { CaseStudy } from "@/content";
+import styles from "./case-study.module.css";
+
+/** Columns from 768px up. Mirrors `md:grid-cols-2` and the media query in the CSS module. */
+const MD_COLUMNS = 2;
+
+/**
+ * Spacing between consecutive cards in `order`, so a detail panel can be slotted
+ * halfway between two cards without disturbing anything else. Grid auto-placement
+ * walks items in order-modified document order, which is what lets a panel land on
+ * its own full-width row after its card's row instead of punching a hole in it.
+ */
+const ORDER_STEP = 10;
 
 export function CaseStudyGrid({ studies }: { studies: CaseStudy[] }) {
   const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
 
   return (
-    <LayoutGroup>
-      <motion.div layout className={`mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 ${expandedSlug ? "" : "auto-rows-fr"}`}>
-        {studies.map((c, i) => {
-          const isExpanded = expandedSlug === c.slug;
-          return (
-            <motion.div
-              key={c.slug}
-              layout
-              transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-              className={isExpanded ? "col-span-full" : ""}
-            >
-              <MagicReveal delay={i * 0.05}>
+    <div className={`${styles.grid} mt-10 grid grid-cols-1 gap-x-6 md:grid-cols-2`}>
+      {studies.map((study, i) => {
+        const isExpanded = expandedSlug === study.slug;
+        const cardOrder = i * ORDER_STEP;
+        // Single column: the panel follows its own card. Two columns: it follows
+        // whichever card ends that row, so the row itself is never broken up.
+        const lastOfRowMd = Math.floor(i / MD_COLUMNS) * MD_COLUMNS + (MD_COLUMNS - 1);
+
+        return (
+          <Fragment key={study.slug}>
+            <div className={styles.cell} style={{ order: cardOrder }}>
+              <MagicReveal delay={i * 0.05} className="flex flex-1 flex-col">
                 <CaseStudyCard
-                  study={c}
+                  study={study}
                   expanded={isExpanded}
-                  onToggle={() => setExpandedSlug(isExpanded ? null : c.slug)}
+                  onToggle={() => setExpandedSlug(isExpanded ? null : study.slug)}
                 />
               </MagicReveal>
-            </motion.div>
-          );
-        })}
-      </motion.div>
-    </LayoutGroup>
+            </div>
+
+            <div
+              id={detailPanelId(study.slug)}
+              role="group"
+              aria-labelledby={cardTitleId(study.slug)}
+              className={`${styles.panel} ${isExpanded ? styles.panelOpen : ""}`}
+              style={
+                {
+                  "--cs-order-sm": String(cardOrder + ORDER_STEP / 2),
+                  "--cs-order-md": String(lastOfRowMd * ORDER_STEP + ORDER_STEP / 2),
+                } as React.CSSProperties
+              }
+            >
+              <div className={styles.panelInner}>
+                <CaseStudyDetail study={study} />
+              </div>
+            </div>
+          </Fragment>
+        );
+      })}
+    </div>
   );
 }

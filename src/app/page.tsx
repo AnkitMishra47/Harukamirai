@@ -4,7 +4,6 @@ import { MagicCircle } from "@/components/effects/MagicCircle";
 import { MagicReveal, BrushDivider } from "@/components/effects/MagicReveal";
 import { Currents } from "@/components/effects/Currents";
 import { HoverLift } from "@/components/effects/HoverLift";
-import { TechPill } from "@/components/TechPill";
 import { awards, caseStudies, profile } from "@/content";
 
 export default function HomePage() {
@@ -20,7 +19,8 @@ export default function HomePage() {
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
           <MagicCircle size={1200} intensity="subtle" />
         </div>
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-12 py-14 grid gap-10 md:grid-cols-3">
+        {/* Banded section: padding sits inside the tinted box, so it takes both sides. */}
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-12 py-band grid gap-10 md:grid-cols-3">
           <Stat kicker={newest.year} value={newest.title} note="Company-wide award, OneIT." delay={0} />
           <Stat kicker={previous.year} value={previous.title} note="Awarded across OneIT engineering." delay={0.15} />
           <Stat kicker="3 in 3" value="Promotions in three years" note="Junior Intern → Senior Software Engineer." delay={0.3} />
@@ -28,7 +28,7 @@ export default function HomePage() {
       </section>
 
       {/* FEATURED WORK */}
-      <section className="mx-auto max-w-7xl px-6 lg:px-12 py-14 md:py-36">
+      <section className="mx-auto max-w-7xl px-6 lg:px-12 pt-section">
         <MagicReveal>
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">
             Featured spells
@@ -38,7 +38,7 @@ export default function HomePage() {
           </h2>
         </MagicReveal>
 
-        <div className="mt-14 grid gap-8 md:grid-cols-5">
+        <div className="mt-stack grid gap-8 md:grid-cols-5">
           {featured.map((c, i) => (
             <MagicReveal key={c.slug} delay={0.1 + i * 0.15} className={i === 0 ? "md:col-span-3" : "md:col-span-2"}>
               <HoverLift>
@@ -53,13 +53,14 @@ export default function HomePage() {
                     <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[var(--accent)] to-transparent opacity-70 group-hover:opacity-100 transition-opacity" />
                     <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{c.kicker}</p>
                     <h3 className="font-display text-3xl mt-3 text-[var(--text)]">{c.title}</h3>
-                    <p className="mt-4 text-[var(--text-muted)] leading-relaxed">{c.domain}</p>
-                    <div className="mt-6 mb-8 flex flex-wrap gap-2 text-xs">
-                      {c.stack.slice(0, 5).map((t) => (
-                        <TechPill key={t}>{t}</TechPill>
-                      ))}
-                    </div>
-                    <div className="mt-auto pt-4 flex items-center text-sm font-medium text-[var(--accent)]">
+                    {/* Teaser only. The card is a headline: kicker, title, and two
+                        lines saying what the system was. The stack and the full
+                        write-up live at the destination this card links to, so
+                        nothing here is the only copy of anything. `line-clamp`
+                        hides the overflow visually but leaves the whole sentence
+                        in the DOM for screen readers and crawlers. */}
+                    <p className="mt-4 text-[var(--text-muted)] leading-relaxed line-clamp-2">{c.domain}</p>
+                    <div className="mt-auto pt-6 flex items-center text-sm font-medium text-[var(--accent)]">
                       Read case study <span className="ml-1 transition-transform group-hover:translate-x-1" aria-hidden>→</span>
                     </div>
                   </article>
@@ -69,7 +70,7 @@ export default function HomePage() {
           ))}
         </div>
 
-        <div className="mt-14 text-center">
+        <div className="mt-stack text-center">
           <Link
             href="/work"
             className="group inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-7 py-3.5 text-sm font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:shadow-[0_0_20px_var(--accent-glow)]"
@@ -82,7 +83,11 @@ export default function HomePage() {
 
       <Currents />
 
-      <section className="mx-auto max-w-3xl px-6 pb-16 md:pb-32">
+      {/* No pt-section here: the BrushDivider below already carries my-16, and it
+          is a visible reason for the gap. Adding a section step on top of it is
+          exactly the doubling this pass removed. No bottom padding either - the
+          footer owns the gap above itself. */}
+      <section className="mx-auto max-w-3xl px-6">
         <BrushDivider />
         <MagicReveal>
           <p className="font-display text-2xl md:text-3xl leading-relaxed text-[var(--text)]">
@@ -92,7 +97,7 @@ export default function HomePage() {
             <span className="text-[var(--accent)]">Click it.</span>
           </p>
         </MagicReveal>
-        <div className="mt-10 text-center">
+        <div className="mt-stack text-center">
           <Link
             href="/about"
             className="group inline-flex items-center gap-2 text-sm font-medium text-[var(--text)] hover:text-[var(--accent)] transition-colors"

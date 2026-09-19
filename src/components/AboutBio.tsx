@@ -15,15 +15,20 @@ export function AboutBio({ bio, emailLink }: AboutBioProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
-  const [primaryParagraph, ...moreParagraphs] = bio;
+  const [p1, p2, ...moreParagraphs] = bio;
 
   return (
     <div className="order-2 md:order-1 flex flex-col justify-between">
       <div className="prose-lg space-y-6 text-lg leading-relaxed text-[var(--text-muted)]">
-        {/* Primary intro paragraph that syncs with portrait height on desktop */}
+        {/* First two bio paragraphs visible by default */}
         <p className={styles.dropCap}>
-          <RichText text={primaryParagraph} />
+          <RichText text={p1} />
         </p>
+        {p2 && (
+          <p>
+            <RichText text={p2} />
+          </p>
+        )}
 
         {/* Expandable additional paragraphs */}
         <AnimatePresence initial={false}>

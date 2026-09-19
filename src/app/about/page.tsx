@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { MagicReveal } from "@/components/effects/MagicReveal";
 import { TestimonialCarousel } from "@/components/TestimonialCarousel";
-import { ClickableImage } from "@/components/ClickableImage";
 import { AboutBio } from "@/components/AboutBio";
-import { awards, photos, profile, testimonials, timeline } from "@/content";
+import { AboutPortraitTimezone } from "@/components/about/AboutPortraitTimezone";
+import { RecognitionGrid } from "@/components/about/RecognitionGrid";
+import { PersonalMottoBanner } from "@/components/about/PersonalMottoBanner";
+import { photos, profile, testimonials, timeline } from "@/content";
 import styles from "@/components/about.module.css";
 
 export const metadata: Metadata = {
@@ -96,68 +97,29 @@ export default function AboutPage() {
 
       {/* PORTRAIT + BIO */}
       <div className="grid gap-12 md:grid-cols-[1fr_320px] md:gap-16 items-start">
-        <AboutBio bio={profile.bio} emailLink={emailLink} />
-
-        <div className="order-1 md:order-2 md:sticky md:top-28">
-          <div className="relative aspect-[3/4] w-full max-w-[320px] mx-auto overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)]">
-            <Image
-              src={photos.portrait.src}
-              alt={photos.portrait.alt}
-              fill
-              unoptimized
-              sizes="(min-width: 768px) 320px, 80vw"
-              className="object-cover grayscale-[0.15] transition-all duration-500 hover:grayscale-0"
-              placeholder="blur"
-              blurDataURL={photos.portrait.blurDataURL}
-              priority
-            />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent p-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/85">{profile.location} · IST</p>
-              <p className="font-display text-sm text-white/95 mt-0.5">
-                Working {profile.workingHours.zone} hours.
-              </p>
-            </div>
-          </div>
-        </div>
+        <MagicReveal direction="left">
+          <AboutBio bio={profile.bio} emailLink={emailLink} />
+        </MagicReveal>
+        <MagicReveal direction="right" delay={0.1}>
+          <AboutPortraitTimezone />
+        </MagicReveal>
       </div>
 
-      {/* AWARDS */}
+      {/* CHAPTER I: AWARDS / RECOGNITION (CENTERED) */}
       <section className="mt-section">
         <ChapterMark
           numeral="I"
           title="Recognition"
           lead="Two consecutive years of company-wide recognition at OneIT, awarded by executive leadership."
+          centered
         />
 
-        <div className="mt-stack grid gap-8 md:grid-cols-[260px_1fr] items-center">
-          <ClickableImage
-            src={photos.awardTrophy.src}
-            alt={photos.awardTrophy.alt}
-            fill
-            unoptimized
-            sizes="(min-width: 768px) 260px, 80vw"
-            className="object-cover"
-            placeholder="blur"
-            blurDataURL={photos.awardTrophy.blurDataURL}
-            wrapperClassName="relative aspect-[3/4] w-full max-w-[260px] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)]"
-          />
-
-          <div className="space-y-5">
-            {awards.map((a) => (
-              <div
-                key={a.title}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-6 transition-colors hover:border-[var(--accent)]"
-              >
-                <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{a.year}</p>
-                <p className="font-display text-xl mt-2 text-[var(--text)]">{a.title}</p>
-                <p className="text-sm text-[var(--text-muted)] mt-2 leading-relaxed">{a.body}</p>
-              </div>
-            ))}
-          </div>
+        <div className="mt-stack">
+          <RecognitionGrid />
         </div>
       </section>
 
-      {/* PEER TESTIMONIALS */}
+      {/* CHAPTER II: PEER TESTIMONIALS (CENTERED) */}
       <section className="mt-section">
         <ChapterMark
           numeral="II"
@@ -166,37 +128,53 @@ export default function AboutPage() {
           centered
         />
 
-        <MagicReveal className="mt-stack">
+        <MagicReveal direction="left" className="mt-stack">
           <TestimonialCarousel testimonials={testimonials} />
         </MagicReveal>
       </section>
 
-      {/* ARC */}
+      {/* PHILOSOPHICAL CREED BANNER (CINEMATIC BRIDGE TO THE ARC) */}
+      <section className="mt-section">
+        <MagicReveal direction="right">
+          <PersonalMottoBanner />
+        </MagicReveal>
+      </section>
+
+      {/* CHAPTER III: THE ARC (CENTERED) */}
       <section className="mt-section">
         <ChapterMark
           numeral="III"
           title="The arc"
-          lead={"Three promotions in three years, while completing a Master’s. That’s the headline, not “proficient in Java, Angular, TypeScript.”"}
+          lead={"Three promotions in three years, while completing a Master’s Degree. That’s the headline, not “proficient in Java, Angular, TypeScript.”"}
+          centered
         />
 
-        <ol className="mt-stack relative border-l border-[var(--border)] pl-6 space-y-7">
-          {timeline.map((step, i) => (
-            <li key={step.id} className="relative">
-              <MagicReveal delay={i * 0.1}>
-                <span
-                  className="absolute -left-[30px] top-1 block size-2.5 rounded-full bg-[var(--accent)] ring-4 ring-[var(--bg)]"
-                  aria-hidden
-                />
-                <p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--accent)]">{step.date}</p>
-                <p className="font-display text-xl text-[var(--text)] mt-0.5">{step.title}</p>
-                <p className="text-sm text-[var(--text-muted)] mt-1">{step.note}</p>
-              </MagicReveal>
-            </li>
-          ))}
-        </ol>
+        <div className="mt-stack max-w-3xl mx-auto">
+          <ol className="relative border-l border-[var(--gold)]/30 pl-6 sm:pl-8 space-y-8">
+            {timeline.map((step, i) => (
+              <li key={step.id} className="relative">
+                <MagicReveal direction={i % 2 === 0 ? "left" : "right"} delay={i * 0.08}>
+                  <span
+                    className="absolute -left-[31px] sm:-left-[39px] top-1.5 block size-3 rounded-full bg-[var(--gold)] ring-4 ring-[var(--bg)]"
+                    aria-hidden
+                  />
+                  <p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--gold)] font-semibold">
+                    {step.date}
+                  </p>
+                  <p className="font-display text-xl text-[var(--text)] mt-0.5 font-medium">
+                    {step.title}
+                  </p>
+                  <p className="text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
+                    {step.note}
+                  </p>
+                </MagicReveal>
+              </li>
+            ))}
+          </ol>
+        </div>
       </section>
 
-      {/* OFF THE CLOCK */}
+      {/* CHAPTER IV: OFF THE CLOCK (CENTERED) */}
       <section className="mt-section">
         <ChapterMark
           numeral="IV"
@@ -205,36 +183,8 @@ export default function AboutPage() {
           centered
         />
 
-        <MagicReveal className="mt-stack">
+        <MagicReveal direction="left" className="mt-stack">
           <PhotoGallery photos={photos.offTheClock} />
-        </MagicReveal>
-      </section>
-
-      {/* SLOGAN BANNER */}
-      <section className="mt-section">
-        <MagicReveal>
-          <div className="relative h-[420px] overflow-hidden rounded-3xl border border-[var(--border)]">
-            <Image
-              src={photos.openRoad.src}
-              alt={photos.openRoad.alt}
-              fill
-              unoptimized
-              sizes="(min-width: 1024px) 1280px, 100vw"
-              className="object-cover object-center"
-              placeholder="blur"
-              blurDataURL={photos.openRoad.blurDataURL}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-            <div className="absolute inset-0 flex items-end p-8 md:p-12">
-              <div>
-                <p className="font-mono text-xs uppercase tracking-[0.28em] text-white/75">Personal motto</p>
-                <p className="font-display text-4xl md:text-5xl text-white mt-3 leading-tight">
-                  &ldquo;{profile.motto.en}&rdquo;
-                </p>
-                <p className="font-jp text-base text-white/70 mt-2">{profile.motto.jp}</p>
-              </div>
-            </div>
-          </div>
         </MagicReveal>
       </section>
     </article>

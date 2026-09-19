@@ -1,0 +1,201 @@
+/*
+ * ADVENTURE QUEST & GRIMOIRE RELIC CODEX
+ */
+
+.floatingTrigger {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--gold);
+  background: color-mix(in oklab, var(--bg-elevated) 90%, var(--gold-glow));
+  color: var(--gold);
+  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.25),
+    0 0 16px var(--gold-glow);
+  cursor: pointer;
+  transition: all 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floatingTrigger:hover {
+  transform: translateY(-2px) scale(1.04);
+  background: var(--gold);
+  color: var(--bg);
+  box-shadow: 0 8px 28px var(--gold-glow);
+}
+
+/* ---- Celebration Toast ("Hurrah! You found this!") ---- */
+
+.toast {
+  position: fixed;
+  bottom: 5.5rem;
+  left: 1.5rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1.25rem;
+  max-width: 24rem;
+  border-radius: 1rem;
+  border: 1px solid var(--gold);
+  background: color-mix(in oklab, var(--bg-elevated) 95%, var(--gold-glow));
+  box-shadow:
+    0 16px 40px -8px rgba(0, 0, 0, 0.4),
+    0 0 28px var(--gold-glow);
+  color: var(--text);
+  animation: toast-glow 2s ease-in-out infinite;
+}
+
+@keyframes toast-glow {
+  0%, 100% { box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.4), 0 0 18px var(--gold-glow); }
+  50%      { box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.4), 0 0 32px var(--gold-glow); }
+}
+
+.toastIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.toastHurrah {
+  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.toastTitle {
+  font-family: var(--font-display, var(--font-geist-sans), sans-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 0.1rem;
+}
+
+/* ---- Relic Modal Dialog ---- */
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(6, 7, 10, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow-y: auto;
+}
+
+.modalDialog {
+  position: relative;
+  width: 100%;
+  max-width: 44rem;
+  max-height: calc(100dvh - 3rem);
+  overflow-y: auto;
+  border-radius: 1.25rem;
+  border: 1px solid var(--gold);
+  background: var(--bg-elevated);
+  box-shadow:
+    0 24px 64px -12px rgba(0, 0, 0, 0.5),
+    0 0 40px var(--gold-glow);
+  padding: 1.75rem;
+}
+
+@media (min-width: 640px) {
+  .modalDialog {
+    padding: 2.25rem;
+  }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.closeBtn:hover {
+  color: var(--text);
+  border-color: var(--gold);
+  transform: scale(1.08);
+}
+
+.relicGrid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .relicGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.relicCard {
+  border-radius: 0.85rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  padding: 1rem 1.15rem;
+  transition: all 240ms ease;
+}
+
+.relicUnlocked {
+  border-color: var(--gold);
+  background: color-mix(in oklab, var(--bg-elevated) 80%, var(--gold-glow));
+  box-shadow: 0 0 16px var(--gold-glow);
+}
+
+.relicHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.relicIcon {
+  font-size: 1.35rem;
+}
+
+.relicName {
+  font-family: var(--font-display, var(--font-geist-sans), sans-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.relicLore {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+}
+
+.relicHint {
+  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+  margin-top: 0.4rem;
+}

@@ -26,7 +26,7 @@ export default function WorkPage() {
           the note on <sizes> below. */}
       <header className="mb-stack">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,400px)] lg:gap-16">
-          <MagicReveal>
+          <MagicReveal direction="left">
             <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">Work</p>
             <h1 className="font-display text-5xl md:text-6xl mt-3 text-[var(--text)] leading-[1.02]">
               Built, shipped, owned.
@@ -38,7 +38,7 @@ export default function WorkPage() {
             </p>
           </MagicReveal>
 
-          <MagicReveal delay={0.12}>
+          <MagicReveal direction="right" delay={0.12}>
             <figure className="mx-auto w-full max-w-[420px] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] lg:mx-0">
               {/* The frame is the file's own 899x682, so object-cover never
                   actually crops and the photo is not upscaled past its pixels. */}
@@ -82,7 +82,7 @@ export default function WorkPage() {
           boundary (mb-stack), because a header and its first section read as
           one opening movement. Every section after this one owns its own. */}
       <section>
-        <MagicReveal>
+        <MagicReveal direction="left">
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
             Inside OneIT · Selected work
           </p>
@@ -100,7 +100,7 @@ export default function WorkPage() {
       {/* INDEPENDENT CLIENT WORK */}
       {independent.length > 0 && (
         <section className="pt-section">
-          <MagicReveal>
+          <MagicReveal direction="left">
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
               Featured · Independent client work
             </p>
@@ -112,7 +112,7 @@ export default function WorkPage() {
 
       {/* ONEIT TIMELINE */}
       <section className="pt-section">
-        <MagicReveal>
+        <MagicReveal direction="left">
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
             Day job · {career[0].date} - present
           </p>
@@ -132,7 +132,7 @@ export default function WorkPage() {
         <ol className="mt-stack relative border-l border-[var(--border)] pl-8 space-y-12">
           {career.map((step, i) => (
             <li key={step.id} className="list-none relative">
-              <MagicReveal delay={i * 0.1}>
+              <MagicReveal direction={i % 2 === 0 ? "left" : "right"} delay={i * 0.1}>
                 <span
                   className="timeline-dot absolute -left-[37px] top-1 block size-2.5 rounded-full bg-[var(--accent)] ring-4 ring-[var(--bg)] shadow-[0_0_10px_var(--accent)]"
                   aria-hidden
@@ -153,7 +153,20 @@ export default function WorkPage() {
             className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[var(--accent)] px-8 py-4 text-sm text-[var(--bg)] font-medium transition-all hover:shadow-[0_0_30px_var(--accent-glow)]"
           >
             <span className="relative z-10">Talk to me</span>
-            <span className="relative z-10 transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="relative z-10 shrink-0 transition-transform group-hover:translate-x-1"
+              aria-hidden
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
             <span className="absolute inset-0 -translate-x-full bg-[var(--accent-hover)] transition-transform duration-500 group-hover:translate-x-0" />
           </Link>
         </MagicReveal>

@@ -1,0 +1,115 @@
+/*
+ * CASE STUDY MODAL - Grimoire Blueprint & Case Study Dialog
+ */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(6, 7, 10, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow-y: auto;
+}
+
+@media (min-width: 640px) {
+  .backdrop {
+    padding: 2rem;
+  }
+}
+
+.dialog {
+  position: relative;
+  width: 100%;
+  max-width: 48rem;
+  max-height: calc(100dvh - 3rem);
+  overflow-y: auto;
+  border-radius: 1.25rem;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+  box-shadow:
+    0 24px 64px -12px rgba(0, 0, 0, 0.45),
+    0 0 32px var(--accent-glow);
+  padding: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .dialog {
+    padding: 2.25rem;
+  }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.closeBtn:hover,
+.closeBtn:focus-visible {
+  color: var(--text);
+  border-color: var(--accent);
+  background: color-mix(in oklab, var(--bg) 80%, var(--accent-glow));
+  transform: scale(1.08);
+}
+
+.kicker {
+  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.title {
+  font-family: var(--font-display, var(--font-geist-sans), sans-serif);
+  font-size: 1.75rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 2.25rem;
+  }
+}
+
+.domain {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.rule {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+.blockTitle {
+  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  margin-bottom: 0.4rem;
+}

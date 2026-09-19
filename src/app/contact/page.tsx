@@ -9,8 +9,10 @@ export const metadata: Metadata = {
   description: "Send a message, or leave a note about the site itself. Email, LinkedIn, GitHub, and the rest.",
 };
 
+/** Ways to reach Ankit. Profiles flagged personal are not channels. */
+const channels = profile.links.filter((l) => !l.personal);
+
 const firstName = profile.name.split(" ")[0];
-const city = profile.location.split(",")[0].trim();
 
 export default function ContactPage() {
   return (
@@ -40,7 +42,7 @@ export default function ContactPage() {
         </MagicReveal>
 
         <ul className="space-y-6">
-          {profile.links.map((c, i) => (
+          {channels.map((c, i) => (
             <li key={c.label}>
               <MagicReveal delay={0.3 + i * 0.1}>
                 <a
@@ -100,7 +102,7 @@ export default function ContactPage() {
 
             <p className="mt-6 pt-5 border-t border-[var(--border)] font-display text-lg text-[var(--text)]">
               - {firstName}
-              <span className="block font-sans text-sm text-[var(--text-subtle)] mt-1">{city}</span>
+              <span className="block font-sans text-sm text-[var(--text-subtle)] mt-1">{profile.location}</span>
             </p>
           </div>
         </MagicReveal>

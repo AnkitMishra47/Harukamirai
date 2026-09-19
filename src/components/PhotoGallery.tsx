@@ -12,6 +12,18 @@ const NUMERALS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "
 const numeral = (n: number) => NUMERALS[n] ?? String(n + 1);
 
 /**
+ * The caption as a museum plate writes it: the name of the print, then where it
+ * was taken when `photos.ts` records a location. It is one phrase, not two
+ * fields, which is what keeps the four prints with no confirmed location
+ * reading as a whole line rather than one with a gap in it. A location is only
+ * ever shown when it is in the content module; none is inferred here.
+ */
+function plateCaption(photo: Photo) {
+  if (!photo.caption) return photo.location;
+  return photo.location ? `${photo.caption}, ${photo.location}` : photo.caption;
+}
+
+/**
  * The off-the-clock gallery: one print at a time, mounted on a board, with the
  * contact sheet underneath as the selector.
  *
@@ -58,6 +70,7 @@ export function PhotoGallery({ photos }: { photos: readonly Photo[] }) {
   }
 
   const photo = photos[index];
+  const caption = plateCaption(photo);
   const shift = reduce ? 0 : 24;
 
   return (
@@ -102,7 +115,7 @@ export function PhotoGallery({ photos }: { photos: readonly Photo[] }) {
                 }
                 setLightboxOpen(true);
               }}
-              aria-label={`Open ${photo.caption ?? "photo"} full size`}
+              aria-label={`Open ${caption ?? "photo"} full size`}
               initial={{ opacity: 0, x: dir * shift }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: dir * -shift }}
@@ -136,7 +149,7 @@ export function PhotoGallery({ photos }: { photos: readonly Photo[] }) {
 
       <p className={styles.plateLine} aria-live="polite">
         <span className={styles.plateNo}>Plate {numeral(index)}</span>
-        {photo.caption && <span className={styles.plateName}>{photo.caption}</span>}
+        {caption && <span className={styles.plateName}>{caption}</span>}
       </p>
 
       <PhotoStrip photos={photos} activeIndex={index} onSelect={(i) => goTo(i, i > index ? 1 : -1)} controls={stageId} />
@@ -145,7 +158,7 @@ export function PhotoGallery({ photos }: { photos: readonly Photo[] }) {
         images={photos.map((p) => ({
           src: p.src,
           alt: p.alt,
-          caption: p.caption,
+          caption: plateCaption(p),
           width: p.width,
           height: p.height,
         }))}

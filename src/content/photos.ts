@@ -43,6 +43,7 @@ export const photos = {
       src: "/photos/hills-walk.jpeg",
       alt: "Walking down a grassy Himalayan hillside, cedar forest behind",
       caption: "Hills",
+      location: "Himachal",
       width: 1448,
       height: 1086,
       blurDataURL: "data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAHAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUG/8QAHBAAAgICAwAAAAAAAAAAAAAAAAEDBAIFERVU/8QAFQEBAQAAAAAAAAAAAAAAAAAAAgX/xAAaEQACAgMAAAAAAAAAAAAAAAABAgAEAxFR/9oADAMBAAIRAxEAPwDP15tlu7LntTLlMrddN6MgCNZuZgRpo0ReT//Z",

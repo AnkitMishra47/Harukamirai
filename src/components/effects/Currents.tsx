@@ -1,7 +1,17 @@
 "use client";
 
+import { profile } from "@/content/profile";
+import type { Link } from "@/content/types";
 import { HoverLift } from "./HoverLift";
 import { MagicReveal } from "./MagicReveal";
+
+/**
+ * The chess profile as the content module holds it, found by label the way
+ * every other page finds a link rather than hardcoded here. Optional on
+ * purpose: if the entry ever leaves `profile.links`, the card renders exactly
+ * as it did before the link existed instead of throwing.
+ */
+const chessProfile = profile.links.find((l) => l.label === "Chess.com");
 
 /**
  * "Currents" - what I'm reading, drinking, listening to.
@@ -51,10 +61,17 @@ export function Currents() {
         <MagicReveal delay={0.32} className="h-full">
           <Card label="Playing" jp="将棋">
             <ChessBoard />
+            {/* The platform name is read off the same link entry the chip below
+                points at, so the card and the link can never drift apart - that
+                drift is what left "Lichess" sitting above a chess.com profile.
+                RATING: "2000-ish" is a figure Ankit confirmed. It has no home in
+                the content module, and ratings go stale, so check it with him
+                rather than assume it still holds. */}
             <CardMeta
               title="Chess - Sicilian, mostly"
-              meta="Lichess · 1500-ish"
+              meta={[chessProfile?.label, "2000-ish"].filter(Boolean).join(" · ")}
               line="Analysis after losses is where the hobby actually lives."
+              link={chessProfile}
             />
           </Card>
         </MagicReveal>
@@ -91,10 +108,13 @@ function CardMeta({
   title,
   meta,
   line,
+  link,
 }: {
   title: string;
   meta: string;
   line: string;
+  /** Optional profile to link out to. Cards without one are unchanged. */
+  link?: Link;
 }) {
   return (
     <div className="mt-4">
@@ -103,6 +123,20 @@ function CardMeta({
         {meta}
       </p>
       <p className="text-sm text-[var(--text-muted)] mt-3 leading-relaxed">{line}</p>
+      {link && (
+        <a
+          href={link.href}
+          {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          aria-label={link.value ? `${link.label} - ${link.value}` : link.label}
+          className="mt-4 inline-flex min-h-[24px] items-center gap-1.5 font-mono text-xs uppercase tracking-[0.16em] text-[var(--accent)] transition-colors hover:text-[var(--accent-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+        >
+          {/* The handle alone: the meta line above already names the platform,
+              and repeating it would stack the same word twice. The platform is
+              back in the accessible name, where the meta line is not. */}
+          {link.value ?? link.label}
+          <span aria-hidden>↗</span>
+        </a>
+      )}
     </div>
   );
 }

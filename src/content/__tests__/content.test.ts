@@ -21,6 +21,15 @@ describe("working hours", () => {
   });
 });
 
+describe("location", () => {
+  it("is India, and no content string names the old city", () => {
+    expect(profile.location).toBe("India");
+    for (const [name, value] of Object.entries(allContent)) {
+      expect(JSON.stringify(value), `${name} still says Faridabad`).not.toMatch(/Faridabad/i);
+    }
+  });
+});
+
 describe("awards", () => {
   it("never claims Employee of the Year outright", () => {
     for (const a of awards) {
@@ -100,6 +109,25 @@ describe("photos and side projects", () => {
       expect(existsSync(path.join(process.cwd(), "public", p.src))).toBe(true);
     }
     expect(prof.bio.join(" ")).toMatch(/Runner-up for Employee of the Year/);
+  });
+});
+
+describe("confirmed personal facts", () => {
+  it("keeps the chess profile in profile.links, off the contact channel list", () => {
+    const chess = prof.links.find((l) => l.label === "Chess.com");
+    expect(chess?.value).toBe("ankit_0047");
+    expect(chess?.href).toBe("https://www.chess.com/member/ankit_0047");
+    expect(chess?.personal).toBe(true);
+    expect(prof.links.filter((l) => !l.personal).map((l) => l.label)).toEqual([
+      "Email", "LinkedIn", "GitHub",
+    ]);
+  });
+
+  it("records a location only for the one photo whose location is confirmed", () => {
+    const located = photos.offTheClock.filter((p) => p.location);
+    expect(located.map((p) => [p.src, p.location])).toEqual([
+      ["/photos/hills-walk.jpeg", "Himachal"],
+    ]);
   });
 });
 

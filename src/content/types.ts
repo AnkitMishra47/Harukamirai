@@ -6,6 +6,12 @@ export type Link = {
   value?: string;
   /** One-line note shown under the link on the Contact page. */
   note?: string;
+  /**
+   * A personal profile rather than a way to reach Ankit. Anything that asks for
+   * it by label still gets it; the Contact page's list of channels leaves it
+   * out, because a chess profile is not a hiring channel.
+   */
+  personal?: boolean;
 };
 
 export type Profile = {
@@ -67,6 +73,12 @@ export type Photo = {
   src: string;
   alt: string;
   caption?: string;
+  /**
+   * Where the photograph was taken, in the wording Ankit confirmed. Optional,
+   * and deliberately so: most of the set has no confirmed location, and a
+   * location is never inferred from what the picture looks like.
+   */
+  location?: string;
   /**
    * Intrinsic pixel size of the file on disk. Layouts size frames from the
    * real aspect ratio instead of cropping to a fixed one, and next/image gets

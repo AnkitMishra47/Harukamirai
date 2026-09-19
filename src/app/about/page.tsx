@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { PhotoGallery } from "@/components/PhotoGallery";
-import { RichText } from "@/components/RichText";
 import { MagicReveal } from "@/components/effects/MagicReveal";
 import { TestimonialCarousel } from "@/components/TestimonialCarousel";
 import { ClickableImage } from "@/components/ClickableImage";
+import { AboutBio } from "@/components/AboutBio";
 import { awards, photos, profile, testimonials, timeline } from "@/content";
 import styles from "@/components/about.module.css";
 
@@ -96,25 +96,7 @@ export default function AboutPage() {
 
       {/* PORTRAIT + BIO */}
       <div className="grid gap-12 md:grid-cols-[1fr_320px] md:gap-16 items-start">
-        <div className="prose-lg space-y-6 text-lg leading-relaxed text-[var(--text-muted)] order-2 md:order-1">
-          {profile.bio.map((para, i) => (
-            <p key={para.slice(0, 32)} className={i === 0 ? styles.dropCap : undefined}>
-              <RichText text={para} />
-            </p>
-          ))}
-          <p>
-            If you want to talk about backend architecture, enterprise integrations, AI in
-            production, the <em>Black Clover</em> anime adaptation pacing problem, or freelance
-            work -{" "}
-            <a
-              href={emailLink.href}
-              className="text-[var(--text)] underline decoration-[var(--accent)] decoration-1 underline-offset-4 hover:text-[var(--accent)]"
-            >
-              {emailLink.value}
-            </a>
-            .
-          </p>
-        </div>
+        <AboutBio bio={profile.bio} emailLink={emailLink} />
 
         <div className="order-1 md:order-2 md:sticky md:top-28">
           <div className="relative aspect-[3/4] w-full max-w-[320px] mx-auto overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)]">
@@ -130,7 +112,7 @@ export default function AboutPage() {
               priority
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent p-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/85">Faridabad · IST</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/85">{profile.location} · IST</p>
               <p className="font-display text-sm text-white/95 mt-0.5">
                 Working {profile.workingHours.zone} hours.
               </p>
@@ -219,7 +201,7 @@ export default function AboutPage() {
         <ChapterMark
           numeral="IV"
           title="Off the clock"
-          lead={"Hills, rivers, and the occasional barefoot walk. Faridabad is flat; the mountains are a night’s drive."}
+          lead={"Hills, rivers, and the occasional barefoot walk. Home is flat; the mountains are a night’s drive."}
           centered
         />
 

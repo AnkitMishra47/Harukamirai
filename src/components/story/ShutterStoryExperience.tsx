@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "motion/react";
 import { profile, photos } from "@/content";
 import { trackDownload } from "@/lib/track-download";
 
@@ -157,6 +157,28 @@ const SCENES: StoryScene[] = [
 
 const SCENE_DURATION_MS = 12000;
 
+/**
+ * Swipe navigation tuning.
+ *
+ * A swipe commits when EITHER it travelled far enough OR it was a deliberate
+ * flick, so a slow deliberate drag and a quick flick both advance while a small
+ * nudge settles back. Distance alone would punish flicks; velocity alone would
+ * punish slow, careful drags.
+ */
+const SWIPE_DISTANCE_RATIO = 0.22; // fraction of the stage width
+const SWIPE_DISTANCE_MIN_PX = 56; // floor, so narrow phones stay easy to swipe
+const SWIPE_DISTANCE_MAX_PX = 120; // ceiling, so wide screens do not need a marathon drag
+const SWIPE_VELOCITY_PX_PER_S = 450; // what separates a flick from a slide
+const SWIPE_FLICK_MIN_PX = 24; // a flick still has to actually travel
+const SWIPE_FOLLOW_ELASTIC = 0.85; // close to 1:1 tracking of the finger
+const SWIPE_EDGE_ELASTIC = 0.12; // near-solid wall where there is nowhere to go
+/**
+ * How far an outgoing scene slides before it is gone. It has to clear a typical
+ * release point, otherwise a committed swipe would visually snap backwards as the
+ * exit animation pulled the card in from beyond its own target.
+ */
+const SCENE_EXIT_OFFSET_PX = 110;
+
 export function ShutterStoryExperience() {
   const [isDismissed, setIsDismissed] = useState(false);
   const [isShutterLifted, setIsShutterLifted] = useState(false);
@@ -165,7 +187,14 @@ export function ShutterStoryExperience() {
   const [direction, setDirection] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
+  /**
+   * Separate from `isPaused` on purpose: a drag suspends the auto-advance timer
+   * without flipping the visible Play/Pause control under the visitor's thumb.
+   */
+  const [isDragging, setIsDragging] = useState(false);
   const progressTimerRef = useRef<number | null>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const handleReopen = () => {
@@ -223,6 +252,57 @@ export function ShutterStoryExperience() {
     setProgress(0);
   };
 
+  /**
+   * Swipe / drag navigation.
+   *
+   * The stage follows the pointer horizontally while the gesture is live. Motion
+   * owns that transform directly, so the offset is never mirrored into React
+   * state and the drag costs no re-renders per frame. On release the gesture
+   * either settles back or hands off to the very same goNext / goPrev that the
+   * arrow keys and the on-screen buttons use, so every route through the story
+   * produces the same transition.
+   */
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = (
+    _event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) => {
+    setIsDragging(false);
+
+    const stageWidth = stageRef.current?.offsetWidth ?? 0;
+    const distanceThreshold = Math.min(
+      SWIPE_DISTANCE_MAX_PX,
+      Math.max(SWIPE_DISTANCE_MIN_PX, stageWidth * SWIPE_DISTANCE_RATIO)
+    );
+
+    const offsetX = info.offset.x;
+    const velocityX = info.velocity.x;
+    const travelled = Math.abs(offsetX);
+
+    const draggedFarEnough = travelled >= distanceThreshold;
+    const flickedHardEnough =
+      travelled >= SWIPE_FLICK_MIN_PX &&
+      Math.abs(velocityX) >= SWIPE_VELOCITY_PX_PER_S &&
+      // A flick that reverses direction at the last moment is not a commit.
+      Math.sign(velocityX) === Math.sign(offsetX);
+
+    // Too small to mean anything: motion settles the stage back to rest.
+    if (!draggedFarEnough && !flickedHardEnough) return;
+
+    if (offsetX < 0) {
+      // Dragged left: forward. On the final scene goNext exits to the portfolio,
+      // which is exactly what ArrowRight and the Next button already do.
+      goNext();
+    } else {
+      // Dragged right: back. goPrev is a no-op on the first scene, so the stage
+      // simply settles, on top of the heavier edge resistance it already met.
+      goPrev();
+    }
+  };
+
   // Keyboard navigation
   useEffect(() => {
     if (isDismissed) return;
@@ -254,7 +334,8 @@ export function ShutterStoryExperience() {
 
   // Scene auto-advance timer
   useEffect(() => {
-    if (!isShutterLifted || isExitingTheater || isDismissed || isPaused) {
+    // A live drag suspends the timer: the visitor is driving, not the clock.
+    if (!isShutterLifted || isExitingTheater || isDismissed || isPaused || isDragging) {
       if (progressTimerRef.current) clearInterval(progressTimerRef.current);
       return;
     }
@@ -281,7 +362,7 @@ export function ShutterStoryExperience() {
     return () => {
       if (progressTimerRef.current) clearInterval(progressTimerRef.current);
     };
-  }, [isShutterLifted, isExitingTheater, isDismissed, currentSceneIdx, isPaused]);
+  }, [isShutterLifted, isExitingTheater, isDismissed, currentSceneIdx, isPaused, isDragging]);
 
   if (isDismissed) {
     return null;
@@ -416,25 +497,56 @@ export function ShutterStoryExperience() {
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentSceneIdx}
+              ref={stageRef}
               custom={direction}
+              drag={isShutterLifted && !isExitingTheater ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={{
+                top: 0,
+                bottom: 0,
+                // `left` governs dragging leftwards, which walks the story forward.
+                left: SWIPE_FOLLOW_ELASTIC,
+                // `right` governs dragging rightwards, which walks it back. The
+                // first scene has nowhere to go, so it resists instead.
+                right: currentSceneIdx === 0 ? SWIPE_EDGE_ELASTIC : SWIPE_FOLLOW_ELASTIC,
+              }}
+              dragMomentum={false}
+              dragTransition={
+                // Reduced motion keeps the drag (it answers the visitor's own hand)
+                // but drops the springy settle: these are motion's own overdamped
+                // values, which land the stage back at rest immediately.
+                shouldReduceMotion
+                  ? { bounceStiffness: 1000000, bounceDamping: 10000000 }
+                  : undefined
+              }
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              // Motion sets this itself for drag="x"; stated here so the intent
+              // survives a refactor. The browser keeps vertical gestures, so the
+              // stage can still be scrolled when it overflows a short screen.
+              style={{ touchAction: "pan-y" }}
               variants={{
                 enter: (dir: number) => ({
-                  x: dir > 0 ? 30 : -30,
+                  x: shouldReduceMotion ? 0 : dir > 0 ? 30 : -30,
                   opacity: 0,
                 }),
                 center: {
                   x: 0,
                   opacity: 1,
                   transition: {
-                    duration: 0.4,
+                    duration: shouldReduceMotion ? 0.18 : 0.4,
                     ease: [0.22, 1, 0.36, 1],
                   },
                 },
                 exit: (dir: number) => ({
-                  x: dir > 0 ? -30 : 30,
+                  x: shouldReduceMotion
+                    ? 0
+                    : dir > 0
+                    ? -SCENE_EXIT_OFFSET_PX
+                    : SCENE_EXIT_OFFSET_PX,
                   opacity: 0,
                   transition: {
-                    duration: 0.28,
+                    duration: shouldReduceMotion ? 0.12 : 0.28,
                     ease: [0.22, 1, 0.36, 1],
                   },
                 }),

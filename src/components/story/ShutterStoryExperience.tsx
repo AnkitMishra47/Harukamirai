@@ -378,6 +378,28 @@ export function ShutterStoryExperience() {
     }, 700);
   };
 
+  const shutterPointerDownY = useRef<number | null>(null);
+
+  const handleShutterPointerDown = (e: React.PointerEvent) => {
+    shutterPointerDownY.current = e.clientY;
+  };
+
+  const handleShutterPointerUp = (e: React.PointerEvent) => {
+    if (shutterPointerDownY.current !== null) {
+      const deltaY = e.clientY - shutterPointerDownY.current;
+      if (deltaY < -35) {
+        liftShutter();
+      }
+      shutterPointerDownY.current = null;
+    }
+  };
+
+  const handleShutterWheel = (e: React.WheelEvent) => {
+    if (e.deltaY > 25) {
+      liftShutter();
+    }
+  };
+
   const goNext = () => {
     if (currentSceneIdx < SCENES.length - 1) {
       setDirection(1);
@@ -1346,33 +1368,28 @@ export function ShutterStoryExperience() {
       */}
       <motion.div
         initial={false}
-        drag={!isShutterLifted && !isExitingTheater ? "y" : false}
-        dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={{ top: 0.35, bottom: 0 }}
-        onDragEnd={(_, info) => {
-          if (info.offset.y < -45 || info.velocity.y < -250) {
-            liftShutter();
-          }
-        }}
         animate={
           isShutterLifted
             ? { y: "-100%" }
             : {
-                y: shouldReduceMotion ? 0 : [0, -75, -75, 0],
+                y: shouldReduceMotion ? 0 : [0, -80, -80, 0],
               }
         }
         transition={
           isShutterLifted
             ? { duration: 0.9, ease: [0.16, 1, 0.3, 1] }
             : {
-                duration: 3.8,
-                times: [0, 0.28, 0.68, 1],
+                duration: 3.2,
+                times: [0, 0.25, 0.7, 1],
                 repeat: Infinity,
-                repeatDelay: 1.8,
+                repeatDelay: 1.2,
                 ease: [0.22, 1, 0.36, 1],
               }
         }
-        className="fixed inset-0 z-50 flex flex-col justify-between bg-[#08090c] text-[var(--text)] select-none pointer-events-auto h-[100dvh] cursor-grab active:cursor-grabbing border-b border-amber-400/25 shadow-[0_25px_60px_rgba(0,0,0,0.95)]"
+        onPointerDown={handleShutterPointerDown}
+        onPointerUp={handleShutterPointerUp}
+        onWheel={handleShutterWheel}
+        className="fixed inset-0 z-50 flex flex-col justify-between bg-[#08090c] text-[var(--text)] select-none pointer-events-auto h-[100dvh] border-b-2 border-amber-400/30 shadow-[0_25px_60px_rgba(0,0,0,0.95)]"
         style={{
           backgroundImage:
             "linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px)",

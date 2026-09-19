@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import { themeInitScript } from "@/lib/theme-init";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { ScrollToTop } from "@/components/ScrollToTop";
+import { ScrollRunes } from "@/components/ScrollRunes";
 import { PageTransition } from "@/components/PageTransition";
 import { CursorTrail } from "@/components/effects/CursorTrail";
 import { ThemeBurst } from "@/components/effects/ThemeBurst";
@@ -74,7 +74,7 @@ export default function RootLayout({
         <main className="flex-1">
           <PageTransition>{children}</PageTransition>
         </main>
-        <ScrollToTop />
+        <ScrollRunes />
         <Footer />
       </body>
     </html>

@@ -1,0 +1,151 @@
+/*
+ * SCROLL RUNES - two floating rune seals, top centre and bottom centre.
+ *
+ * WHY A MODULE. These rules used to live in globals.css as `.scroll-runes` /
+ * `.sr-*`. They are scoped here instead so the control owns its own styling
+ * and nothing global can reach it. The old block in globals.css is dead once
+ * this ships and should be deleted; no markup carries those class names now.
+ *
+ * SHAPE. Each control is a 54px leather seal (a 44px rune ring on a 5px
+ * plate) pinned to the horizontal centre of the viewport: the "back to the
+ * top" seal below the nav, the "one screen down" seal above the fold line.
+ * Centring uses the individual `translate` property, which leaves `transform`
+ * free for the bob and `scale` free for the press, so the three never fight.
+ *
+ * MATERIALS. Leather, foil and gilt from the fixed --leather-*, --foil and
+ * --gilt tokens rather than the surface tokens, for the same reason the book
+ * uses them: a seal is one object in both themes, and the theme reaches it as
+ * light, through --accent on the inner rule and the hover halo. Foil on
+ * leather measures 7.0:1.
+ *
+ * COST. Only opacity and transform are animated, both compositor properties.
+ * A hidden seal has its bob switched off outright, so an off-screen control
+ * costs nothing per frame.
+ */
+
+/* The seal is 54px across; these two keep it off the page furniture. */
+.dock {
+  position: fixed;
+  left: 50%;
+  z-index: 30;
+  translate: -50% 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms ease;
+}
+
+/*
+ * Appearing is an animation rather than the transition, because a transition
+ * does not run on the frame an element is inserted - the first seal you ever
+ * see would pop. The keyframes carry no fill, so once they finish the base
+ * `opacity: 1` below takes over and the transition handles the fade out.
+ */
+.dock[data-show="true"] {
+  opacity: 1;
+  pointer-events: auto;
+  animation: sr-in 320ms ease;
+}
+
+/*
+ * Below the sticky header, which measures 75px tall from lg down to md and
+ * 77px on a phone. 6rem leaves 14px of air under it even at the top of the
+ * bob, which is the closest the seal ever gets.
+ */
+.top {
+  top: 6rem;
+}
+
+/*
+ * Off the bottom edge, clear of the iOS home indicator.
+ *
+ * KNOWN CONFLICT. The home hero carries its own "scroll down" hint, centred
+ * like this seal, 32px off the bottom of a section whose height is driven by
+ * its content rather than the viewport. Its distance from the bottom of the
+ * screen therefore moves with the window: measured across fourteen viewport
+ * sizes it lands anywhere from 370px below the fold to 129px above it, so no
+ * fixed offset here clears it everywhere - the window in which the two collide
+ * is 75px wide and the hint sweeps straight through it. This offset is the
+ * conventional one and has the fewest collisions of any sane value: one of the
+ * fourteen, at 1920x950. The real fix is to delete that hint - it now says the
+ * same thing this seal does, from the same place.
+ */
+.bottom {
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* The plate the ring is seated in. */
+.seal {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  color: var(--foil);
+  cursor: pointer;
+  background: linear-gradient(160deg, var(--leather-b) 0%, var(--leather-a) 46%, var(--leather-edge) 100%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--foil) 55%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 6px 18px rgba(0, 0, 0, 0.38);
+  transition: color 200ms ease;
+}
+.seal:hover { color: var(--foil-hi); }
+.seal:active { scale: 0.94; }
+.seal:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/*
+ * The invitation: a slow drift the way the seal will send you. It rides on
+ * `transform`, so it composes with the `translate` that centres the dock and
+ * the `scale` that answers a press, and it is switched off entirely while the
+ * seal is hidden.
+ */
+.top[data-show="true"] .seal { animation: sr-bob-up 3.2s ease-in-out infinite; }
+.bottom[data-show="true"] .seal { animation: sr-bob-down 3.2s ease-in-out infinite; }
+
+@keyframes sr-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes sr-bob-up {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+@keyframes sr-bob-down {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(5px); }
+}
+
+/* The chevron leans a little further the way it will send you. */
+.glyph { transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1); }
+.top .seal:hover .glyph    { transform: translateY(-2px); }
+.bottom .seal:hover .glyph { transform: translateY(2px); }
+
+/* The tooth ring turns only while the pointer is on it. */
+.teeth { transform-origin: 22px 22px; transform-box: view-box; }
+.seal:hover .teeth { animation: sr-spin 12s linear infinite; }
+@keyframes sr-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Mana answering a hand. */
+.halo { opacity: 0; transition: opacity 220ms ease; }
+.seal:hover .halo { opacity: 0.75; }
+
+/*
+ * Reduced motion: the seals still arrive, still leave and still work. They
+ * just hold still while they are there.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .top[data-show="true"] .seal,
+  .bottom[data-show="true"] .seal,
+  .seal:hover .teeth {
+    animation: none;
+  }
+  .top .seal:hover .glyph,
+  .bottom .seal:hover .glyph {
+    transform: none;
+  }
+}

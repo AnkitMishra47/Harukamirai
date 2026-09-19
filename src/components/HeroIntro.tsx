@@ -234,10 +234,9 @@ export function HeroIntro() {
           </div>
         </div>
       </div>
-
-      <div className="hero-in hero-in-7 absolute bottom-8 left-1/2 -translate-x-1/2 text-xs uppercase tracking-[0.32em] text-[var(--text-subtle)]">
-        <span className="hero-bob block">scroll down</span>
-      </div>
+      {/* No "scroll down" hint here any more. ScrollRunes now offers the same
+          invitation from the same place on the screen, and at some viewport
+          widths the two overlapped. One nudge, one control. */}
     </section>
   );
 }

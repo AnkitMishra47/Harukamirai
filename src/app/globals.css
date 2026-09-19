@@ -5,35 +5,104 @@
    Spec: Documentation/clover-toggle-spec.md
    ============================================================ */
 
+/* ------------------------------------------------------------------
+   PALETTE: "Woad and Rubric"
+
+   Where it comes from. A scriptorium worked in more than one ink. The body
+   of the text was iron gall, brown-black and acidic. The large initials were
+   lapis lazuli, ground from stone and worth more than the gold beside them.
+   The headings, the paragraph marks and the corrections were vermilion - the
+   rubric, from "ruber", red - and gold leaf carried the rest. Four colours,
+   a fixed job for each.
+
+   The site takes that division literally:
+
+     leaf-4  is the page. Linen-grey rag paper washed faintly blue, iron gall
+             for the text, and the lapis initial as the accent: links, small
+             labels, the things you are meant to act on.
+     leaf-5  is the ink itself. The woad vat, deep indigo-black, with the
+             rubric vermilion coming up out of it.
+
+   Why not what was here before. The old ground was #ece3cf, a warm cream, and
+   the old dark was #070605 with one bright crimson on it. Cream-plus-one-
+   muted-accent and near-black-plus-one-acid-accent are the two most worn
+   default looks going; both were being worn here. Neither survives: the
+   grounds are now cool and chromatic in both themes, the accent is a deep
+   stone blue rather than a saturated signal colour, and the dark accent is a
+   warm vermilion sitting well off the top of its gamut.
+
+   The cool ground earns something else. The grimoire below is fixed warm
+   material - brown leather, gold foil, cream parchment. On the old cream it
+   was cream on cream (parchment vs ground measured 1.01:1, and the same hue).
+   On a blue-grey ground the warm object separates by hue instead of by
+   luminance, which is how a physical thing sits on a table.
+
+   Every pairing below is measured, not judged. /tmp/claude-1001/palette holds
+   the checker; the matrix is in the handover. Nothing here is under its floor.
+
+   ALTERNATES. Swapping direction is replacing the token values in the two
+   blocks below; nothing else in this file reads a literal colour.
+
+     B - "Verdigris and Brass". A copper-fitted book in a limewashed cloister.
+         Copper oxidises, brass does not. Warmer and more domestic than A;
+         the weakness is that dark green sits at almost the same luminance as
+         the leather (1.02:1), so the book loses its edge at night.
+       leaf-4  bg #e0e6de  elevated #eef1e9  inset #cbd4c9
+               text #152019  muted #4a554c  subtle #566158
+               accent #9a2f2a  hover #7b201c  gold #725819
+               border #b5beb2  border-strong #94a191
+       leaf-5  bg #101d18  elevated #1a2a23  inset #0a1410
+               text #e8efe5  muted #b3c0b2  subtle #9aa899
+               accent #ff7c5e  hover #ff9c83  gold #d9b25a
+               border #36463e  border-strong #4b6154
+
+     C - "Porphyry and Silver". The purple codex: parchment dyed with murex
+         and written in silver and gold. The most striking of the three and
+         the closest to the crimson the site had; the risk is that purple and
+         gold is a short walk from luxury-template.
+       leaf-4  bg #e5e2ea  elevated #f1eff5  inset #d1cddb
+               text #191520  muted #4e4959  subtle #5a5467
+               accent #6f2a72  hover #571f5a  gold #775718
+               border #bdb8c6  border-strong #9d96ac
+       leaf-5  bg #150f1e  elevated #20182c  inset #0d0914
+               text #eee9f4  muted #bcb4c9  subtle #a39ab1
+               accent #ff6b7f  hover #ff8f9e  gold #d9b45f
+               border #3e3650  border-strong #544a6b
+
+   Both alternates clear the same floors as A. Re-run the checker after any
+   change: a colour that is nearly right is a colour someone cannot read.
+   ------------------------------------------------------------------ */
+
 :root,
 [data-theme="leaf-4"] {
-  /* Surface - vellum, not office cream */
-  --bg:              #ece3cf;
-  --bg-elevated:     #f5eeda;
-  --bg-inset:        #ded3b9;
+  /* Surface - rag paper washed with woad, not office cream */
+  --bg:              #e1e6ea;
+  --bg-elevated:     #f0f3f6;
+  --bg-inset:        #ccd5dd;
 
-  /* Text */
-  --text:            #171310;
-  --text-muted:      #5d5445;
-  --text-subtle:     #6b6350;   /* 4.67:1 on vellum */
+  /* Text - iron gall, which is a cold brown-black, not a grey */
+  --text:            #131a20;   /* 13.97:1 on paper */
+  --text-muted:      #495460;   /* 6.14:1 - carries body copy */
+  --text-subtle:     #55606c;   /* 5.10:1 - dates, eyebrows, captions */
 
-  /* Accent - Magic Knight jade */
-  --accent:          #14634a;
-  --accent-hover:    #1c8462;
-  --accent-glow:     rgba(20, 99, 74, 0.20);
+  /* Accent - lapis, the initial. Deep enough to be an ink rather than a
+     signal colour, and it clears 4.5:1 twice over at 12px. */
+  --accent:          #1a4c80;   /* 6.99:1 on paper, 7.89:1 on a card */
+  --accent-hover:    #123a66;   /* darker on hover: light theme, so down */
+  --accent-glow:     rgba(26, 76, 128, 0.20);
 
-  /* Second accent - illuminated gold. Dark enough for small text on vellum
-     (4.9:1); the bright leaf lives on the book as --foil, never on the page. */
-  --gold:            #7d5a12;
-  --gold-glow:       rgba(125, 90, 18, 0.16);
+  /* Second accent - ochre gold leaf. Dark enough for small text on paper
+     (5.13:1); the bright leaf lives on the book as --foil, never on the page. */
+  --gold:            #79591a;
+  --gold-glow:       rgba(121, 89, 26, 0.16);
 
-  /* Structure */
-  --border:          #cfc3a4;
-  --border-strong:   #ab9c78;
+  /* Structure - 1.51:1 on the ground, so a hairline is a line */
+  --border:          #b4bdc6;
+  --border-strong:   #97a4b0;
 
-  /* Clover icon */
+  /* Clover icon - malachite, the fourth manuscript colour */
   --clover-leaf:     #14634a;
-  --clover-stem:     #4a3d2a;
+  --clover-stem:     #3f4a44;
   --clover-fifth:    transparent;
   --fifth-opacity:   0;
   --fifth-scale:     0;
@@ -41,28 +110,31 @@
 }
 
 [data-theme="leaf-5"] {
-  --bg:              #070605;
-  --bg-elevated:     #141110;
-  --bg-inset:        #030202;
+  /* Surface - the woad vat. Chromatic, not a tinted near-black */
+  --bg:              #0b1220;
+  --bg-elevated:     #131c2c;
+  --bg-inset:        #060b15;
 
-  --text:            #f5f0e4;   /* Crisp warm ivory: 17:1 contrast on ink */
-  --text-muted:      #c4bcb1;   /* Warm silver parchment: 9.8:1 contrast on ink */
-  --text-subtle:     #a49a8d;   /* Readable kicker tone: 6.8:1 contrast on ink */
+  --text:            #e9eef4;   /* 16.05:1 on the vat */
+  --text-muted:      #b2bdcb;   /* 9.84:1 */
+  --text-subtle:     #97a4b4;   /* 7.39:1 */
 
-  /* Anti-magic crimson, hot enough to clear 4.5:1 on the ink ground */
-  --accent:          #f02040;
-  --accent-hover:    #ff4d66;
-  --accent-glow:     rgba(240, 32, 64, 0.42);
+  /* Anti-magic rubric. Vermilion, held off the top of its gamut so it reads
+     as pigment rather than as an alert, and still 6.25:1 on a raised card -
+     the pairing the case-study kicker uses, which used to measure 4.46:1. */
+  --accent:          #ff7053;
+  --accent-hover:    #ff9179;
+  --accent-glow:     rgba(255, 112, 83, 0.30);
 
-  --gold:            #e4b74a;
-  --gold-glow:       rgba(228, 183, 74, 0.25);
+  --gold:            #d8b45c;
+  --gold-glow:       rgba(216, 180, 92, 0.25);
 
-  --border:          #2e2722;
-  --border-strong:   #5e5347;   /* Crisp borders for cards and buttons */
+  --border:          #303c4f;   /* 1.68:1 on the vat, 1.53:1 on a card */
+  --border-strong:   #485a70;
 
-  --clover-leaf:     #f0ebde;
-  --clover-stem:     #6b6358;
-  --clover-fifth:    #f02040;
+  --clover-leaf:     #eef2f7;
+  --clover-stem:     #6a7585;
+  --clover-fifth:    #ff7053;
   --fifth-opacity:   1;
   --fifth-scale:     1;
   --fifth-rotate:    0deg;

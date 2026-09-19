@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { HoverLift } from "./HoverLift";
 import { MagicReveal } from "./MagicReveal";
 
 /**
@@ -70,19 +70,17 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <motion.div
-      whileHover={{ y: -6 }}
-      transition={{ type: "spring", stiffness: 280, damping: 22 }}
-      className="group relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-7 transition-all hover:border-[var(--accent)] hover:shadow-[0_30px_80px_-30px_var(--accent-glow)]"
-    >
-      <div className="flex items-center justify-between">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
-          {label}
-        </p>
-        <p className="font-jp text-sm text-[var(--text-subtle)]">{jp}</p>
+    <HoverLift y={-6}>
+      <div className="group relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-7 transition-all hover:border-[var(--accent)] hover:shadow-[0_30px_80px_-30px_var(--accent-glow)]">
+        <div className="flex items-center justify-between">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
+            {label}
+          </p>
+          <p className="font-jp text-sm text-[var(--text-subtle)]">{jp}</p>
+        </div>
+        {children}
       </div>
-      {children}
-    </motion.div>
+    </HoverLift>
   );
 }
 
@@ -157,17 +155,7 @@ function MangaBook() {
         </g>
 
         {/* Right page — flipping pages animation */}
-        <motion.g
-          animate={{ rotateY: [0, -160, -160, 0] }}
-          transition={{
-            duration: 5,
-            times: [0, 0.4, 0.6, 1],
-            repeat: Infinity,
-            repeatDelay: 1.2,
-            ease: "easeInOut",
-          }}
-          style={{ transformOrigin: "120px 90px" }}
-        >
+        <g className="manga-flip">
           <rect x="124" y="40" width="68" height="100" fill="url(#manga-page)" stroke="var(--border)" strokeWidth="0.5" />
           {/* Right page panel content */}
           <rect x="130" y="46" width="56" height="40" fill="var(--bg)" stroke="var(--text)" strokeWidth="1" />
@@ -179,15 +167,10 @@ function MangaBook() {
             fill="var(--accent)"
             opacity="0.85"
           />
-        </motion.g>
+        </g>
 
         {/* Page-turn shadow */}
-        <motion.rect
-          x="118" y="30" width="2" height="120"
-          fill="#000" opacity="0.4"
-          animate={{ opacity: [0.4, 0.1, 0.4] }}
-          transition={{ duration: 5, repeat: Infinity }}
-        />
+        <rect className="shadow-breathe" x="118" y="30" width="2" height="120" fill="#000" opacity="0.4" />
       </svg>
     </div>
   );
@@ -217,25 +200,16 @@ function CoffeeCup() {
           { x: 100, delay: 0.6 },
           { x: 122, delay: 1.2 },
         ].map((s) => (
-          <motion.path
+          <path
             key={s.x}
+            className="steam"
+            pathLength={1}
             d={`M ${s.x} 110 Q ${s.x - 6} 90 ${s.x} 70 Q ${s.x + 6} 50 ${s.x} 30 Q ${s.x - 4} 18 ${s.x} 10`}
             stroke="var(--text-muted)"
             strokeWidth="2"
             strokeLinecap="round"
             fill="none"
-            initial={{ opacity: 0, y: 20, pathLength: 0 }}
-            animate={{
-              opacity: [0, 0.55, 0],
-              y: [20, -30],
-              pathLength: [0, 1, 1],
-            }}
-            transition={{
-              duration: 3,
-              delay: s.delay,
-              repeat: Infinity,
-              ease: "easeOut",
-            }}
+            style={{ animationDelay: `${s.delay}s` }}
           />
         ))}
 
@@ -267,14 +241,13 @@ function CoffeeCup() {
         <ellipse cx="100" cy="98" rx="48" ry="6" fill="none" stroke="var(--accent)" strokeOpacity="0.4" />
 
         {/* Crema swirl */}
-        <motion.path
+        <path
+          className="crema"
           d="M 78 100 Q 100 96 122 100 Q 100 104 78 100"
           fill="none"
           stroke="#a07550"
           strokeWidth="1"
           opacity="0.6"
-          animate={{ opacity: [0.4, 0.7, 0.4] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
       </svg>
     </div>
@@ -310,18 +283,7 @@ function ChessBoard() {
         </g>
 
         {/* Knight glyph that hops in an L-shape */}
-        <motion.g
-          animate={{
-            x: [0, 40, 40, 0, 0],
-            y: [0, 0, -40, -40, 0],
-          }}
-          transition={{
-            duration: 6,
-            times: [0, 0.25, 0.5, 0.75, 1],
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
+        <g className="knight">
           <circle cx="50" cy="150" r="9" fill="var(--bg)" stroke="var(--text)" strokeWidth="1.5" />
           <text
             x="50"
@@ -334,7 +296,7 @@ function ChessBoard() {
           >
             ♞
           </text>
-        </motion.g>
+        </g>
       </svg>
     </div>
   );

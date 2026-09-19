@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
 import { CloverIcon } from "./CloverIcon";
 
 type Theme = "leaf-4" | "leaf-5";
@@ -57,12 +56,11 @@ export function CloverToggle() {
 
   return (
     <div className="relative inline-flex items-center justify-center">
-      {/* Always-on magic ring — rotating, theme-responsive */}
-      <motion.svg
+      {/* Always-on magic ring - rotating (CSS), theme-responsive */}
+      <svg
         viewBox="0 0 60 60"
-        className="pointer-events-none absolute inset-0 h-full w-full"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+        className="spin-cw pointer-events-none absolute inset-0 h-full w-full"
+        style={{ "--spin": "18s", transformOrigin: "50% 50%" } as React.CSSProperties}
         aria-hidden
       >
         <defs>
@@ -92,15 +90,13 @@ export function CloverToggle() {
             ANTIMAGIC·遥か未来·GRIMOIRE·
           </textPath>
         </text>
-      </motion.svg>
+      </svg>
 
       {/* Pulsing glow */}
-      <motion.span
+      <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-full"
+        className="glow-pulse pointer-events-none absolute inset-0 rounded-full"
         style={{ boxShadow: "0 0 18px var(--accent-glow)" }}
-        animate={{ opacity: [0.45, 1, 0.45] }}
-        transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <button

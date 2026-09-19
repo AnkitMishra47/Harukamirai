@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
 import { CloverIcon } from "./CloverIcon";
 import { CloverToggle } from "./CloverToggle";
 
@@ -89,43 +88,43 @@ export function Nav() {
         </div>
       </nav>
 
-      {/* Mobile menu panel — slides down from below the nav bar */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            id="mobile-nav-panel"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="md:hidden border-t border-[var(--border)] bg-[var(--bg)]"
-          >
-            <ul className="mx-auto max-w-6xl px-6 py-3 flex flex-col">
-              {links.map((l, i) => (
-                <motion.li
-                  key={l.href}
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.04 + i * 0.04, duration: 0.3 }}
+      {/* Mobile menu panel - slides down from below the nav bar (CSS keyframe on mount) */}
+      {open && (
+        <div
+          id="mobile-nav-panel"
+          className="nav-panel md:hidden border-t border-[var(--border)] bg-[var(--bg)]"
+        >
+          <ul className="mx-auto max-w-6xl px-6 py-3 flex flex-col">
+            {links.map((l, i) => (
+              <li
+                key={l.href}
+                className="nav-item"
+                style={{ animationDelay: `${0.04 + i * 0.04}s` }}
+              >
+                <Link
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="block rounded-md px-3 py-3 font-display text-lg text-[var(--text)] transition-colors hover:text-[var(--accent)]"
                 >
-                  <Link
-                    href={l.href}
-                    onClick={() => setOpen(false)}
-                    className="block rounded-md px-3 py-3 font-display text-lg text-[var(--text)] transition-colors hover:text-[var(--accent)]"
-                  >
-                    {l.label}
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </header>
   );
 }
 
+/** Two bars that rotate into an X; the transform transitions in CSS. */
 function HamburgerIcon({ open }: { open: boolean }) {
+  const line = (dy: number, deg: number): React.CSSProperties => ({
+    transform: open ? `rotate(${deg}deg) translateY(${dy}px)` : "none",
+    transformOrigin: "10px 10px",
+    transformBox: "view-box",
+    transition: "transform .2s",
+  });
   return (
     <svg
       width="20"
@@ -137,22 +136,8 @@ function HamburgerIcon({ open }: { open: boolean }) {
       strokeLinecap="round"
       aria-hidden
     >
-      <motion.line
-        x1="3"
-        y1="6"
-        x2="17"
-        y2="6"
-        animate={open ? { x1: 4, y1: 4, x2: 16, y2: 16 } : { x1: 3, y1: 6, x2: 17, y2: 6 }}
-        transition={{ duration: 0.2 }}
-      />
-      <motion.line
-        x1="3"
-        y1="14"
-        x2="17"
-        y2="14"
-        animate={open ? { x1: 4, y1: 16, x2: 16, y2: 4 } : { x1: 3, y1: 14, x2: 17, y2: 14 }}
-        transition={{ duration: 0.2 }}
-      />
+      <line x1="3" y1="6" x2="17" y2="6" style={line(4, 45)} />
+      <line x1="3" y1="14" x2="17" y2="14" style={line(-4, -45)} />
     </svg>
   );
 }

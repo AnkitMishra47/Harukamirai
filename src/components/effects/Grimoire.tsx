@@ -105,7 +105,7 @@ const MATTER: Record<string, Pick<Chapter, "marks" | "aside"> & { body?: string 
     marks: ["Java", "Angular", "Cougar platform"],
     // timeline.oneit-junior (whose own note reads "First promotion.") and
     // timeline.oneit-se - the two role entries the book never showed.
-    aside: { caption: "Promotions", lines: [...fromTimeline("oneit-junior"), ...fromTimeline("oneit-se")] },
+    aside: { caption: "Career Growth", lines: [...fromTimeline("oneit-junior"), ...fromTimeline("oneit-se")] },
   },
   "award-2024": {
     // timeline.award-2024.note "Stack expanded into Python, Flask, Twilio and Ionic."

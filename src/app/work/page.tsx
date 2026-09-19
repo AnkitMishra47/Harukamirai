@@ -116,8 +116,8 @@ export default function WorkPage() {
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
             Day job · {career[0].date} - present
           </p>
-          <h2 className="font-display text-4xl mt-3 text-[var(--text)]">
-            {profile.employer.name} - three years, three promotions.
+          <h2 className="font-display text-3xl sm:text-4xl text-[var(--text)]">
+            {profile.employer.name} - three years of rapid career progression.
           </h2>
           <p className="mt-2 text-[var(--text-muted)]">
             {profile.title} on {profile.employer.name}&apos;s Australian engineering team. Backend,

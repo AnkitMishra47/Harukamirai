@@ -99,10 +99,10 @@ export function RecruiterBriefModal() {
               Trajectory
             </span>
             <span className="mt-1 block font-display text-lg font-semibold text-[var(--text)]">
-              3 Promotions
+              3 Milestones
             </span>
             <span className="text-xs text-[var(--text-muted)]">
-              Intern → Senior SWE in 3 yrs + MCA (86%)
+              Intern to Senior SWE in 3 yrs + MCA (86%)
             </span>
           </div>
 

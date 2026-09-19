@@ -145,7 +145,7 @@ export default function AboutPage() {
         <ChapterMark
           numeral="III"
           title="The arc"
-          lead={"Three promotions in three years, while completing a Master’s Degree. That’s the headline, not “proficient in Java, Angular, TypeScript.”"}
+          lead={"Intern to Senior Engineer in three years, while completing a Master’s Degree. That’s the headline, not “proficient in Java, Angular, TypeScript.”"}
           centered
         />
 

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Fraunces, Geist, JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { themeInitScript } from "@/lib/theme-init";
 import { Nav } from "@/components/Nav";
@@ -10,27 +9,23 @@ import { AmbientCircle } from "@/components/effects/AmbientCircle";
 import { profile } from "@/content";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  subsets: ["latin"],
+// Every font is a self-hosted glyph subset produced by scripts/subset-fonts.sh.
+// The Google-hosted set shipped 125 preloaded files (4 MB) and made local
+// builds depend on fonts.gstatic.com. Total now: ~115 KB across three files.
+const fraunces = localFont({
+  src: "../../public/fonts/Fraunces-subset.woff2",
+  weight: "100 900",
   variable: "--font-fraunces",
-  axes: ["opsz"],
   display: "swap",
 });
 
-const geist = Geist({
-  subsets: ["latin"],
+const geist = localFont({
+  src: "../../public/fonts/Geist-subset.woff2",
+  weight: "100 900",
   variable: "--font-geist-sans",
   display: "swap",
 });
 
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-});
-
-// Self-hosted glyph subset (scripts/subset-jp-font.sh). The Google-hosted
-// family shipped 125 preloaded slices totalling 4 MB.
 const jp = localFont({
   src: "../../public/fonts/ShipporiMincho-subset.woff2",
   weight: "400",
@@ -57,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${geist.variable} ${mono.variable} ${jp.variable}`}
+      className={`${fraunces.variable} ${geist.variable} ${jp.variable}`}
       suppressHydrationWarning
     >
       <head>

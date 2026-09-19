@@ -51,3 +51,21 @@ describe("skills", () => {
     ]);
   });
 });
+
+import { caseStudies } from "@/content";
+
+describe("case studies", () => {
+  it("has unique slugs, complete fields and no TODO markers or em dashes", () => {
+    const slugs = caseStudies.map((c) => c.slug);
+    expect(new Set(slugs).size).toBe(slugs.length);
+    for (const c of caseStudies) {
+      expect(c.approach.length).toBeGreaterThan(0);
+      expect(c.stack.length).toBeGreaterThan(0);
+      expect(JSON.stringify(c)).not.toMatch(/TODO|\{TODO\}|—/);
+    }
+  });
+  it("features Sprachkraft with a live link", () => {
+    const s = caseStudies.find((c) => c.slug === "sprachkraft");
+    expect(s?.links?.[0].href).toBe("https://thesprachkraft.com/");
+  });
+});

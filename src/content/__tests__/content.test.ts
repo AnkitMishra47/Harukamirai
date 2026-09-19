@@ -70,7 +70,7 @@ describe("case studies", () => {
   });
 });
 
-import { sideProjects, photos, profile as prof } from "@/content";
+import { photos, profile as prof } from "@/content";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
@@ -88,7 +88,17 @@ describe("photos and side projects", () => {
     for (const p of all) {
       expect(existsSync(path.join(process.cwd(), "public", p.src))).toBe(true);
     }
-    expect(sideProjects.length).toBeGreaterThan(0);
     expect(prof.bio.join(" ")).toMatch(/Runner-up for Employee of the Year/);
+  });
+});
+
+describe("grimoire chapter derivation", () => {
+  it("gives every chapter-eligible entry a distinct leading year", () => {
+    const ids = ["bca", "oneit-intern", "award-2024", "award-2025", "now"];
+    const years = ids.map((id) => {
+      const t = timeline.find((x) => x.id === id)!;
+      return id === "now" ? "今" : (t.date.match(/\d{4}/)?.[0] ?? t.date);
+    });
+    expect(new Set(years).size).toBe(years.length);
   });
 });

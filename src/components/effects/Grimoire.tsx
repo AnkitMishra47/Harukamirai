@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
  */
 
 type Chapter = {
+  id: string;
   year: string;
   ribbon: string; // ribbon color theme
   romaji: string;
@@ -33,7 +34,10 @@ const DECOR: Record<string, Pick<Chapter, "ribbon" | "romaji" | "kanji" | "sigil
 const CHAPTERS: Chapter[] = timeline
   .filter((t) => t.id in DECOR)
   .map((t) => ({
-    year: t.id === "now" ? "今" : t.date.slice(-4),
+    id: t.id,
+    // First year in the date, so "2019 - 2022" reads 2019 and does not collide
+    // with "Jul 2022" on the ribbon labels.
+    year: t.id === "now" ? "今" : (t.date.match(/\d{4}/)?.[0] ?? t.date),
     title: t.title,
     body: t.note,
     ...DECOR[t.id],
@@ -102,14 +106,14 @@ export function Grimoire({ size = 400 }: { size?: number }) {
           >
             {CHAPTERS.map((ch, i) => (
               <motion.button
-                key={ch.year}
+                key={ch.id}
                 onClick={() => jumpTo(i)}
                 className="group relative cursor-pointer"
                 initial={{ y: -40, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -40, opacity: 0 }}
                 transition={{ delay: 0.1 + i * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                aria-label={`Jump to ${ch.year} — ${ch.title}`}
+                aria-label={`Jump to ${ch.year}: ${ch.title}`}
               >
                 <Ribbon active={i === chapter} color={ch.ribbon} year={ch.year} />
               </motion.button>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MagicReveal } from "@/components/effects/MagicReveal";
-import { caseStudies, profile, sideProjects, timeline } from "@/content";
+import { caseStudies, profile, timeline } from "@/content";
 import type { CaseStudy } from "@/content";
 
 export const metadata: Metadata = {
@@ -102,39 +102,6 @@ export default function WorkPage() {
             </MagicReveal>
           ))}
         </ol>
-      </section>
-
-      {/* OTHER PROJECTS */}
-      <section>
-        <MagicReveal>
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">Outside OneIT</p>
-          <h2 className="font-display text-4xl mt-3 text-[var(--text)]">Side things I&apos;ve built.</h2>
-        </MagicReveal>
-
-        <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {sideProjects.map((p, i) => (
-            <MagicReveal key={p.title} delay={0.1 + i * 0.1}>
-              <article
-                className={`group relative h-full rounded-2xl border p-7 transition-all ${
-                  p.muted
-                    ? "border-dashed border-[var(--border)] bg-transparent opacity-60"
-                    : "border-[var(--border)] bg-[var(--bg-elevated)] hover:border-[var(--accent)] hover:shadow-[0_0_25px_var(--accent-glow)]"
-                }`}
-              >
-                <p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--text-subtle)]">{p.stack}</p>
-                <h3 className="font-display text-2xl mt-2 text-[var(--text)] transition-colors group-hover:text-[var(--accent)]">
-                  {p.title}
-                </h3>
-                <p className="mt-3 text-[var(--text-muted)] leading-relaxed">{p.body}</p>
-              </article>
-            </MagicReveal>
-          ))}
-        </div>
-
-        <p className="mt-12 text-sm text-[var(--text-subtle)]">
-          The 2022 HTML/CSS portfolio, TextUtility, and Sudoku Solver are retired with thanks.
-          They were good for what they were.
-        </p>
       </section>
 
       <div className="mt-24 text-center">

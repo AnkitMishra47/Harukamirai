@@ -58,6 +58,4 @@ export type CaseStudy = {
   featured?: boolean;
 };
 
-export type SideProject = { title: string; stack: string; body: string; muted?: boolean };
-
 export type Photo = { src: string; alt: string; caption?: string };

@@ -41,8 +41,8 @@ export default function ContactPage() {
 
         <ul className="space-y-6">
           {profile.links.map((c, i) => (
-            <MagicReveal key={c.label} delay={0.3 + i * 0.1}>
-              <li>
+            <li key={c.label}>
+              <MagicReveal delay={0.3 + i * 0.1}>
                 <a
                   href={c.href}
                   target={c.external ? "_blank" : undefined}
@@ -55,8 +55,8 @@ export default function ContactPage() {
                   </p>
                   {c.note && <p className="text-sm text-[var(--text-muted)] mt-2">{c.note}</p>}
                 </a>
-              </li>
-            </MagicReveal>
+              </MagicReveal>
+            </li>
           ))}
         </ul>
       </section>

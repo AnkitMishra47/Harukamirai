@@ -145,23 +145,34 @@ export function HeroIntro() {
             </span>
           </div>
 
-          <div
-            className="hero-rule mt-6 h-[2px] w-44 origin-left bg-[var(--accent)]"
-            style={{ boxShadow: "0 0 18px var(--accent-glow)" }}
-          />
+          {/*
+            Lede. The accent rule belongs to the paragraph, not to the
+            "not a coincidence" caption above it: the space above the rule is
+            roughly twice the space below, so it reads as the mark that opens
+            the paragraph rather than an orphan underline for the caption.
+            That matters most at 390px, where the caption wraps onto its own
+            line and lands directly above the rule. The two are grouped in one
+            wrapper so the relationship survives future spacing edits.
+          */}
+          <div className="mt-8 sm:mt-10">
+            <div
+              className="hero-rule h-[2px] w-44 origin-left bg-[var(--accent)]"
+              style={{ boxShadow: "0 0 18px var(--accent-glow)" }}
+            />
 
-          <p className="hero-in hero-in-5 mt-8 max-w-xl text-lg sm:text-xl text-[var(--text)] leading-relaxed">
-            {profile.heroLine}{" "}
-            <a
-              href={profile.employer.href}
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium text-[var(--accent)] underline decoration-1 underline-offset-4 transition-colors hover:text-[var(--accent-hover)]"
-            >
-              {profile.employer.name}
-            </a>
-            .
-          </p>
+            <p className="hero-in hero-in-5 mt-4 max-w-xl text-lg sm:text-xl text-[var(--text)] leading-relaxed">
+              {profile.heroLine}{" "}
+              <a
+                href={profile.employer.href}
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium text-[var(--accent)] underline decoration-1 underline-offset-4 transition-colors hover:text-[var(--accent-hover)]"
+              >
+                {profile.employer.name}
+              </a>
+              .
+            </p>
+          </div>
 
           <div className="hero-in hero-in-6 mt-10 flex flex-col items-start gap-5">
             <div className="flex flex-wrap items-center gap-3 text-sm">

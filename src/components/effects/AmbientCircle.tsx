@@ -1,12 +1,11 @@
 "use client";
 
-import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 /**
  * Lightweight always-on background magic circle for non-home routes.
- * - Single rotating ring (no textPath, no counter-rotating layers).
+ * - Single ring rotated by a CSS animation (no JS per frame, no gradient).
  * - Renders behind everything at very low opacity.
  * - Skipped on `/` because the home hero has its own (heavier) circle.
  * - Honours prefers-reduced-motion.
@@ -29,23 +28,13 @@ export function AmbientCircle() {
       className="pointer-events-none fixed inset-0 -z-50 flex items-center justify-center overflow-hidden"
       aria-hidden
     >
-      <motion.svg
+      <svg
         viewBox="0 0 800 800"
         width={1100}
         height={1100}
-        className="opacity-[0.05] dark:opacity-[0.08] will-change-transform"
-        style={{ transform: "translateZ(0)" }}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+        className="spin-cw opacity-[0.05] dark:opacity-[0.08]"
+        style={{ "--spin": "120s", transformOrigin: "50% 50%" } as React.CSSProperties}
       >
-        <defs>
-          <radialGradient id="ac-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.25" />
-            <stop offset="60%" stopColor="var(--accent)" stopOpacity="0.04" />
-            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <circle cx="400" cy="400" r="380" fill="url(#ac-glow)" />
         <circle cx="400" cy="400" r="360" fill="none" stroke="var(--accent)" strokeWidth="1" strokeOpacity="0.8" />
         <circle cx="400" cy="400" r="345" fill="none" stroke="var(--accent)" strokeWidth="0.5" strokeOpacity="0.5" />
         <circle cx="400" cy="400" r="300" fill="none" stroke="var(--accent)" strokeWidth="0.6" strokeOpacity="0.5" />
@@ -61,7 +50,7 @@ export function AmbientCircle() {
           <line x1="40" y1="400" x2="760" y2="400" />
           <line x1="400" y1="40" x2="400" y2="760" />
         </g>
-      </motion.svg>
+      </svg>
     </div>
   );
 }

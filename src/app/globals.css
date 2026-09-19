@@ -254,3 +254,16 @@ body {
   body { background: #fff; color: #000; }
   .resume-sheet { max-width: none; }
 }
+
+/* Magic circle rings - GPU transforms only */
+@keyframes spin-cw  { to { transform: rotate(360deg); } }
+@keyframes spin-ccw { to { transform: rotate(-360deg); } }
+@keyframes ring-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50%      { transform: scale(1.15); opacity: 0.2; }
+}
+@keyframes circle-in { from { opacity: 0; transform: scale(0.8); } }
+.spin-cw  { animation: spin-cw  var(--spin, 60s) linear infinite; transform-origin: 400px 400px; transform-box: view-box; }
+.spin-ccw { animation: spin-ccw var(--spin, 80s) linear infinite; transform-origin: 400px 400px; transform-box: view-box; }
+.ring-pulse { animation: ring-pulse 4s ease-in-out infinite; transform-origin: 400px 400px; transform-box: view-box; }
+.circle-in { animation: circle-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }

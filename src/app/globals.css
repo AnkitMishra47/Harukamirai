@@ -247,3 +247,10 @@ body {
 /* Work timeline dot pulse (was a per-item motion loop) */
 @keyframes timeline-dot { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.5); opacity: 1; } }
 .timeline-dot { animation: timeline-dot 2s ease-in-out infinite; }
+
+/* Print: the HTML resume prints as a plain sheet */
+@media print {
+  header, footer, canvas, .print\:hidden { display: none !important; }
+  body { background: #fff; color: #000; }
+  .resume-sheet { max-width: none; }
+}

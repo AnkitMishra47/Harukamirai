@@ -6,12 +6,11 @@ import { AnimatePresence, motion } from "motion/react";
 import { CloverIcon } from "./CloverIcon";
 import { CloverToggle } from "./CloverToggle";
 
+// Writing / Now / Lab stay routable but leave the nav until they have content.
 const links = [
   { href: "/about", label: "About" },
   { href: "/work", label: "Work" },
   { href: "/resume", label: "Resume" },
-  { href: "/writing", label: "Writing" },
-  { href: "/now", label: "Now" },
   { href: "/contact", label: "Contact" },
 ];
 

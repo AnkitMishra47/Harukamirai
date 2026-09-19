@@ -1,0 +1,207 @@
+/*
+ * Story scene chrome.
+ *
+ * Three jobs the utility classes could not do honestly.
+ *
+ * 1. PHOTO FRAMES THAT DO NOT LIE ABOUT THEIR SUBJECT.
+ *
+ *    The frame is sized from the file's real pixels, handed in as
+ *    `--ar: <width> / <height>` straight off `src/content/photos.ts`, and it is
+ *    bounded on BOTH axes without ever violating that ratio: the height budget
+ *    is converted into a width budget through the ratio, so `max-width` alone
+ *    does the limiting and `aspect-ratio` is always satisfied.
+ *
+ *    This component used to cap `max-height` directly while also declaring
+ *    `aspect-ratio`. The cap wins, the box quietly reshapes, and the crop is
+ *    handed to `object-fit: cover` with `object-position: top` - which is how
+ *    the trophy photograph ended up with its trophy cut off the bottom edge
+ *    (measured: a 1066x1599 file in a 318x360 frame, 32.5% off its own shape).
+ *    Because the frame now matches the file, `cover` and `contain` agree and
+ *    there is nothing left to crop or letterbox on any viewport.
+ *
+ *    The height budget stays below the source resolution at 2x on every step,
+ *    so nothing is ever upscaled: the smallest file in play is 899x682.
+ *
+ * 2. CENTRING INSIDE A SCROLL CONTAINER.
+ *
+ *    `align-items: center` on an overflowing scroll container pushes the top of
+ *    the content above scrollTop 0, where it can never be reached - measured at
+ *    390x600, where every scene stranded 71-158px of itself above the scroll
+ *    origin. Auto margins centre identically when there is free space and
+ *    collapse to 0 when there is not, so nothing is stranded.
+ *
+ * 3. SAFE-AREA GUTTERS, applied to every edge of the overlay rather than the
+ *    bottom only, so a notch in landscape cannot sit on top of the copy.
+ */
+
+.gutter {
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+@media (min-width: 640px) {
+  .gutter {
+    padding-left: max(2rem, env(safe-area-inset-left, 0px));
+    padding-right: max(2rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+@media (min-width: 768px) {
+  .gutter {
+    padding-left: max(3rem, env(safe-area-inset-left, 0px));
+    padding-right: max(3rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+.topInset {
+  padding-top: calc(0.875rem + env(safe-area-inset-top, 0px));
+}
+
+@media (min-width: 640px) {
+  .topInset {
+    padding-top: calc(1.25rem + env(safe-area-inset-top, 0px));
+  }
+}
+
+.bottomInset {
+  padding-bottom: calc(0.875rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* ---- the scrolling stage ---- */
+
+.stageScroller {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/*
+ * Centres when it fits, scrolls from the very top when it does not.
+ *
+ * The rhythm lives here rather than in utility classes because it has to answer
+ * viewport HEIGHT, which the width-based breakpoints cannot see: a 390x600
+ * phone has the same column widths as a 390x844 one and 244px less to put them
+ * in. Short screens get the same content, closer together.
+ */
+.stageItem {
+  margin-block: auto;
+  gap: 1.5rem;
+  padding-block: 0.5rem;
+}
+
+.headlineStack > * + * {
+  margin-top: 0.875rem;
+}
+
+@media (min-width: 1024px) {
+  .stageItem {
+    gap: 2.5rem;
+  }
+}
+
+@media (max-height: 720px) {
+  .stageItem {
+    gap: 1rem;
+    padding-block: 0;
+  }
+  .headlineStack > * + * {
+    margin-top: 0.5rem;
+  }
+}
+
+/* ---- photo card ---- */
+
+/*
+ * The card hugs its photograph, down to a floor of 210px. Below that floor the
+ * caption underneath has nowhere to go and shreds itself into one word a line,
+ * so a tall photograph on a short screen sits on a little mount instead, the
+ * way `PhotoGallery` mounts its prints. The photograph itself is never widened
+ * to meet the floor: `.photoFrame` keeps its own width and centres.
+ */
+.photoCard {
+  width: 100%;
+  /*
+   * `--ar` is substituted as raw tokens, so this reads
+   * `min(460px, max(210px, calc(<height budget> * 899 / 682)))` at used-value time.
+   */
+  max-width: min(460px, max(210px, calc(var(--frame-h) * var(--ar))));
+  margin-inline: auto;
+  --frame-h: min(340px, 30dvh);
+}
+
+@media (min-width: 640px) {
+  .photoCard {
+    --frame-h: min(340px, 34dvh);
+  }
+}
+
+@media (min-width: 1024px) {
+  .photoCard {
+    --frame-h: min(400px, 48dvh);
+  }
+}
+
+/*
+ * Stacked layout on a short screen: the photograph shares the height with the
+ * headline above it rather than pushing it off the end. Last, so it wins over
+ * the width rules. Not applied from 1024px up, where the photograph sits beside
+ * the headline and the two do not compete for the same pixels.
+ */
+@media (max-height: 720px) and (max-width: 1023px) {
+  .photoCard {
+    --frame-h: min(200px, 24dvh);
+  }
+}
+
+/*
+ * A phone held sideways. There is no height to stack a headline on top of a
+ * photograph, but there is width to put them beside each other, so the split
+ * layout arrives early here instead of waiting for the 1024px breakpoint. The
+ * photograph is still small: at 360px of viewport, whatever it is given comes
+ * off the caption underneath it, which wraps and takes the height back. Last in
+ * the file, so it wins over both rules above.
+ */
+@media (max-height: 560px) and (min-width: 600px) {
+  /* Both classes, to outrank the single-class `grid-cols-1` utility. */
+  .stageItem.split {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .stageItem.split > * {
+    grid-column: span 6 / span 6;
+  }
+  .photoCard {
+    --frame-h: min(200px, 26dvh);
+  }
+}
+
+.photoFrame {
+  position: relative;
+  width: 100%;
+  max-width: calc(var(--frame-h) * var(--ar));
+  margin-inline: auto;
+  aspect-ratio: var(--ar);
+}
+
+/* ---- detail disclosure ---- */
+
+.detail {
+  animation: detailIn 200ms ease-out both;
+}
+
+@keyframes detailIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail {
+    animation: none;
+  }
+}

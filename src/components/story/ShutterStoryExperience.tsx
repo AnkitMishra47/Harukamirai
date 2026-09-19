@@ -3,14 +3,28 @@
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "motion/react";
-import { profile, photos } from "@/content";
+import { profile, photos, type Photo } from "@/content";
 import { trackDownload } from "@/lib/track-download";
+import styles from "./story-scene.module.css";
 
-/** Map scene imageSrc → blurDataURL from the photos module. */
-const BLUR_MAP: Record<string, string | undefined> = {
-  [photos.setup.src]: photos.setup.blurDataURL,
-  [photos.awardTrophy.src]: photos.awardTrophy.blurDataURL,
-};
+/**
+ * Every photograph the story can show, keyed by its own src.
+ *
+ * A scene names a file and nothing else. Its real pixel size, and therefore the
+ * shape of the frame it is shown in, is read from `src/content/photos.ts`, which
+ * `content.test.ts` checks against the JPEG headers on disk. Scenes used to
+ * carry hand-written `imageAspectRatio` strings beside the src, which is exactly
+ * how a frame comes to disagree with its file.
+ */
+const PHOTO_INDEX: Record<string, Photo> = Object.fromEntries(
+  [
+    photos.portrait,
+    photos.setup,
+    photos.awardTrophy,
+    photos.openRoad,
+    ...photos.offTheClock,
+  ].map((p) => [p.src, p])
+);
 
 interface StoryScene {
   id: number;
@@ -29,8 +43,6 @@ interface StoryScene {
   imageAlt?: string;
   imageCaption?: string;
   imageMeta?: string;
-  imageOrientation?: "portrait" | "landscape";
-  imageAspectRatio?: string;
   chips?: string[];
   type: "terminal" | "photo" | "vector" | "dossier";
 }
@@ -71,8 +83,6 @@ const SCENES: StoryScene[] = [
     imageAlt: "Ankit's remote engineering workstation with terminal buffers and desk lamp",
     imageCaption: "Workstation · Late-Night Focus",
     imageMeta: "REMOTE ENGINEERING · FARIDABAD",
-    imageOrientation: "landscape",
-    imageAspectRatio: "899 / 682",
     chips: ["Production Ownership", "Clean Architecture", "Late-Night Focus"],
     type: "photo",
   },
@@ -109,8 +119,6 @@ const SCENES: StoryScene[] = [
     imageAlt: "Ankit holding the Runner-up Employee of the Year trophy at OneIT annual honours",
     imageCaption: "OneIT Annual Honours · 2024 & 2025",
     imageMeta: "DOUBLE HONOREE · EXECUTIVE LEADERSHIP",
-    imageOrientation: "portrait",
-    imageAspectRatio: "1066 / 1599",
     metricLabel: "Executive Recognition",
     metricValue: "Double Honoree · 2024 & 2025",
     chips: ["Mid Developer of the Year (2024)", "Runner-up Employee of the Year (2025)"],
@@ -132,8 +140,6 @@ const SCENES: StoryScene[] = [
     imageAlt: "Walking through grassy Himalayan hills with cedar forest in the background",
     imageCaption: "Himalayan Ridges · Himachal",
     imageMeta: "BALANCE & PERSPECTIVE",
-    imageOrientation: "landscape",
-    imageAspectRatio: "1448 / 1086",
     chips: ["Himalayan Ridges", "Mental Clarity", "Patience & Focus"],
     type: "photo",
   },
@@ -150,7 +156,7 @@ const SCENES: StoryScene[] = [
       "A proven track record of shipping production AI and backend systems with calm ownership.",
     narrativeBody:
       "Three years. Three promotions. A Master's degree earned alongside full-time production delivery. Fast ramp-up, clean code, and reliable communication across global timezones. Ready to step in and solve high-stakes challenges from day one.",
-    chips: ["3 Promotions in 3 Years", "25M+ Vector Infrastructure", "Full-Time Remote (AEDT)"],
+    chips: ["3 Promotions in 3 Years", "25M+ Vector Infrastructure", "Full-Time Remote (AWST)"],
     type: "dossier",
   },
 ];
@@ -179,6 +185,15 @@ const SWIPE_EDGE_ELASTIC = 0.12; // near-solid wall where there is nowhere to go
  */
 const SCENE_EXIT_OFFSET_PX = 110;
 
+/**
+ * How far the pointer may travel between press and release and still count as a
+ * tap on the scene. Anything further was a swipe, and a swipe must never also
+ * open the detail: the browser fires `click` at the release point after a drag,
+ * so the two gestures are told apart by distance rather than trusted to be
+ * mutually exclusive.
+ */
+const TAP_SLOP_PX = 10;
+
 export function ShutterStoryExperience() {
   const [isDismissed, setIsDismissed] = useState(false);
   const [isShutterLifted, setIsShutterLifted] = useState(false);
@@ -192,8 +207,16 @@ export function ShutterStoryExperience() {
    * without flipping the visible Play/Pause control under the visitor's thumb.
    */
   const [isDragging, setIsDragging] = useState(false);
+  /**
+   * A scene shows its headline by default. Everything longer than a headline -
+   * the narrative body, the chips, the metric, the instrument panels - waits
+   * behind this, and the story clock waits with it.
+   */
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const progressTimerRef = useRef<number | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  /** Press position of the live pointer gesture, for telling a tap from a swipe. */
+  const pointerDownRef = useRef<{ x: number; y: number } | null>(null);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -271,6 +294,8 @@ export function ShutterStoryExperience() {
     info: PanInfo
   ) => {
     setIsDragging(false);
+    // A drag that travelled is not a tap, whatever click the browser sends next.
+    if (Math.abs(info.offset.x) > TAP_SLOP_PX) pointerDownRef.current = null;
 
     const stageWidth = stageRef.current?.offsetWidth ?? 0;
     const distanceThreshold = Math.min(
@@ -303,6 +328,36 @@ export function ShutterStoryExperience() {
     }
   };
 
+  /**
+   * Tap-to-reveal, living on the same surface as the swipe.
+   *
+   * The press position is remembered and compared against the release position
+   * of the click the browser reports. A swipe moves the pointer well past
+   * `TAP_SLOP_PX`, so the click it drags behind it is discarded here; `onDragEnd`
+   * clears the press outright as a second guard. A tap that lands on a control -
+   * the toggle itself, a resume link, a nav button - is left to that control.
+   *
+   * It only opens. Closing stays on the button, so that reading the detail and
+   * then tapping the text does not snatch it away again.
+   */
+  const handleStagePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    pointerDownRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleStageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const down = pointerDownRef.current;
+    pointerDownRef.current = null;
+    if (isDetailOpen || !down) return;
+    if (Math.hypot(e.clientX - down.x, e.clientY - down.y) > TAP_SLOP_PX) return;
+    if ((e.target as HTMLElement).closest("a, button, [role='button']")) return;
+    setIsDetailOpen(true);
+  };
+
+  // A new scene always opens on its headline, and restarts the clock.
+  useEffect(() => {
+    setIsDetailOpen(false);
+  }, [currentSceneIdx]);
+
   // Keyboard navigation
   useEffect(() => {
     if (isDismissed) return;
@@ -334,8 +389,16 @@ export function ShutterStoryExperience() {
 
   // Scene auto-advance timer
   useEffect(() => {
-    // A live drag suspends the timer: the visitor is driving, not the clock.
-    if (!isShutterLifted || isExitingTheater || isDismissed || isPaused || isDragging) {
+    // A live drag or an open detail suspends the timer: the visitor is driving,
+    // not the clock. Neither flips the visible Play/Pause control.
+    if (
+      !isShutterLifted ||
+      isExitingTheater ||
+      isDismissed ||
+      isPaused ||
+      isDragging ||
+      isDetailOpen
+    ) {
       if (progressTimerRef.current) clearInterval(progressTimerRef.current);
       return;
     }
@@ -362,13 +425,34 @@ export function ShutterStoryExperience() {
     return () => {
       if (progressTimerRef.current) clearInterval(progressTimerRef.current);
     };
-  }, [isShutterLifted, isExitingTheater, isDismissed, currentSceneIdx, isPaused, isDragging]);
+  }, [
+    isShutterLifted,
+    isExitingTheater,
+    isDismissed,
+    currentSceneIdx,
+    isPaused,
+    isDragging,
+    isDetailOpen,
+  ]);
 
   if (isDismissed) {
     return null;
   }
 
   const activeScene = SCENES[currentSceneIdx];
+  const activePhoto = activeScene.imageSrc ? PHOTO_INDEX[activeScene.imageSrc] : undefined;
+  const detailTextId = `scene-${activeScene.id}-detail`;
+  const detailPanelId = `scene-${activeScene.id}-panel`;
+  /**
+   * The right-hand column only earns its place when it has something in it. A
+   * photograph is the point of its scene so it stays in the headline state; the
+   * instrument panels are the gibberish, so they wait. Act 06 keeps its two
+   * recruiter actions out in the open, which is what that scene is for.
+   */
+  const hasHeadlineVisual = activeScene.type === "photo" || activeScene.type === "dossier";
+  const isSplit = hasHeadlineVisual || isDetailOpen;
+  /** A photo scene has nothing in its right column waiting on the toggle. */
+  const hasGatedPanel = activeScene.type !== "photo";
 
   return (
     <div className="fixed inset-0 z-50 select-none overflow-hidden font-sans h-[100dvh]">
@@ -414,7 +498,9 @@ export function ShutterStoryExperience() {
         />
 
         {/* TOP HEADER HUD */}
-        <header className="relative z-30 flex flex-col gap-2.5 px-4 pt-3.5 sm:px-8 sm:pt-5 md:px-12 max-w-5xl mx-auto w-full">
+        <header
+          className={`relative z-30 flex flex-col gap-2.5 max-w-5xl mx-auto w-full ${styles.gutter} ${styles.topInset}`}
+        >
           {/* Progress Segments */}
           <div className="grid grid-cols-6 gap-1.5 sm:gap-2 w-full">
             {SCENES.map((s, idx) => (
@@ -478,22 +564,28 @@ export function ShutterStoryExperience() {
                   </>
                 )}
               </button>
+              {/*
+                No aria-label: the accessible name is the visible text, which is
+                what `label-content-name-mismatch` asks for. The glyph is hidden
+                from the name so it does not read as "Exit to Portfolio times".
+              */}
               <button
                 type="button"
                 onClick={exitToPortfolio}
-                aria-label="Exit to Portfolio"
                 className="font-mono text-xs text-white/70 hover:text-white px-2 sm:px-2.5 py-1 rounded border border-white/10 bg-white/5 transition-colors cursor-pointer inline-flex items-center gap-1"
               >
                 <span className="hidden sm:inline">Exit to Portfolio</span>
                 <span className="sm:hidden">Exit</span>
-                <span>✕</span>
+                <span aria-hidden>✕</span>
               </button>
             </div>
           </div>
         </header>
 
         {/* MAIN STAGE (RESPONSIVE 2-COLUMN SPLIT SHOWCASE WITH SMOOTH TRANSITIONS & SAFE SCROLL) */}
-        <main className="relative z-30 mx-auto max-w-5xl w-full px-4 sm:px-8 md:px-12 py-3 sm:py-6 flex-1 min-h-0 overflow-y-auto flex items-center">
+        <main
+          className={`relative z-30 mx-auto max-w-5xl w-full py-3 sm:py-6 flex-1 min-h-0 ${styles.gutter} ${styles.stageScroller}`}
+        >
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentSceneIdx}
@@ -521,6 +613,8 @@ export function ShutterStoryExperience() {
               }
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              onPointerDownCapture={handleStagePointerDown}
+              onClick={handleStageClick}
               // Motion sets this itself for drag="x"; stated here so the intent
               // survives a refactor. The browser keeps vertical gestures, so the
               // stage can still be scrolled when it overflows a short screen.
@@ -554,10 +648,16 @@ export function ShutterStoryExperience() {
               initial="enter"
               animate="center"
               exit="exit"
-              className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center py-2"
+              className={`w-full grid grid-cols-1 items-center ${styles.stageItem} ${
+                isSplit ? `lg:grid-cols-12 ${styles.split}` : ""
+              }`}
             >
-              {/* LEFT COLUMN: NARRATIVE & CONTEXT */}
-              <div className="lg:col-span-6 space-y-3.5 text-left">
+              {/* LEFT COLUMN: HEADLINE, THEN THE DETAIL BEHIND THE TOGGLE */}
+              <div
+                className={`text-left ${styles.headlineStack} ${
+                  isSplit ? "lg:col-span-6" : "lg:max-w-3xl lg:mx-auto lg:text-center"
+                }`}
+              >
                 <p
                   className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] font-semibold"
                   style={{ color: activeScene.accentColor }}
@@ -573,75 +673,123 @@ export function ShutterStoryExperience() {
                   {activeScene.narrativeLead}
                 </p>
 
-                <p className="font-sans text-xs sm:text-sm md:text-base text-white/70 leading-relaxed">
-                  {activeScene.narrativeBody}
-                </p>
+                <button
+                  type="button"
+                  data-detail-toggle
+                  aria-expanded={isDetailOpen}
+                  aria-controls={
+                    hasGatedPanel ? `${detailTextId} ${detailPanelId}` : detailTextId
+                  }
+                  onClick={() => setIsDetailOpen((open) => !open)}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3.5 py-1.5 font-mono text-[11px] sm:text-xs text-white/85 hover:bg-white/10 hover:text-white transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                >
+                  <span>{isDetailOpen ? "Hide the detail" : "Read the detail"}</span>
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    aria-hidden
+                  >
+                    <polyline points={isDetailOpen ? "18 15 12 9 6 15" : "6 9 12 15 18 9"} />
+                  </svg>
+                </button>
 
-                {/* Tags / Chips */}
-                {activeScene.chips && (
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-1">
-                    {activeScene.chips.map((c) => (
-                      <span
-                        key={c}
-                        className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 font-mono text-[11px] text-white/80"
-                      >
-                        {c}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <div id={detailTextId} hidden={!isDetailOpen}>
+                  {isDetailOpen && (
+                    <div className={`${styles.headlineStack} ${styles.detail}`}>
+                      <p className="font-sans text-xs sm:text-sm md:text-base text-white/70 leading-relaxed">
+                        {activeScene.narrativeBody}
+                      </p>
 
-                {/* Metric Pill */}
-                {activeScene.metricValue && (
-                  <div className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1 mt-1 text-xs">
-                    <span className="font-mono text-white/50">
-                      {activeScene.metricLabel}:
-                    </span>
-                    <span
-                      className="font-mono font-semibold"
-                      style={{ color: activeScene.accentColor }}
-                    >
-                      {activeScene.metricValue}
-                    </span>
-                  </div>
-                )}
+                      {/* Tags / Chips */}
+                      {activeScene.chips && (
+                        <div
+                          className={`flex flex-wrap gap-1.5 sm:gap-2 ${
+                            isSplit ? "" : "lg:justify-center"
+                          }`}
+                        >
+                          {activeScene.chips.map((c) => (
+                            <span
+                              key={c}
+                              className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 font-mono text-[11px] text-white/80"
+                            >
+                              {c}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Metric Pill */}
+                      {activeScene.metricValue && (
+                        <div className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1 text-xs">
+                          <span className="font-mono text-white/50">
+                            {activeScene.metricLabel}:
+                          </span>
+                          <span
+                            className="font-mono font-semibold"
+                            style={{ color: activeScene.accentColor }}
+                          >
+                            {activeScene.metricValue}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* RIGHT COLUMN: HIGH-DEFINITION VISUAL STAGE (NO CROPPING) */}
-              <div className="lg:col-span-6 flex items-center justify-center w-full">
-                {/* 1. Terminal Visualizer (Act 1) */}
+              {/* RIGHT COLUMN: THE PHOTOGRAPH, AND THE PANELS ONCE ASKED FOR */}
+              <div
+                className={`flex items-center justify-center w-full ${
+                  isSplit ? "lg:col-span-6" : "hidden"
+                }`}
+              >
+                {/* 1. Terminal Visualizer (Act 1) - detail only */}
                 {activeScene.type === "terminal" && (
-                  <div className="w-full max-w-md rounded-2xl border border-white/15 bg-[#0b0f17]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-2.5 mb-3 text-white/50">
-                      <div className="flex items-center gap-2">
-                        <span className="size-2 rounded-full bg-red-500/80" />
-                        <span className="size-2 rounded-full bg-yellow-500/80" />
-                        <span className="size-2 rounded-full bg-green-500/80" />
-                        <span className="text-[11px] text-white/70 pl-1.5">production-sync.sh</span>
-                      </div>
-                      <span className="text-[10px] text-sky-400">ACTIVE</span>
-                    </div>
+                  <div id={detailPanelId} hidden={!isDetailOpen} className="w-full">
+                    {isDetailOpen && (
+                      <div className={`w-full max-w-md mx-auto rounded-2xl border border-white/15 bg-[#0b0f17]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md ${styles.detail}`}>
+                        <div className="flex items-center justify-between border-b border-white/10 pb-2.5 mb-3 text-white/50">
+                          <div className="flex items-center gap-2">
+                            <span className="size-2 rounded-full bg-red-500/80" />
+                            <span className="size-2 rounded-full bg-yellow-500/80" />
+                            <span className="size-2 rounded-full bg-green-500/80" />
+                            <span className="text-[11px] text-white/70 pl-1.5">production-sync.sh</span>
+                          </div>
+                          <span className="text-[10px] text-sky-400">ACTIVE</span>
+                        </div>
 
-                    <div className="space-y-2 text-white/85">
-                      <div className="flex justify-between items-center rounded bg-white/5 px-2.5 py-1.5 border border-white/5 text-[11px] sm:text-xs">
-                        <span className="text-white/50">FARIDABAD IST:</span>
-                        <span className="text-amber-400 font-semibold">23:14:02 · DEEP WORK</span>
+                        <div className="space-y-2 text-white/85">
+                          <div className="flex justify-between items-center rounded bg-white/5 px-2.5 py-1.5 border border-white/5 text-[11px] sm:text-xs">
+                            <span className="text-white/50">FARIDABAD IST:</span>
+                            <span className="text-amber-400 font-semibold">23:14:02 · DEEP WORK</span>
+                          </div>
+                          <div className="flex justify-between items-center rounded bg-white/5 px-2.5 py-1.5 border border-white/5 text-[11px] sm:text-xs">
+                            <span className="text-white/50">AWST:</span>
+                            <span className="text-sky-400 font-semibold">01:44:02 · CLIENT SYNC</span>
+                          </div>
+                          <div className="pt-2 text-[11px] text-white/60 space-y-1 border-t border-white/5">
+                            <p className="text-emerald-400">&gt; [23:14] Resolved connection pool starvation.</p>
+                            <p className="text-emerald-400">&gt; [23:19] Zero downtime hotfix verified.</p>
+                            <p className="text-white/40">&gt; [09:00] Next: MCA Distributed Systems Exam.</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-between items-center rounded bg-white/5 px-2.5 py-1.5 border border-white/5 text-[11px] sm:text-xs">
-                        <span className="text-white/50">MELBOURNE AEDT:</span>
-                        <span className="text-sky-400 font-semibold">04:44:02 · CLIENT SYNC</span>
-                      </div>
-                      <div className="pt-2 text-[11px] text-white/60 space-y-1 border-t border-white/5">
-                        <p className="text-emerald-400">&gt; [23:14] Resolved connection pool starvation.</p>
-                        <p className="text-emerald-400">&gt; [23:19] Zero downtime hotfix verified.</p>
-                        <p className="text-white/40">&gt; [09:00] Next: MCA Distributed Systems Exam.</p>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 )}
 
-                {/* 2. Crisp Photo Showcase (Acts 2, 4, 5) - Full Aspect Ratio Preservation */}
-                {activeScene.type === "photo" && activeScene.imageSrc && (
+                {/*
+                  2. Photo Showcase (Acts 2, 4, 5).
+
+                  The card is sized from the file's real pixels, so the frame is
+                  the photograph's own shape at every viewport and `object-cover`
+                  has nothing to crop. See story-scene.module.css.
+                */}
+                {activeScene.type === "photo" && activePhoto && (
                   <div className="relative group w-full flex justify-center">
                     {/* Backlit Diffused Ambient Glow */}
                     <div
@@ -651,39 +799,40 @@ export function ShutterStoryExperience() {
                       }}
                     />
 
-                    {/* Elevated Photo Card Respecting Natural Aspect Ratio */}
                     <div
-                      className={`relative rounded-2xl overflow-hidden border border-white/20 bg-[#0d0f14] shadow-[0_20px_50px_rgba(0,0,0,0.85)] w-full ${
-                        activeScene.imageOrientation === "portrait"
-                          ? "max-w-[260px] sm:max-w-[300px] md:max-w-[320px]"
-                          : "max-w-md"
-                      }`}
+                      className={`relative rounded-2xl overflow-hidden border border-white/20 bg-[#0d0f14] shadow-[0_20px_50px_rgba(0,0,0,0.85)] ${styles.photoCard}`}
+                      style={
+                        {
+                          "--ar": `${activePhoto.width} / ${activePhoto.height}`,
+                        } as React.CSSProperties
+                      }
                     >
-                      <div
-                        className="relative w-full overflow-hidden bg-black/40 flex items-center justify-center"
-                        style={{
-                          aspectRatio: activeScene.imageAspectRatio || "4 / 3",
-                          maxHeight: activeScene.imageOrientation === "portrait" ? "360px" : "280px",
-                        }}
-                      >
+                      <div className={`overflow-hidden bg-black/40 ${styles.photoFrame}`}>
                         <Image
-                          src={activeScene.imageSrc}
-                          alt={activeScene.imageAlt || ""}
+                          src={activePhoto.src}
+                          alt={activeScene.imageAlt || activePhoto.alt}
                           fill
                           unoptimized
                           priority
-                          className="object-contain sm:object-cover sm:object-top transition-transform duration-700 group-hover:scale-[1.02]"
-                          {...(activeScene.imageSrc && BLUR_MAP[activeScene.imageSrc] ? { placeholder: "blur" as const, blurDataURL: BLUR_MAP[activeScene.imageSrc] } : {})}
+                          sizes="(min-width: 1024px) 460px, (min-width: 640px) 460px, 90vw"
+                          className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.02]"
+                          {...(activePhoto.blurDataURL
+                            ? { placeholder: "blur" as const, blurDataURL: activePhoto.blurDataURL }
+                            : {})}
                         />
                       </div>
 
-                      {/* Photo Metadata Footer */}
-                      <div className="p-2.5 sm:p-3 flex items-center justify-between text-[11px] font-mono border-t border-white/10 bg-black/75 backdrop-blur-md">
-                        <span className="text-white/90 font-medium truncate pr-2">
+                      {/*
+                        Stacked, not two columns: the card is now as narrow as its
+                        photograph, and side by side these two strings ellipsised
+                        each other away at every viewport.
+                      */}
+                      <div className="p-2.5 sm:p-3 flex flex-col gap-0.5 text-[11px] font-mono border-t border-white/10 bg-black/75 backdrop-blur-md">
+                        <span className="text-white/90 font-medium">
                           {activeScene.imageCaption}
                         </span>
                         <span
-                          className="text-[10px] uppercase font-semibold shrink-0"
+                          className="text-[10px] uppercase font-semibold"
                           style={{ color: activeScene.accentColor }}
                         >
                           {activeScene.imageMeta}
@@ -693,47 +842,56 @@ export function ShutterStoryExperience() {
                   </div>
                 )}
 
-                {/* 3. Scale pgvector HNSW Stage (Act 3) */}
+                {/* 3. Scale pgvector HNSW Stage (Act 3) - detail only */}
                 {activeScene.type === "vector" && (
-                  <div className="w-full max-w-md rounded-2xl border border-sky-500/30 bg-[#070e1c]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md space-y-3">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-2.5 text-white/50">
-                      <span className="text-sky-400 font-semibold text-xs">pgvector · HNSW Telemetry</span>
-                      <span className="text-emerald-400 text-[11px]">Sub-15ms Latency</span>
-                    </div>
+                  <div id={detailPanelId} hidden={!isDetailOpen} className="w-full">
+                    {isDetailOpen && (
+                      <div className={`w-full max-w-md mx-auto rounded-2xl border border-sky-500/30 bg-[#070e1c]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md space-y-3 ${styles.detail}`}>
+                        <div className="flex items-center justify-between border-b border-white/10 pb-2.5 text-white/50">
+                          <span className="text-sky-400 font-semibold text-xs">pgvector · HNSW Telemetry</span>
+                          <span className="text-emerald-400 text-[11px]">Sub-15ms Latency</span>
+                        </div>
 
-                    <div className="grid grid-cols-2 gap-2.5 text-left">
-                      <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-3">
-                        <span className="text-[10px] text-white/50 block">INDEXED CORPUS</span>
-                        <span className="text-lg sm:text-xl font-bold text-white">25,000,000</span>
-                        <span className="text-[10px] text-sky-400 block pt-0.5">Embeddings</span>
-                      </div>
-                      <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-3">
-                        <span className="text-[10px] text-white/50 block">P99 FILTERED LATENCY</span>
-                        <span className="text-lg sm:text-xl font-bold text-emerald-400">14.8ms</span>
-                        <span className="text-[10px] text-white/50 block pt-0.5">PostgreSQL Engine</span>
-                      </div>
-                    </div>
+                        <div className="grid grid-cols-2 gap-2.5 text-left">
+                          <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-3">
+                            <span className="text-[10px] text-white/50 block">INDEXED CORPUS</span>
+                            <span className="text-lg sm:text-xl font-bold text-white">25,000,000</span>
+                            <span className="text-[10px] text-sky-400 block pt-0.5">Embeddings</span>
+                          </div>
+                          <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-3">
+                            <span className="text-[10px] text-white/50 block">P99 FILTERED LATENCY</span>
+                            <span className="text-lg sm:text-xl font-bold text-emerald-400">14.8ms</span>
+                            <span className="text-[10px] text-white/50 block pt-0.5">PostgreSQL Engine</span>
+                          </div>
+                        </div>
 
-                    <div className="rounded-xl border border-white/5 bg-black/40 p-2.5 sm:p-3 text-[11px] text-white/75 space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-white/50">HNSW Parameters:</span>
-                        <span className="text-sky-300 font-medium">m=16, ef_construction=64</span>
+                        <div className="rounded-xl border border-white/5 bg-black/40 p-2.5 sm:p-3 text-[11px] text-white/75 space-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-white/50">HNSW Parameters:</span>
+                            <span className="text-sky-300 font-medium">m=16, ef_construction=64</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-white/50">Index Bloat:</span>
+                            <span className="text-emerald-400 font-medium">0.0% (Automated VACUUM)</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-white/50">Enterprise Middleware:</span>
+                            <span className="text-white/90 font-medium">CargoWise, MYOB, ERP EDI</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-white/50">Index Bloat:</span>
-                        <span className="text-emerald-400 font-medium">0.0% (Automated VACUUM)</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-white/50">Enterprise Middleware:</span>
-                        <span className="text-white/90 font-medium">CargoWise, MYOB, ERP EDI</span>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 )}
 
-                {/* 4. Recruiter Dossier Stage (Act 6) */}
+                {/*
+                  4. Recruiter Dossier Stage (Act 6).
+
+                  The two actions stay out in the open: this scene exists so a
+                  recruiter can take the resume away. Only the stat grid waits.
+                */}
                 {activeScene.type === "dossier" && (
-                  <div className="w-full max-w-md rounded-2xl border border-rose-500/30 bg-[#140a0e]/95 shadow-2xl p-4 sm:p-5 backdrop-blur-md space-y-3">
+                  <div className="w-full max-w-md mx-auto rounded-2xl border border-rose-500/30 bg-[#140a0e]/95 shadow-2xl p-4 sm:p-5 backdrop-blur-md space-y-3">
                     <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                       <span className="font-mono text-xs text-rose-400 uppercase tracking-wider font-semibold">
                         Executive Summary
@@ -741,26 +899,30 @@ export function ShutterStoryExperience() {
                       <span className="size-2 rounded-full bg-rose-500 animate-pulse" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-left text-xs">
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                        <span className="text-[10px] text-white/50 block font-mono">TRAJECTORY</span>
-                        <span className="font-semibold text-white">3 Promotions in 3 Yrs</span>
-                      </div>
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                        <span className="text-[10px] text-white/50 block font-mono">SCALE</span>
-                        <span className="font-semibold text-white">25M+ Vectors</span>
-                      </div>
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                        <span className="text-[10px] text-white/50 block font-mono">HONOURS</span>
-                        <span className="font-semibold text-white">Double Honoree</span>
-                      </div>
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                        <span className="text-[10px] text-white/50 block font-mono">LOCATION</span>
-                        <span className="font-semibold text-white">Remote AEDT</span>
-                      </div>
+                    <div id={detailPanelId} hidden={!isDetailOpen}>
+                      {isDetailOpen && (
+                        <div className={`grid grid-cols-2 gap-2 text-left text-xs ${styles.detail}`}>
+                          <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
+                            <span className="text-[10px] text-white/50 block font-mono">TRAJECTORY</span>
+                            <span className="font-semibold text-white">3 Promotions in 3 Yrs</span>
+                          </div>
+                          <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
+                            <span className="text-[10px] text-white/50 block font-mono">SCALE</span>
+                            <span className="font-semibold text-white">25M+ Vectors</span>
+                          </div>
+                          <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
+                            <span className="text-[10px] text-white/50 block font-mono">HONOURS</span>
+                            <span className="font-semibold text-white">Double Honoree</span>
+                          </div>
+                          <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
+                            <span className="text-[10px] text-white/50 block font-mono">LOCATION</span>
+                            <span className="font-semibold text-white">Remote AWST</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
-                    <div className="pt-1 flex flex-col gap-2">
+                    <div className="flex flex-col gap-2">
                       <a
                         href={profile.resumePdf}
                         download
@@ -802,7 +964,9 @@ export function ShutterStoryExperience() {
         </main>
 
         {/* BOTTOM FOOTER NAVIGATION */}
-        <footer className="relative z-30 flex items-center justify-between px-6 py-3.5 sm:px-8 sm:py-4 md:px-12 border-t border-white/10 max-w-5xl mx-auto w-full bg-[#06070a]/90 backdrop-blur-sm" style={{ paddingBottom: 'calc(0.875rem + env(safe-area-inset-bottom, 0px))' }}>
+        <footer
+          className={`relative z-30 flex items-center justify-between gap-3 pt-3.5 sm:pt-4 border-t border-white/10 max-w-5xl mx-auto w-full bg-[#06070a]/90 backdrop-blur-sm ${styles.gutter} ${styles.bottomInset}`}
+        >
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -866,7 +1030,9 @@ export function ShutterStoryExperience() {
         />
 
         {/* Top Header */}
-        <header className="relative z-10 flex items-center justify-between px-4 py-4 sm:px-8 sm:py-6 md:px-12 border-b border-white/10">
+        <header
+          className={`relative z-10 flex items-center justify-between gap-3 pb-4 sm:pb-6 border-b border-white/10 ${styles.gutter} ${styles.topInset}`}
+        >
           <div className="flex items-center gap-2.5">
             <span className="size-2 rounded-full bg-[var(--accent)] animate-pulse" />
             <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/75 font-medium">
@@ -883,7 +1049,10 @@ export function ShutterStoryExperience() {
         </header>
 
         {/* Center Sanctuary Callout */}
-        <main className="relative z-10 mx-auto max-w-2xl px-4 text-center my-auto">
+        <main
+          className={`relative z-10 mx-auto max-w-2xl w-full text-center flex-1 min-h-0 py-4 ${styles.gutter} ${styles.stageScroller}`}
+        >
+          <div className={styles.stageItem}>
           <p className="font-jp text-xs sm:text-sm uppercase tracking-[0.28em] text-[var(--accent)] mb-3">
             遥か未来 · 反魔法
           </p>
@@ -926,10 +1095,13 @@ export function ShutterStoryExperience() {
           <p className="mt-4 font-mono text-[11px] text-white/35">
             Press Space or Enter to lift
           </p>
+          </div>
         </main>
 
         {/* Shutter Bottom Architectural Grip Lip */}
-        <footer className="relative z-10 flex items-center justify-between px-4 py-3 sm:px-8 sm:py-4 md:px-12 border-t border-white/10 bg-black/40 font-mono text-[11px] text-white/40 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
+        <footer
+          className={`relative z-10 flex items-center justify-between gap-3 pt-3 sm:pt-4 border-t border-white/10 bg-black/40 font-mono text-[11px] text-white/40 ${styles.gutter} ${styles.bottomInset}`}
+        >
           <span>Ankit Mishra · Senior SWE</span>
           <span className="hidden sm:inline">▲ ARCHITECTURAL SHUTTER · PULL UP TO ENTER</span>
           <span>OneIT Australia</span>

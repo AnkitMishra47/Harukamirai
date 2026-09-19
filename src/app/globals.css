@@ -374,9 +374,21 @@ body {
 }
 .page-enter { animation: page-enter 400ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-/* Print: the HTML resume prints as a plain sheet */
+/* Print: the HTML resume prints as a plain sheet.
+
+   The header/footer rules are scoped to `body >` on purpose. Nav and Footer
+   are direct children of <body> (src/app/layout.tsx), so `body > header` and
+   `body > footer` hit the site chrome and nothing else. Unscoped, as it was,
+   `header { display: none }` also took out any page's OWN <header> - which
+   silently stripped the name, the title and every contact detail off the
+   printed resume, and the heading block off /about, /work and /contact.
+   ResumeSheet carries a comment about working around exactly this; the
+   workaround can stay, but it is no longer load-bearing.
+
+   `canvas` is deliberately NOT scoped: the only two canvases on the site are
+   CursorTrail and ParticleField, both decorative, and neither should print. */
 @media print {
-  header, footer, canvas, .print\:hidden { display: none !important; }
+  body > header, body > footer, canvas, .print\:hidden { display: none !important; }
   body { background: #fff; color: #000; }
   .resume-sheet { max-width: none; }
 }

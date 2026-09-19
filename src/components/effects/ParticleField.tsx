@@ -64,7 +64,31 @@ export function ParticleField() {
       });
     }
 
+    // Pause when the hero is scrolled away or the tab is hidden; resume on
+    // return. `active` gates the loop, `scheduled` prevents double loops.
+    let inView = true;
+    let active = true;
+    let scheduled = false;
+    function schedule() {
+      if (!active || scheduled) return;
+      scheduled = true;
+      raf = requestAnimationFrame(frame);
+    }
+    function recompute() {
+      active = inView && !document.hidden;
+      schedule();
+    }
+    const io = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      recompute();
+    });
+    io.observe(canvas!);
+    const onVisibility = () => recompute();
+    document.addEventListener("visibilitychange", onVisibility);
+
     function frame() {
+      scheduled = false;
+      if (!active) return;
       ctx!.clearRect(0, 0, W, H);
       ctx!.fillStyle = accent;
 
@@ -90,15 +114,17 @@ export function ParticleField() {
         }
       }
       ctx!.globalAlpha = 1;
-      raf = requestAnimationFrame(frame);
+      schedule();
     }
 
     resize();
     window.addEventListener("resize", resize);
-    raf = requestAnimationFrame(frame);
+    schedule();
 
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
       themeObserver.disconnect();
       window.removeEventListener("resize", resize);
     };

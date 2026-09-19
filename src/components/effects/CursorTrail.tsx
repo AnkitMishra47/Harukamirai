@@ -46,6 +46,15 @@ export function CursorTrail() {
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
+    // The loop only runs while dots are alive. With the pointer still, the
+    // canvas costs nothing.
+    let running = false;
+    function wake() {
+      if (running) return;
+      running = true;
+      raf = requestAnimationFrame(frame);
+    }
+
     function onMove(e: MouseEvent) {
       const now = performance.now();
       if (now - lastSpawn < 32) return;
@@ -56,6 +65,7 @@ export function CursorTrail() {
         life: 0,
         size: 7 + Math.random() * 4,
       });
+      wake();
     }
 
     function frame() {
@@ -74,13 +84,16 @@ export function CursorTrail() {
         if (d.life >= 28) dots.splice(i, 1);
       }
       ctx!.globalAlpha = 1;
+      if (dots.length === 0) {
+        running = false;
+        return;
+      }
       raf = requestAnimationFrame(frame);
     }
 
     resize();
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", onMove, { passive: true });
-    raf = requestAnimationFrame(frame);
 
     return () => {
       cancelAnimationFrame(raf);

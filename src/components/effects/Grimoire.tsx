@@ -273,13 +273,11 @@ function FrontCover() {
       }}
     >
       {/* Leather grain */}
-      <svg className="absolute inset-0 h-full w-full opacity-30 mix-blend-multiply" aria-hidden>
-        <filter id="grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" />
-          <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#grain)" />
-      </svg>
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-30 mix-blend-multiply"
+        style={{ backgroundImage: "url(/textures/grain-128.png)", backgroundSize: "128px 128px" }}
+      />
 
       {/* Corner brackets */}
       {[
@@ -383,12 +381,11 @@ function PageBackground({ side }: { side: "left" | "right" }) {
       }}
     >
       {/* Page texture */}
-      <svg className="absolute inset-0 h-full w-full opacity-[0.07]" aria-hidden>
-        <filter id={`pg-${side}`}>
-          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="2" />
-        </filter>
-        <rect width="100%" height="100%" filter={`url(#pg-${side})`} />
-      </svg>
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-[0.07]"
+        style={{ backgroundImage: "url(/textures/grain-128.png)", backgroundSize: "128px 128px" }}
+      />
     </div>
   );
 }

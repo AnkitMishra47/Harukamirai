@@ -29,3 +29,25 @@ describe("testimonials", () => {
     }
   });
 });
+
+import { timeline, skills } from "@/content";
+
+describe("timeline", () => {
+  it("starts at OneIT in Jul 2022 and has stable ids", () => {
+    const join = timeline.find((t) => t.id === "oneit-intern");
+    expect(join?.date).toBe("Jul 2022");
+    const ids = timeline.map((t) => t.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ["bca", "oneit-intern", "award-2024", "award-2025", "now"]) {
+      expect(ids).toContain(id);
+    }
+  });
+});
+
+describe("skills", () => {
+  it("uses the resume's eight groups", () => {
+    expect(skills.map((g) => g.id)).toEqual([
+      "languages", "ai", "backend", "frontend", "data", "integrations", "devops", "practices",
+    ]);
+  });
+});

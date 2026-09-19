@@ -24,8 +24,24 @@
   }
 }
 
+/*
+ * The panel is bounded by the viewport, and the results list is the part that
+ * gives.
+ *
+ * It used to have no height bound of its own - only `max-height: 52vh` on the
+ * results - so the whole scroll could stand taller than the screen and the page
+ * behind it had to be panned to reach the bottom. `dvh` rather than `vh`
+ * throughout, so a phone's URL bar appearing shortens the panel instead of
+ * pushing its footer out of reach.
+ *
+ * The subtraction is the backdrop's own padding: 3.5rem above, 1rem below.
+ */
 .scrollWrapper {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: calc(100dvh - 4.5rem);
   width: 100%;
   max-width: 44rem;
   margin: 0 auto;
@@ -82,6 +98,10 @@
 .scrollBody {
   position: relative;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
   overflow: hidden;
   background: var(--bg-elevated);
   border-left: 2px solid var(--border-strong);
@@ -118,12 +138,30 @@
 }
 
 .searchInput {
+  flex: 1 1 auto;
+  /* Without this the input refuses to shrink below its content and pushes the
+     close control out of the header on a narrow screen. */
+  min-width: 0;
   width: 100%;
   background: transparent;
   font-family: var(--font-sans, system-ui, sans-serif);
   font-size: 0.95rem;
   color: var(--text);
   outline: none;
+}
+
+/*
+ * 16px exactly, on touch.
+ *
+ * Safari on iOS zooms the whole page in when a text field smaller than 16px
+ * takes focus, and it does not zoom back out. 0.95rem is 15.2px, so focusing
+ * this field left the page scaled up and scrolling in both directions - which
+ * looks like the dialog overflowing and is really the viewport being zoomed.
+ */
+@media (hover: none) and (pointer: coarse) {
+  .searchInput {
+    font-size: 16px;
+  }
 }
 
 .searchInput::placeholder {
@@ -155,6 +193,45 @@
   color: var(--text-subtle);
 }
 
+/* ---- Close ---- */
+
+.closeBtn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    color 140ms ease,
+    border-color 140ms ease,
+    background 140ms ease;
+}
+
+.closeBtn:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--bg-elevated);
+}
+
+.closeBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* A thumb is not a cursor: the target grows where there is no hover to aim with. */
+@media (hover: none) and (pointer: coarse) {
+  .closeBtn {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
 @media (min-width: 640px) {
   .escBadge {
     display: inline-block;
@@ -173,7 +250,9 @@
   background: color-mix(in oklab, var(--bg) 80%, transparent);
 }
 
+/* The label is not a charm and does not stretch with them. */
 .charmsLabel {
+  flex: 0 0 auto;
   font-family: var(--font-mono, monospace);
   font-size: 0.65rem;
   letter-spacing: 0.18em;
@@ -184,7 +263,24 @@
   margin-right: 0.25rem;
 }
 
+/*
+ * The charms fill the row they land on, rather than leaving a ragged right edge.
+ *
+ * Reordering was the first thing tried and it cannot fix this. Brute-forcing all
+ * 720 orders against the four common phone widths, the best possible order saves
+ * one row out of twenty and still leaves a 161px gap on its worst line, because
+ * the chips are simply wide against a phone: "Storyline (6 Cinematic Acts)" is
+ * 193px of the 284px a 360px screen has to give. There is no order in which
+ * these six labels tile a phone neatly.
+ *
+ * Growing them does fix it, at every width and for any future label, because the
+ * leftover space is divided among whatever is on the line instead of being left
+ * at the end of it. `flex-basis: auto` keeps the wrapping decisions based on the
+ * text, so the rows break where they always did.
+ */
 .tiltedCharm {
+  flex: 1 1 auto;
+  justify-content: center;
   font-size: 0.75rem;
   white-space: nowrap;
   padding: 0.22rem 0.65rem;
@@ -220,9 +316,17 @@
 
 /* ---- Results Inscription List ---- */
 
+/*
+ * `flex: 1` with `min-height: 0` is what lets this shrink below its content
+ * when the panel is up against the top of the screen; the `max-height` keeps it
+ * from sprawling on a desktop, where there is room to spare.
+ */
 .resultsList {
-  max-height: 52vh;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 52dvh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0.6rem 0.75rem;
 }
 
@@ -330,6 +434,19 @@
   font-family: var(--font-mono, monospace);
   font-size: 0.7rem;
   color: var(--text-subtle);
+}
+
+/*
+ * The footer is nothing but keyboard instructions - arrow keys to move, Enter
+ * to open, Escape to close. A phone has none of those, so on touch it is three
+ * lies taking up 70px above the results, wrapping onto two lines to tell them.
+ * The cross in the header is the close affordance there, and tapping a row is
+ * the open one.
+ */
+@media (hover: none) and (pointer: coarse) {
+  .scrollFooter {
+    display: none;
+  }
 }
 
 .kbd {

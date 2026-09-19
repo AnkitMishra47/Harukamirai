@@ -18,13 +18,22 @@ export interface SuggestionChip {
   icon: string;
 }
 
+/*
+ * Order is the packing order, not a ranking - with one exception.
+ *
+ * The recruiter brief stays first because it is the one a recruiter is here for.
+ * The rest are sequenced by how well their widths tile a phone: measured greedily
+ * against 360/390/412/430px, this order fits the six charms in four rows at
+ * 412px where the previous one needed five. The widest charm ("Storyline") goes
+ * last, where a part-used row costs least.
+ */
 export const SUGGESTED_QUERIES: SuggestionChip[] = [
   { id: "sug-exec", label: "Executive Recruiter Brief", query: "Executive Brief", icon: "✦" },
-  { id: "sug-story", label: "Storyline (6 Cinematic Acts)", query: "Storyline", icon: "📖" },
-  { id: "sug-resume", label: "Official Resume PDF", query: "Resume PDF", icon: "📄" },
-  { id: "sug-rag", label: "PostgreSQL 25M+ Vectors", query: "RAG Systems", icon: "⚡" },
   { id: "sug-sprach", label: "1-Day Client Delivery", query: "Sprachkraft", icon: "🚀" },
+  { id: "sug-resume", label: "Official Resume PDF", query: "Resume PDF", icon: "📄" },
   { id: "sug-email", label: "Send Direct Email", query: "Email Ankit", icon: "✉" },
+  { id: "sug-rag", label: "PostgreSQL 25M+ Vectors", query: "RAG Systems", icon: "⚡" },
+  { id: "sug-story", label: "Storyline (6 Cinematic Acts)", query: "Storyline", icon: "📖" },
 ];
 
 export function searchCareerIndex(rawQuery: string): SearchResultItem[] {

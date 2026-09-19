@@ -12,6 +12,7 @@ export function CommandPalette() {
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const results = searchCareerIndex(query);
 
@@ -44,14 +45,38 @@ export function CommandPalette() {
     };
   }, [isOpen]);
 
-  // Focus input on open
+  /*
+   * Focus the input on open - but only where focusing it does not throw a
+   * keyboard over half the screen.
+   *
+   * On a desktop the palette is a keyboard tool: it is opened with Cmd+K and
+   * the caret belongs in the field. On a phone it is opened by tapping a
+   * button, and stealing focus there means the software keyboard covers the
+   * suggestions and results the visitor came to read, before they have typed
+   * anything. They can still tap the field when they actually want to type.
+   *
+   * The dialog itself takes focus instead, so screen readers land inside it and
+   * Escape still has somewhere to go.
+   */
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 40);
-      setSelectedIndex(0);
-    } else {
+    if (!isOpen) {
       setQuery("");
+      return;
     }
+    setSelectedIndex(0);
+    /*
+     * Coarse is the thing being excluded, so coarse is the thing to ask about.
+     * Testing for `fine` instead would withhold focus from anything that is
+     * neither - `pointer: none` is a real answer, given by keyboard-only setups
+     * and by headless browsers, and those are the visitors who want the caret
+     * in the field most.
+     */
+    const wantsKeyboard = !window.matchMedia("(pointer: coarse)").matches;
+    const t = setTimeout(() => {
+      if (wantsKeyboard) inputRef.current?.focus();
+      else dialogRef.current?.focus();
+    }, 40);
+    return () => clearTimeout(t);
   }, [isOpen]);
 
   // Lock body scroll when menu open
@@ -109,6 +134,8 @@ export function CommandPalette() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
+          ref={dialogRef}
+          tabIndex={-1}
           className={styles.backdrop}
           onClick={(e) => {
             if (e.target === e.currentTarget) setIsOpen(false);
@@ -167,6 +194,28 @@ export function CommandPalette() {
                   </button>
                 )}
                 <kbd className={styles.escBadge}>ESC</kbd>
+                {/*
+                  The ESC badge is `display: none` below 640px, which left a
+                  phone with no way out of this dialog at all except the
+                  backdrop it mostly covers. This is that way out, and it is
+                  shown at every size because a cross is not worse with a mouse.
+                */}
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className={styles.closeBtn}
+                  aria-label="Close search"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden focusable="false">
+                    <path
+                      d="M6 6 L18 18 M18 6 L6 18"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.9"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
               </div>
 
               {/* Tilted Spell Charms */}

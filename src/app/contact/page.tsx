@@ -24,7 +24,7 @@ export default function ContactPage() {
           <h1 className="font-display text-5xl md:text-6xl mt-3 text-[var(--text)] leading-[1.02]">
             Send a message.
           </h1>
-          <p className="mt-5 text-base md:text-lg text-[var(--text-muted)] leading-relaxed">
+          <p className="mt-3 text-xs md:text-sm text-[var(--text-muted)] leading-relaxed max-w-2xl">
             Backend architecture, enterprise integrations, AI in production, freelance work, the{" "}
             <em>Black Clover</em> anime adaptation pacing problem - all welcome. So is a note about
             this site itself. I read everything that lands in that inbox.

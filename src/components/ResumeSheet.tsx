@@ -35,9 +35,9 @@ export function ResumeSheet() {
       <Section title="Technical skills">
         <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
           {skills.map((g) => (
-            <div key={g.id} className="grid grid-cols-[7rem_1fr] gap-3 text-sm">
-              <dt className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--text-subtle)] pt-0.5">{g.label}</dt>
-              <dd className="text-[var(--text-muted)]">{g.items.join(", ")}</dd>
+            <div key={g.id} className="grid grid-cols-1 sm:grid-cols-[7.5rem_1fr] gap-1 sm:gap-3 text-sm">
+              <dt className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--accent)] pt-0.5">{g.label}</dt>
+              <dd className="text-[var(--text)] font-normal">{g.items.join(", ")}</dd>
             </div>
           ))}
         </dl>

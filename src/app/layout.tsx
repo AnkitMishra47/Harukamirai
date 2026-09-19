@@ -6,6 +6,9 @@ import { Footer } from "@/components/Footer";
 import { CursorTrail } from "@/components/effects/CursorTrail";
 import { ThemeBurst } from "@/components/effects/ThemeBurst";
 import { AmbientCircle } from "@/components/effects/AmbientCircle";
+import { CommandPalette } from "@/components/command/CommandPalette";
+import { InteractiveStoryPlayer } from "@/components/story/InteractiveStoryPlayer";
+import { RecruiterBriefModal } from "@/components/story/RecruiterBriefModal";
 import { profile } from "@/content";
 import "./globals.css";
 
@@ -63,6 +66,9 @@ export default function RootLayout({
         <CursorTrail />
         <ThemeBurst />
         <Nav />
+        <CommandPalette />
+        <InteractiveStoryPlayer />
+        <RecruiterBriefModal />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>

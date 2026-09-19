@@ -9,7 +9,7 @@ import { MagicReveal } from "./MagicReveal";
  */
 export function Currents() {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-28 md:py-36">
+    <section className="mx-auto max-w-7xl px-6 lg:px-12 py-28 md:py-36">
       <MagicReveal>
         <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">
           Currents · 今

@@ -15,7 +15,7 @@ export default function WorkPage() {
   const career = timeline.filter((t) => t.kind === "role" || t.kind === "award");
 
   return (
-    <article className="mx-auto max-w-5xl px-6 py-20 md:py-28">
+    <article className="mx-auto max-w-7xl px-6 lg:px-12 py-20 md:py-28">
       <header className="mb-20">
         <MagicReveal>
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">Work</p>
@@ -90,12 +90,12 @@ export default function WorkPage() {
         <ol className="mt-12 relative border-l border-[var(--border)] pl-8 space-y-12">
           {career.map((step, i) => (
             <MagicReveal key={step.id} delay={i * 0.1}>
-              <li className="list-none">
+              <li className="list-none relative">
                 <span
-                  className="timeline-dot absolute -left-[5px] mt-1.5 block size-2.5 rounded-full bg-[var(--accent)] ring-4 ring-[var(--bg)] shadow-[0_0_10px_var(--accent)]"
+                  className="timeline-dot absolute -left-[37px] top-1 block size-2.5 rounded-full bg-[var(--accent)] ring-4 ring-[var(--bg)] shadow-[0_0_10px_var(--accent)]"
                   aria-hidden
                 />
-                <p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--text-subtle)]">{step.date}</p>
+                <p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--accent)] font-medium">{step.date}</p>
                 <p className="font-display text-xl mt-0.5 text-[var(--text)]">{step.title}</p>
                 <p className="text-sm text-[var(--text-muted)] mt-1.5 max-w-2xl leading-relaxed">{step.note}</p>
               </li>

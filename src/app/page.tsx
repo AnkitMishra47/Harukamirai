@@ -19,7 +19,7 @@ export default function HomePage() {
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
           <MagicCircle size={1200} intensity="subtle" />
         </div>
-        <div className="relative mx-auto max-w-6xl px-6 py-14 grid gap-10 md:grid-cols-3">
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-12 py-14 grid gap-10 md:grid-cols-3">
           <Stat kicker={newest.year} value={newest.title} note="Company-wide award, OneIT." delay={0} />
           <Stat kicker={previous.year} value={previous.title} note="Signed by MD David Barton." delay={0.15} />
           <Stat kicker="3 in 3" value="Promotions in three years" note="Junior Intern → Senior Software Engineer." delay={0.3} />
@@ -27,7 +27,7 @@ export default function HomePage() {
       </section>
 
       {/* FEATURED WORK */}
-      <section className="mx-auto max-w-6xl px-6 py-28 md:py-36">
+      <section className="mx-auto max-w-7xl px-6 lg:px-12 py-28 md:py-36">
         <MagicReveal>
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">
             Featured spells
@@ -64,12 +64,12 @@ export default function HomePage() {
           ))}
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-14 text-center">
           <Link
             href="/work"
-            className="group inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+            className="group inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-7 py-3.5 text-sm font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:shadow-[0_0_20px_var(--accent-glow)]"
           >
-            All work, full timeline
+            <span>All work, full timeline</span>
             <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
           </Link>
         </div>

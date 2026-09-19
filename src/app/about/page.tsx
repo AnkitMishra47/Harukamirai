@@ -13,7 +13,7 @@ export default function AboutPage() {
   const emailLink = profile.links.find((l) => l.label === "Email")!;
 
   return (
-    <article className="mx-auto max-w-5xl px-6 py-20 md:py-28">
+    <article className="mx-auto max-w-7xl px-6 lg:px-12 py-20 md:py-28">
       <header className="mb-16">
         <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">About</p>
         <h1 className="font-display text-5xl md:text-6xl mt-3 text-[var(--text)] leading-[1.02]">
@@ -22,7 +22,7 @@ export default function AboutPage() {
       </header>
 
       {/* PORTRAIT + BIO */}
-      <div className="grid gap-12 md:grid-cols-[1fr_280px] md:gap-14 items-start">
+      <div className="grid gap-12 md:grid-cols-[1fr_320px] md:gap-16 items-start">
         <div className="prose-lg space-y-6 text-lg leading-relaxed text-[var(--text-muted)] order-2 md:order-1">
           {profile.bio.map((para) => (
             <p key={para.slice(0, 32)}>
@@ -44,12 +44,13 @@ export default function AboutPage() {
         </div>
 
         <div className="order-1 md:order-2 md:sticky md:top-28">
-          <div className="relative aspect-[3/4] w-full max-w-[280px] mx-auto overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)]">
+          <div className="relative aspect-[3/4] w-full max-w-[320px] mx-auto overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)]">
             <Image
               src={photos.portrait.src}
               alt={photos.portrait.alt}
               fill
-              sizes="(min-width: 768px) 280px, 80vw"
+              unoptimized
+              sizes="(min-width: 768px) 320px, 80vw"
               className="object-cover grayscale-[0.15] transition-all duration-500 hover:grayscale-0"
               priority
             />
@@ -75,6 +76,7 @@ export default function AboutPage() {
               src={photos.awardTrophy.src}
               alt={photos.awardTrophy.alt}
               fill
+              unoptimized
               sizes="(min-width: 768px) 260px, 80vw"
               className="object-cover"
             />
@@ -109,10 +111,10 @@ export default function AboutPage() {
               key={t.quote.slice(0, 24)}
               className="relative rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-6 transition-colors hover:border-[var(--accent)]"
             >
-              <span className="absolute -top-3 left-5 font-display text-5xl leading-none text-[var(--accent)]" aria-hidden>
+              <span className="font-display text-4xl leading-none text-[var(--accent)] select-none block mb-2" aria-hidden>
                 &ldquo;
               </span>
-              <blockquote className="text-[var(--text-muted)] leading-relaxed text-sm pt-2">{t.quote}</blockquote>
+              <blockquote className="text-[var(--text-muted)] leading-relaxed text-sm">{t.quote}</blockquote>
               <figcaption className="mt-5 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-subtle)]">
                 - {t.attribution}
               </figcaption>
@@ -131,12 +133,12 @@ export default function AboutPage() {
 
         <ol className="relative border-l border-[var(--border)] pl-6 space-y-7">
           {timeline.map((step) => (
-            <li key={step.id}>
+            <li key={step.id} className="relative">
               <span
-                className="absolute -left-[5px] mt-1.5 block size-2.5 rounded-full bg-[var(--accent)] ring-4 ring-[var(--bg)]"
+                className="absolute -left-[30px] top-1 block size-2.5 rounded-full bg-[var(--accent)] ring-4 ring-[var(--bg)]"
                 aria-hidden
               />
-              <p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--text-subtle)]">{step.date}</p>
+              <p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--accent)]">{step.date}</p>
               <p className="font-display text-xl text-[var(--text)] mt-0.5">{step.title}</p>
               <p className="text-sm text-[var(--text-muted)] mt-1">{step.note}</p>
             </li>
@@ -181,13 +183,14 @@ export default function AboutPage() {
       </section>
 
       {/* SLOGAN BANNER */}
-      <section className="mt-28 -mx-6">
-        <div className="relative h-[420px] overflow-hidden md:rounded-3xl">
+      <section className="mt-28">
+        <div className="relative h-[420px] overflow-hidden rounded-3xl border border-[var(--border)]">
           <Image
             src={photos.openRoad.src}
             alt={photos.openRoad.alt}
             fill
-            sizes="(min-width: 1024px) 1024px, 100vw"
+            unoptimized
+            sizes="(min-width: 1024px) 1280px, 100vw"
             className="object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />

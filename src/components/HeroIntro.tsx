@@ -87,19 +87,29 @@ export function HeroIntro() {
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto grid min-h-[88vh] max-w-6xl grid-cols-1 items-center gap-12 px-6 pt-24 pb-20 lg:grid-cols-[1.4fr_1fr]">
+      <div className="relative z-10 mx-auto grid min-h-[88vh] max-w-7xl grid-cols-1 items-center gap-12 px-6 lg:px-12 pt-24 pb-20 lg:grid-cols-[1.3fr_1fr]">
         <div>
-          <p className="hero-in hero-in-1 text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--accent)]">
-            <span className="font-jp text-base tracking-normal">アスタ</span>
-            <span className="mx-2 opacity-40">·</span>
-            <span className="font-jp text-base tracking-normal">反魔法</span>
-            <span className="mx-3 opacity-40">·</span>
+          <div className="hero-in hero-in-1 mb-3.5 inline-flex items-center gap-2.5 rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--bg-elevated)_70%,var(--accent-glow))] px-3.5 py-1.5 shadow-[0_0_15px_var(--accent-glow)] backdrop-blur-sm">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75" />
+              <span className="relative inline-flex size-2 rounded-full bg-[var(--accent)]" />
+            </span>
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
+              Welcome to Haruka Mirai · Grimoire No. 17
+            </span>
+          </div>
+
+          <p className="hero-in hero-in-1 flex flex-wrap items-center text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--accent)]">
+            <span className="font-jp text-sm tracking-normal">アスタ</span>
+            <span className="mx-2 opacity-50">·</span>
+            <span className="font-jp text-sm tracking-normal">反魔法</span>
+            <span className="mx-3 opacity-50">·</span>
             <span className="whitespace-nowrap">ANTI-MAGIC GRIMOIRE</span>
           </p>
-          <p className="hero-in hero-in-2 mt-1.5 text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--text-subtle)]">
-            <span className="font-jp text-base tracking-normal">遥か未来</span>
-            <span className="mx-3 opacity-40">·</span>
-            No. 17
+          <p className="hero-in hero-in-2 mt-2 flex flex-wrap items-center text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--text-subtle)]">
+            <span className="font-jp text-sm tracking-normal">遥か未来</span>
+            <span className="mx-3 opacity-50">·</span>
+            <span>NO. 17</span>
           </p>
 
           {/* Title - the A and I in ANKIT are accent-coloured: they spell AI. */}
@@ -127,56 +137,78 @@ export function HeroIntro() {
             ))}
           </h1>
 
-          <div className="hero-in hero-in-4 mt-5 flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent)]/40 bg-[var(--accent-glow)] px-3 py-1.5">
-              <span className="font-display text-base font-bold text-[var(--accent)]">A</span>
-              <span className="text-xs text-[var(--text-subtle)]">·</span>
-              <span className="font-display text-base font-bold text-[var(--accent)]">I</span>
-              <span className="ml-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                engineer
+          <div className="hero-in hero-in-4 mt-6 flex flex-wrap items-center gap-3">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--bg-elevated)_70%,var(--accent-glow))] py-1.5 pl-2 pr-3.5 shadow-[0_2px_12px_var(--accent-glow)] backdrop-blur-sm">
+              <span className="inline-flex items-center gap-0.5 rounded-full bg-[var(--accent)] px-2 py-0.5 font-display text-xs font-bold leading-none text-[var(--bg)] shadow-[0_0_8px_var(--accent)]">
+                <span>A</span>
+                <span className="opacity-70">·</span>
+                <span>I</span>
               </span>
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-subtle)]">
-              <span className="hidden sm:inline" aria-hidden>↑ </span>not a coincidence
+              <span className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--text)] leading-none">
+                Software Engineer
+              </span>
+            </div>
+            <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+              <span className="size-1 rounded-full bg-[var(--accent)]" aria-hidden />
+              <span>Not a coincidence</span>
             </span>
           </div>
 
           <div
-            className="hero-rule mt-6 h-[2px] w-40 origin-left bg-[var(--accent)]"
+            className="hero-rule mt-6 h-[2px] w-44 origin-left bg-[var(--accent)]"
             style={{ boxShadow: "0 0 18px var(--accent-glow)" }}
           />
 
-          <p
-            className="hero-in hero-in-5 mt-8 max-w-xl text-lg sm:text-xl text-[var(--text-muted)] leading-relaxed"
-            style={{ textShadow: "0 0 18px var(--bg), 0 0 6px var(--bg)" }}
-          >
+          <p className="hero-in hero-in-5 mt-8 max-w-xl text-lg sm:text-xl text-[var(--text)] leading-relaxed">
             {profile.heroLine}{" "}
             <a
               href={profile.employer.href}
               target="_blank"
               rel="noreferrer"
-              className="text-[var(--accent)] underline decoration-1 underline-offset-4 hover:text-[var(--accent-hover)]"
+              className="font-medium text-[var(--accent)] underline decoration-1 underline-offset-4 transition-colors hover:text-[var(--accent-hover)]"
             >
               {profile.employer.name}
             </a>
             .
           </p>
 
-          <div className="hero-in hero-in-6 mt-10 flex flex-wrap items-center gap-4 text-sm">
+          <div className="hero-in hero-in-6 mt-10 flex flex-wrap items-center gap-3 text-sm">
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("open-interactive-story"))}
+              className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-[var(--accent)] px-6 py-3.5 font-medium text-[var(--bg)] shadow-[0_4px_20px_var(--accent-glow)] transition-all hover:shadow-[0_0_30px_var(--accent-glow)] cursor-pointer"
+            >
+              <span className="relative z-10 font-bold text-xs">▶</span>
+              <span className="relative z-10 font-semibold">Play Career Story (45s)</span>
+              <span className="absolute inset-0 -translate-x-full bg-[var(--accent-hover)] transition-transform duration-500 group-hover:translate-x-0" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("open-recruiter-brief"))}
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/60 bg-[color-mix(in_oklab,var(--bg-elevated)_80%,var(--accent-glow))] px-5 py-3.5 font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:shadow-[0_0_20px_var(--accent-glow)] cursor-pointer"
+            >
+              <span>🎯</span>
+              <span>30s Recruiter Brief</span>
+            </button>
+
             <Link
               href="/work"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[var(--accent)] px-6 py-3 font-medium text-[var(--bg)] transition-all hover:shadow-[0_0_30px_var(--accent-glow)]"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-5 py-3.5 font-medium text-[var(--text-muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--text)]"
             >
-              <span className="relative z-10">Open the grimoire</span>
-              <span className="relative z-10 transition-transform group-hover:translate-x-1" aria-hidden>→</span>
-              <span className="absolute inset-0 -translate-x-full bg-[var(--accent-hover)] transition-transform duration-500 group-hover:translate-x-0" />
+              <span>Work & Projects</span>
+              <span aria-hidden>→</span>
             </Link>
-            <Link
-              href="/about"
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] px-6 py-3 text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors"
+
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("open-command-palette"))}
+              className="group inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-3.5 text-xs font-mono uppercase tracking-[0.14em] text-[var(--text-muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--text)] cursor-pointer"
+              aria-label="Open vector search palette"
             >
-              Read the story
-            </Link>
+              <span className="text-[var(--accent)] font-bold">⌘K</span>
+              <span className="hidden sm:inline">Search</span>
+            </button>
           </div>
         </div>
 

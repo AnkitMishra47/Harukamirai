@@ -6,7 +6,7 @@ export function Footer() {
   const linkedin = profile.links.find((l) => l.label === "LinkedIn")!;
   return (
     <footer className="mt-32 border-t border-[var(--border)]">
-      <div className="mx-auto max-w-6xl px-6 py-14 grid gap-12 md:grid-cols-2">
+      <div className="mx-auto max-w-7xl px-6 lg:px-12 py-14 grid gap-12 md:grid-cols-2">
         <div>
           <p className="font-display text-2xl text-[var(--text)]">遥か未来</p>
           <p className="font-jp text-sm text-[var(--text-subtle)] mt-1">Haruka Mirai - the future, forged.</p>
@@ -48,7 +48,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-[var(--border)]">
-        <p className="mx-auto max-w-6xl px-6 py-5 text-xs text-[var(--text-subtle)]">
+        <p className="mx-auto max-w-7xl px-6 lg:px-12 py-5 text-xs text-[var(--text-subtle)]">
           © {new Date().getFullYear()} {profile.name} · {profile.domain}
         </p>
       </div>

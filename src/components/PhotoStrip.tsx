@@ -2,8 +2,8 @@ import Image from "next/image";
 import type { Photo } from "@/content/types";
 import styles from "./photo-strip.module.css";
 
-/** Container width the strip sits in on desktop: max-w-5xl (1024px) less px-6. */
-const CONTAINER = 976;
+/** Container width the strip sits in on desktop: max-w-7xl (1280px) less px-12 (96px). */
+const CONTAINER = 1184;
 const GAP = 16;
 
 /**
@@ -27,7 +27,7 @@ export function PhotoStrip({ photos }: { photos: readonly Photo[] }) {
     <div className={styles.strip}>
       {photos.map((photo, i) => {
         const share = ratios[i] / ratioSum;
-        // Desktop: a fixed slice of the 976px container.
+        // Desktop: a fixed slice of the 1184px container.
         const wide = Math.round(available * share);
         // Tablet: the container tracks the viewport, so the slice does too.
         const mid = (share * (available / CONTAINER) * 100).toFixed(1);
@@ -48,6 +48,7 @@ export function PhotoStrip({ photos }: { photos: readonly Photo[] }) {
                 src={photo.src}
                 alt={photo.alt}
                 fill
+                unoptimized
                 sizes={`(min-width: 1024px) ${wide}px, (min-width: 640px) ${mid}vw, 100vw`}
               />
             </div>

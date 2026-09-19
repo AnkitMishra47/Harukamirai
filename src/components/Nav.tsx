@@ -39,7 +39,7 @@ export function Nav() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[color-mix(in_oklab,var(--bg)_92%,transparent)] backdrop-blur-md">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-12 py-4">
         <Link
           href="/"
           aria-label="Home"
@@ -67,7 +67,23 @@ export function Nav() {
             ))}
           </ul>
 
-          <div className="ml-2 hidden md:block">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-command-palette"))}
+            aria-label="Search with vector palette (Cmd+K)"
+            className="flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-1 text-xs text-[var(--text-muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--text)] hover:shadow-[0_0_12px_var(--accent-glow)] cursor-pointer"
+          >
+            <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <circle cx="8" cy="8" r="6" />
+              <line x1="13" y1="13" x2="18" y2="18" />
+            </svg>
+            <span className="hidden lg:inline text-[11px] font-mono tracking-wider">AI SEARCH</span>
+            <kbd className="rounded border border-[var(--border)] bg-[var(--bg)] px-1 font-mono text-[10px] text-[var(--accent)]">
+              ⌘K
+            </kbd>
+          </button>
+
+          <div className="ml-1 hidden md:block">
             <CloverToggle />
           </div>
 

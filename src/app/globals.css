@@ -42,23 +42,23 @@
 
 [data-theme="leaf-5"] {
   --bg:              #070605;
-  --bg-elevated:     #131010;
+  --bg-elevated:     #141110;
   --bg-inset:        #030202;
 
-  --text:            #f2ecdd;
-  --text-muted:      #9a9083;
-  --text-subtle:     #807768;   /* 4.59:1 on ink */
+  --text:            #f5f0e4;   /* Crisp warm ivory: 17:1 contrast on ink */
+  --text-muted:      #c4bcb1;   /* Warm silver parchment: 9.8:1 contrast on ink */
+  --text-subtle:     #a49a8d;   /* Readable kicker tone: 6.8:1 contrast on ink */
 
   /* Anti-magic crimson, hot enough to clear 4.5:1 on the ink ground */
   --accent:          #f02040;
   --accent-hover:    #ff4d66;
   --accent-glow:     rgba(240, 32, 64, 0.42);
 
-  --gold:            #d8a93a;
-  --gold-glow:       rgba(216, 169, 58, 0.22);
+  --gold:            #e4b74a;
+  --gold-glow:       rgba(228, 183, 74, 0.25);
 
-  --border:          #2b2420;
-  --border-strong:   #4e443a;
+  --border:          #2e2722;
+  --border-strong:   #5e5347;   /* Crisp borders for cards and buttons */
 
   --clover-leaf:     #f0ebde;
   --clover-stem:     #6b6358;
@@ -138,10 +138,20 @@ body {
   color: var(--bg);
 }
 
+/* Hide scrollbar for clean horizontal pill strips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Reduced motion — instant swap */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }

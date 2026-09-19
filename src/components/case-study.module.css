@@ -92,3 +92,106 @@
   opacity: 1;
   transition: opacity 320ms ease 120ms;
 }
+
+/*
+ * ============================================================
+ * CARD PLATE - the drawn mark at the head of every case study
+ * ============================================================
+ *
+ * The plate is the card's "image area". It bleeds to the card's edges by
+ * cancelling the card's own padding (p-6 / md:p-8), and the card carries
+ * `overflow-hidden` so its rounded corners clip the plate rather than the
+ * plate having to repeat the radius.
+ *
+ * Nothing on this band is text, at any width. The ground below it is
+ * unchanged --bg-elevated, so the measured contrast of the kicker, title and
+ * teaser is exactly what it was before the plate existed.
+ *
+ * The ground is two gradients and a ruled grid - no image request, no bytes on
+ * the wire. The grid is masked to a soft oval so it fades out at the edges
+ * instead of stopping on a hard line, and it fills whatever margin the SVG's
+ * `meet` scaling leaves at the sides of a wide card.
+ */
+.plate {
+  position: relative;
+  height: 5.75rem;
+  margin: -1.5rem -1.5rem 0;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  /* The wash is mixed from --accent rather than taken from --accent-glow,
+     which is 20% in leaf-4 but 42% in leaf-5: at 42% every card wore a red
+     halo and the mark underneath stopped reading. One figure for both themes
+     keeps the plate a ground and the drawing the subject. */
+  background:
+    radial-gradient(130% 150% at 50% 0%, color-mix(in srgb, var(--accent) 15%, transparent), transparent 60%),
+    linear-gradient(168deg, var(--bg-inset), var(--bg-elevated));
+}
+
+@media (min-width: 768px) {
+  .plate {
+    height: 6.25rem;
+    margin: -2rem -2rem 0;
+  }
+}
+
+.plate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(to right, var(--border) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(to bottom, var(--border) 0 1px, transparent 1px 22px);
+  opacity: 0.4;
+  -webkit-mask-image: radial-gradient(120% 130% at 50% 40%, #000 18%, transparent 76%);
+  mask-image: radial-gradient(120% 130% at 50% 40%, #000 18%, transparent 76%);
+}
+
+.mark {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* The two inks every mark is drawn in. Stroke-only: a filled mark would read as
+   a UI screenshot, which is the one thing these cards must never look like. */
+.ink,
+.gilt {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.ink {
+  stroke: var(--accent);
+  stroke-width: 1.4;
+  opacity: 0.58;
+}
+
+.gilt {
+  stroke: var(--gold);
+  stroke-width: 1.2;
+  opacity: 0.62;
+}
+
+.dot {
+  fill: var(--accent);
+  stroke: none;
+  opacity: 0.7;
+}
+
+.dotGilt {
+  fill: var(--gold);
+  stroke: none;
+  opacity: 0.7;
+}
+
+.dash {
+  stroke-dasharray: 3 5;
+}
+
+/* Declared after .ink/.gilt so it wins on source order when combined. */
+.faint {
+  opacity: 0.32;
+}

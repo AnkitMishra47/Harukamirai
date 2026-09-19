@@ -2,6 +2,7 @@
 
 import type { CaseStudy } from "@/content";
 import { TechPill } from "@/components/TechPill";
+import { CaseStudyMotif } from "@/components/CaseStudyMotif";
 
 /** Id of the detail panel a card's toggle controls. Shared with CaseStudyGrid. */
 export function detailPanelId(slug: string) {
@@ -27,6 +28,10 @@ export function cardTitleId(slug: string) {
  * as a separate full-width row, so opening a card cannot move the card, its
  * footer, or the card beside it. The card is a flex column that fills its grid
  * cell, which is what keeps both cards in a row the same height.
+ *
+ * The plate at the top is a fixed-height flex item, so it takes the same bite
+ * out of every card and leaves the equal-height behaviour exactly as it was:
+ * the article still grows, the footer still sits on the bottom edge.
  */
 export function CaseStudyCard({
   study,
@@ -40,13 +45,15 @@ export function CaseStudyCard({
   return (
     <article
       id={study.slug}
-      className={`group relative flex h-full flex-1 flex-col scroll-mt-28 rounded-2xl border bg-[var(--bg-elevated)] p-6 md:p-8 transition-[border-color,box-shadow] duration-300 hover:border-[var(--accent)] hover:shadow-[0_0_30px_var(--accent-glow)] ${
+      className={`group relative flex h-full flex-1 flex-col overflow-hidden scroll-mt-28 rounded-2xl border bg-[var(--bg-elevated)] p-6 md:p-8 transition-[border-color,box-shadow] duration-300 hover:border-[var(--accent)] hover:shadow-[0_0_30px_var(--accent-glow)] ${
         expanded
           ? "border-[var(--accent)] shadow-[0_0_30px_var(--accent-glow)]"
           : "border-[var(--border)]"
       }`}
     >
-      <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{study.kicker}</p>
+      <CaseStudyMotif slug={study.slug} />
+
+      <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)] mt-6 md:mt-8">{study.kicker}</p>
       <h3
         id={cardTitleId(study.slug)}
         className="font-display text-xl md:text-2xl mt-2 text-[var(--text)] leading-tight"

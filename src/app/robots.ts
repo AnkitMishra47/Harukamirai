@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // Stub routes — crawlable by humans via the nav, but not advertised
+        // Stub routes - crawlable by humans via the nav, but not advertised
         // to search engines until they have real content.
         disallow: ["/writing", "/now", "/lab"],
       },

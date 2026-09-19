@@ -5,7 +5,7 @@ type Props = {
 
 /**
  * 4-leaf clover with optional 5th anti-magic leaf (driven by CSS vars).
- * Designed for legibility down to ~20px — uses bold rounded leaves with
+ * Designed for legibility down to ~20px - uses bold rounded leaves with
  * white stroke separation, not overlapping fills.
  */
 export function CloverIcon({ size = 32, className }: Props) {
@@ -25,7 +25,7 @@ export function CloverIcon({ size = 32, className }: Props) {
         d="M 50 56 Q 47 68 49 84 Q 50 86 51 84 Q 53 68 50 56 Z"
       />
 
-      {/* 4 leaves — bold rounded "spade-with-notch" shapes pointing outward */}
+      {/* 4 leaves - bold rounded "spade-with-notch" shapes pointing outward */}
       <g className="leaves">
         {/* Top */}
         <path
@@ -51,13 +51,13 @@ export function CloverIcon({ size = 32, className }: Props) {
         <circle cx="50" cy="50" r="4" className="leaf" />
       </g>
 
-      {/* 5th leaf — jagged, demonic, top-left, hidden in leaf-4 state */}
+      {/* 5th leaf - jagged, demonic, top-left, hidden in leaf-4 state */}
       <path
         className="leaf-fifth"
         d="M 50 50 L 32 32 L 22 16 L 36 22 L 30 6 L 44 18 L 38 4 L 50 14 Z"
       />
 
-      {/* Demon eye — only visible in leaf-5 (Asta) mode, slow pulse */}
+      {/* Demon eye - only visible in leaf-5 (Asta) mode, slow pulse */}
       <g className="demon-eye">
         <ellipse cx="50" cy="50" rx="3.6" ry="6" />
         <ellipse cx="50" cy="50" rx="1.2" ry="4.6" className="demon-pupil" />

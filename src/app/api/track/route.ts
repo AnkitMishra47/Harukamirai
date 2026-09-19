@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 /**
- * Lightweight beacon endpoint — logs resume download events.
+ * Lightweight beacon endpoint - logs resume download events.
  * In production, pipe to an analytics service; for now, server-side console log.
  */
 export async function POST(req: Request) {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ComingSoon } from "@/components/ComingSoon";
 
-export const metadata: Metadata = { title: "Writing — Ankit Mishra" };
+export const metadata: Metadata = { title: "Writing - Ankit Mishra" };
 
 export default function WritingPage() {
   return (

@@ -7,7 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Only real, content-bearing routes are listed. /writing, /now, /lab are
   // ComingSoon stubs and stay out of the sitemap until they have real
-  // content — thin placeholder pages hurt the site's overall quality signal
+  // content - thin placeholder pages hurt the site's overall quality signal
   // in search results.
   return [
     {

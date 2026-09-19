@@ -1358,16 +1358,17 @@ export function ShutterStoryExperience() {
           isShutterLifted
             ? { y: "-100%" }
             : {
-                y: shouldReduceMotion ? 0 : [0, -24, 0],
+                y: shouldReduceMotion ? 0 : [0, -50, -50, 0],
               }
         }
         transition={
           isShutterLifted
             ? { duration: 0.9, ease: [0.16, 1, 0.3, 1] }
             : {
-                duration: 4.2,
+                duration: 4.8,
+                times: [0, 0.25, 0.65, 1],
                 repeat: Infinity,
-                repeatDelay: 3.2,
+                repeatDelay: 2.5,
                 ease: "easeInOut",
               }
         }
@@ -1468,34 +1469,6 @@ export function ShutterStoryExperience() {
               <span>Browse Portfolio Directly</span>
             </button>
           </div>
-
-          {/* Interactive Slide-Up Guidance Badge */}
-          <div className="mt-7 flex flex-col items-center justify-center gap-2">
-            <button
-              type="button"
-              onClick={liftShutter}
-              className="group inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 hover:bg-amber-400/20 px-4 py-2 font-mono text-xs font-semibold text-amber-300 shadow-[0_0_16px_rgba(245,158,11,0.15)] transition-all cursor-pointer hover:scale-105"
-            >
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="animate-bounce"
-                aria-hidden
-              >
-                <polyline points="18 15 12 9 6 15" />
-              </svg>
-              <span>Slide / Drag Up to Lift Shutter</span>
-            </button>
-            <p className="font-mono text-[11px] text-white/40">
-              Drag anywhere with pointer · Swipe up on touch · Press Space or Enter
-            </p>
-          </div>
           </div>
         </main>
 
@@ -1520,7 +1493,7 @@ export function ShutterStoryExperience() {
             >
               <polyline points="18 15 12 9 6 15" />
             </svg>
-            <span>PULL / SLIDE UP TO ENTER</span>
+            <span>SLIDE UP OR CLICK TO ENTER</span>
           </span>
           <span className="hidden sm:inline">OneIT Australia</span>
         </footer>

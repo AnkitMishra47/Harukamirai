@@ -168,7 +168,7 @@ body {
 .font-jp {
   font-family: var(--font-jp), "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP",
     "Shippori Mincho", "Times New Roman", serif;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0.04em;
 }
 

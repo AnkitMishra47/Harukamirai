@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Fraunces, Geist, JetBrains_Mono, Shippori_Mincho } from "next/font/google";
+import { Fraunces, Geist, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { themeInitScript } from "@/lib/theme-init";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
@@ -11,7 +12,7 @@ import "./globals.css";
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
-  axes: ["SOFT", "WONK", "opsz"],
+  axes: ["opsz"],
   display: "swap",
 });
 
@@ -27,10 +28,13 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-const jp = Shippori_Mincho({
-  subsets: ["latin"],
-  weight: ["400", "700"],
+// Self-hosted glyph subset (scripts/subset-jp-font.sh). The Google-hosted
+// family shipped 125 preloaded slices totalling 4 MB.
+const jp = localFont({
+  src: "../../public/fonts/ShipporiMincho-subset.woff2",
+  weight: "400",
   variable: "--font-jp",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MagicCircle } from "@/components/effects/MagicCircle";
 import { ParticleField } from "@/components/effects/ParticleField";
 import { GrimoireLazy } from "@/components/effects/GrimoireLazy";
@@ -20,6 +20,15 @@ import { profile } from "@/content";
  */
 export function HeroIntro() {
   const heroRef = useRef<HTMLElement>(null);
+  const [entranceKey, setEntranceKey] = useState(0);
+
+  useEffect(() => {
+    const onReveal = () => {
+      setEntranceKey((k) => k + 1);
+    };
+    window.addEventListener("portfolio-revealed", onReveal);
+    return () => window.removeEventListener("portfolio-revealed", onReveal);
+  }, []);
 
   useEffect(() => {
     const el = heroRef.current;
@@ -57,7 +66,7 @@ export function HeroIntro() {
   const [first, second] = profile.nameLines;
 
   return (
-    <section ref={heroRef} className="relative overflow-hidden">
+    <section key={entranceKey} ref={heroRef} className="relative overflow-hidden">
       <div className="absolute inset-0 z-0">
         <ParticleField />
       </div>

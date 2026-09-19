@@ -373,6 +373,7 @@ export function ShutterStoryExperience() {
   const exitToPortfolio = () => {
     successionEngine.stop();
     setIsExitingTheater(true);
+    window.dispatchEvent(new CustomEvent("portfolio-revealed"));
     setTimeout(() => {
       setIsDismissed(true);
     }, 700);

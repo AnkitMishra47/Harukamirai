@@ -1,7 +1,32 @@
 "use client";
 
-import { motion, useInView } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+/** True once the element has entered the viewport; never flips back. */
+function useInViewOnce<T extends Element>(margin = "-80px") {
+  const ref = useRef<T>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (!("IntersectionObserver" in window)) {
+      setInView(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: margin }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [margin]);
+  return { ref, inView };
+}
 
 export function MagicReveal({
   children,
@@ -12,51 +37,36 @@ export function MagicReveal({
   delay?: number;
   className?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-
+  const { ref, inView } = useInViewOnce<HTMLDivElement>();
   return (
-    <motion.div
+    <div
       ref={ref}
-      className={className}
-      initial={{ opacity: 0, y: 28 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay }}
+      className={`reveal-up ${inView ? "is-in" : ""} ${className}`}
+      style={{ transitionDelay: `${delay}s` }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
 export function BrushDivider() {
-  const ref = useRef<SVGSVGElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-50px" });
+  const { ref, inView } = useInViewOnce<SVGSVGElement>("-50px");
   return (
-    <motion.svg
+    <svg
       ref={ref}
       viewBox="0 0 600 24"
-      className="mx-auto block w-full max-w-md my-16"
+      className={`brush mx-auto block w-full max-w-md my-16 ${inView ? "is-in" : ""}`}
       aria-hidden
     >
-      <motion.path
+      <path
         d="M 20 12 C 80 4, 180 20, 280 10 S 480 18, 580 12"
         fill="none"
         stroke="var(--accent)"
         strokeWidth="2.5"
         strokeLinecap="round"
-        initial={{ pathLength: 0 }}
-        animate={inView ? { pathLength: 1 } : {}}
-        transition={{ duration: 1.4, ease: [0.65, 0, 0.35, 1] }}
+        pathLength={1}
       />
-      <motion.circle
-        cx="300"
-        cy="12"
-        r="2.5"
-        fill="var(--accent)"
-        initial={{ opacity: 0, scale: 0 }}
-        animate={inView ? { opacity: 1, scale: 1 } : {}}
-        transition={{ duration: 0.4, delay: 1.2 }}
-      />
-    </motion.svg>
+      <circle cx="300" cy="12" r="2.5" fill="var(--accent)" />
+    </svg>
   );
 }

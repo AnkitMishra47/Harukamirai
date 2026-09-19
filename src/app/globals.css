@@ -267,3 +267,11 @@ body {
 .spin-ccw { animation: spin-ccw var(--spin, 80s) linear infinite; transform-origin: 400px 400px; transform-box: view-box; }
 .ring-pulse { animation: ring-pulse 4s ease-in-out infinite; transform-origin: 400px 400px; transform-box: view-box; }
 .circle-in { animation: circle-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Scroll reveals - class flipped once by IntersectionObserver */
+.reveal-up { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up.is-in { opacity: 1; transform: none; }
+.brush path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s cubic-bezier(0.65,0,0.35,1); }
+.brush circle { opacity: 0; transform: scale(0); transform-origin: 300px 12px; transform-box: view-box; transition: opacity .4s 1.2s, transform .4s 1.2s; }
+.brush.is-in path { stroke-dashoffset: 0; }
+.brush.is-in circle { opacity: 1; transform: scale(1); }

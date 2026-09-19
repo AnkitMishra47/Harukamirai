@@ -8,13 +8,13 @@ export interface SearchResultItem {
   description: string;
   badge?: string;
   url?: string;
-  actionId?: "open-recruiter-brief" | "open-interactive-story";
+  actionId?: "open-recruiter-brief" | "open-shutter-story";
 }
 
 export const SUGGESTED_QUERIES = [
-  "Recruiter Brief",
+  "Executive Brief",
+  "Storyline",
   "RAG & pgvector",
-  "Career Story",
   "3 Promotions",
   "Resume PDF",
   "Sprachkraft",
@@ -29,28 +29,28 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
       {
         id: "action-recruiter-brief",
         type: "action",
-        title: "🎯 30-Second Recruiter Brief",
+        title: "Executive Recruiter Brief",
         subtitle: "Executive Summary · 3 Promotions · OneIT",
         description: "Fast high-level overview of Ankit's career arc, 25M+ vector scale, awards, and direct download links.",
-        badge: "Recruiter Fast-Track",
+        badge: "Executive Summary",
         actionId: "open-recruiter-brief",
       },
       {
-        id: "action-interactive-story",
+        id: "action-shutter-story",
         type: "action",
-        title: "▶ Play Interactive Career Story (45s)",
-        subtitle: "Guided Tour · 4 Chapters · Auto-play",
-        description: "Sit back and watch the four-chapter journey: Ascent, Scale, Velocity, and Firm Honours.",
-        badge: "Story Tour",
-        actionId: "open-interactive-story",
+        title: "Experience Cinematic Storyline",
+        subtitle: "The Sanctuary of Haruka Mirai · 6 Acts",
+        description: "Atmospheric narrative through early ambition, the battlestation, production scale, and firm honours.",
+        badge: "Storyline",
+        actionId: "open-shutter-story",
       },
       {
         id: "action-resume-pdf",
         type: "action",
-        title: "📄 Download Verified Resume PDF",
-        subtitle: "Latest Version · Verified Experience",
+        title: "Download Official Resume PDF",
+        subtitle: "Verified Credentials · Latest Version",
         description: "Official PDF resume matching all production engineering roles, metrics, and academic honours.",
-        badge: "PDF",
+        badge: "PDF Document",
         url: profile.resumePdf,
       },
       {
@@ -74,10 +74,10 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
       {
         id: "action-contact",
         type: "action",
-        title: "✉️ Email Ankit Mishra",
+        title: "Email Ankit Mishra",
         subtitle: "Direct Contact · ankitm17.2001@gmail.com",
         description: "Fastest response via email. Open to senior engineering and staff opportunities.",
-        badge: "Get in Touch",
+        badge: "Direct Email",
         url: `mailto:${profile.links.find((l) => l.label === "Email")?.value || "ankitm17.2001@gmail.com"}`,
       },
     ];
@@ -91,23 +91,23 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
     items.push({
       id: "action-recruiter-brief",
       type: "action",
-      title: "🎯 30-Second Recruiter Brief",
+      title: "Executive Recruiter Brief",
       subtitle: "Executive Overview · 3 Promotions · OneIT",
       description: "Quick scannable summary designed for hiring managers and recruiters.",
-      badge: "Recruiter Fast-Track",
+      badge: "Executive Summary",
       actionId: "open-recruiter-brief",
     });
   }
 
-  if (query.includes("story") || query.includes("tour") || query.includes("play") || query.includes("journey") || query.includes("animat")) {
+  if (query.includes("story") || query.includes("tour") || query.includes("play") || query.includes("journey") || query.includes("shutter")) {
     items.push({
-      id: "action-interactive-story",
+      id: "action-shutter-story",
       type: "action",
-      title: "▶ Play Interactive Career Story (45s)",
-      subtitle: "Zero-Finger Navigation · 4 Chapters",
-      description: "Watch the automated 4-chapter narrative from intern to senior engineer.",
-      badge: "Interactive Story",
-      actionId: "open-interactive-story",
+      title: "Experience Cinematic Storyline",
+      subtitle: "The Sanctuary of Haruka Mirai · 6 Acts",
+      description: "Atmospheric narrative through early ambition, the battlestation, production scale, and firm honours.",
+      badge: "Storyline",
+      actionId: "open-shutter-story",
     });
   }
 
@@ -115,10 +115,10 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
     items.push({
       id: "action-resume-pdf",
       type: "action",
-      title: "📄 Download Verified Resume PDF",
-      subtitle: "Official Resume Document",
+      title: "Download Official Resume PDF",
+      subtitle: "Verified Credentials Document",
       description: "Direct download of Ankit Mishra's verified resume PDF.",
-      badge: "PDF Download",
+      badge: "PDF Document",
       url: profile.resumePdf,
     });
   }
@@ -127,7 +127,7 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
     items.push({
       id: "action-contact",
       type: "action",
-      title: "✉️ Email Ankit Mishra",
+      title: "Email Ankit Mishra",
       subtitle: "ankitm17.2001@gmail.com",
       description: "Send an email directly to Ankit.",
       badge: "Direct Email",
@@ -179,7 +179,7 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
           id: `skill-${skill.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
           type: "skill",
           title: skill,
-          subtitle: `Technical Skill · ${g.label}`,
+          subtitle: `Technical Stack · ${g.label}`,
           description: `Part of verified technical stack at OneIT and production systems.`,
           badge: g.label,
           url: "/about",

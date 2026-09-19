@@ -32,7 +32,7 @@ export function RecruiterBriefModal() {
 
   const playStory = () => {
     setIsOpen(false);
-    window.dispatchEvent(new CustomEvent("open-interactive-story"));
+    window.dispatchEvent(new CustomEvent("open-shutter-story"));
   };
 
   if (!isOpen) return null;
@@ -57,7 +57,7 @@ export function RecruiterBriefModal() {
         <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] pb-5">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-3 py-1 font-mono text-xs uppercase tracking-wider text-[var(--accent)] font-semibold mb-2">
-              <span>🎯 30-Second Executive Brief</span>
+              <span>EXECUTIVE SUMMARY · ONEIT</span>
             </div>
             <h2 id="recruiter-brief-title" className="font-display text-2xl sm:text-3xl text-[var(--text)]">
               {profile.name}
@@ -165,9 +165,12 @@ export function RecruiterBriefModal() {
             <button
               type="button"
               onClick={playStory}
-              className="font-medium text-[var(--accent)] hover:underline flex items-center gap-1 cursor-pointer"
+              className="font-medium text-[var(--accent)] hover:underline flex items-center gap-1.5 cursor-pointer"
             >
-              <span>▶ Play 45s Career Story</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+              <span>Experience Storyline</span>
             </button>
             <span className="text-[var(--text-subtle)]">·</span>
             <Link

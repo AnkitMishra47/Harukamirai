@@ -21,7 +21,7 @@ export default function HomePage() {
         </div>
         <div className="relative mx-auto max-w-7xl px-6 lg:px-12 py-14 grid gap-10 md:grid-cols-3">
           <Stat kicker={newest.year} value={newest.title} note="Company-wide award, OneIT." delay={0} />
-          <Stat kicker={previous.year} value={previous.title} note="Signed by MD David Barton." delay={0.15} />
+          <Stat kicker={previous.year} value={previous.title} note="Awarded across OneIT engineering." delay={0.15} />
           <Stat kicker="3 in 3" value="Promotions in three years" note="Junior Intern → Senior Software Engineer." delay={0.3} />
         </div>
       </section>

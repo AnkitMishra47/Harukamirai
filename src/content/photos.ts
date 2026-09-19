@@ -10,6 +10,13 @@ import type { Photo } from "./types";
  */
 export const photos = {
   portrait: { src: "/photos/portrait.jpeg", alt: "Ankit Mishra", width: 965, height: 1600 },
+  setup: {
+    src: "/photos/setup.jpeg",
+    alt: "Ankit's late-night engineering battlestation with dual monitors, terminal buffers, and anime stream",
+    caption: "The Battlestation · 11:42 PM",
+    width: 899,
+    height: 682,
+  },
   awardTrophy: {
     src: "/photos/award-trophy.jpeg",
     alt: "Ankit Mishra holding the OneIT Runner-up Employee of the Year 2025 trophy",

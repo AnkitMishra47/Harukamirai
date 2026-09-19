@@ -66,8 +66,7 @@ export default function AboutPage() {
       <section className="mt-24">
         <h2 className="font-display text-3xl text-[var(--text)] mb-2">Recognition</h2>
         <p className="text-sm text-[var(--text-muted)] mb-10">
-          Two consecutive years of named recognition at OneIT - both signed by Managing Director
-          David Barton.
+          Two consecutive years of company-wide recognition at OneIT, awarded by executive leadership.
         </p>
 
         <div className="grid gap-8 md:grid-cols-[260px_1fr] items-start">

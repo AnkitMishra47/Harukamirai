@@ -55,6 +55,16 @@ export function Nav() {
 
         <div className="flex items-center gap-1 sm:gap-2">
           <ul className="hidden md:flex items-center gap-1">
+            <li>
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("open-shutter-story"))}
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-[var(--accent)] transition-colors hover:text-[var(--text)] hover:bg-[var(--bg-elevated)] cursor-pointer flex items-center gap-1.5"
+              >
+                <span className="size-1.5 rounded-full bg-[var(--accent)]" />
+                <span>Story</span>
+              </button>
+            </li>
             {links.map((l) => (
               <li key={l.href}>
                 <Link

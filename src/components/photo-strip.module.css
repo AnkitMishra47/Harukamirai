@@ -45,10 +45,9 @@
 
 .caption {
   margin-top: 0.7rem;
-  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
-  font-style: italic;
-  font-size: 0.9rem;
-  line-height: 1.4;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
   color: var(--text-muted);
 }
 

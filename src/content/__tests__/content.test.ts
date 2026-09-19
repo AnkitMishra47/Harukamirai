@@ -84,7 +84,7 @@ describe("case study org", () => {
 
 describe("photos and side projects", () => {
   it("point at files that exist under public/", () => {
-    const all = [photos.portrait, photos.awardTrophy, photos.openRoad, ...photos.offTheClock];
+    const all = [photos.portrait, photos.setup, photos.awardTrophy, photos.openRoad, ...photos.offTheClock];
     for (const p of all) {
       expect(existsSync(path.join(process.cwd(), "public", p.src))).toBe(true);
     }
@@ -130,7 +130,7 @@ function jpegSize(file: string): { width: number; height: number } | null {
 
 describe("photo dimensions", () => {
   it("match the files on disk, so galleries can lay out by true aspect ratio", () => {
-    const all = [photos.portrait, photos.awardTrophy, photos.openRoad, ...photos.offTheClock];
+    const all = [photos.portrait, photos.setup, photos.awardTrophy, photos.openRoad, ...photos.offTheClock];
     for (const p of all) {
       const actual = jpegSize(path.join(process.cwd(), "public", p.src));
       expect(actual, `${p.src} is not a readable JPEG`).not.toBeNull();

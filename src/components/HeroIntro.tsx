@@ -175,26 +175,31 @@ export function HeroIntro() {
           <div className="hero-in hero-in-6 mt-10 flex flex-wrap items-center gap-3 text-sm">
             <button
               type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent("open-interactive-story"))}
-              className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-[var(--accent)] px-6 py-3.5 font-medium text-[var(--bg)] shadow-[0_4px_20px_var(--accent-glow)] transition-all hover:shadow-[0_0_30px_var(--accent-glow)] cursor-pointer"
+              onClick={() => window.dispatchEvent(new CustomEvent("open-shutter-story"))}
+              className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-[var(--accent)] px-6 py-3.5 font-sans font-medium text-[var(--bg)] shadow-[0_4px_20px_var(--accent-glow)] transition-all hover:shadow-[0_0_30px_var(--accent-glow)] cursor-pointer"
             >
-              <span className="relative z-10 font-bold text-xs">▶</span>
-              <span className="relative z-10 font-semibold">Play Career Story (45s)</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="relative z-10">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+              <span className="relative z-10 font-semibold tracking-wide">Experience Storyline</span>
               <span className="absolute inset-0 -translate-x-full bg-[var(--accent-hover)] transition-transform duration-500 group-hover:translate-x-0" />
             </button>
 
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent("open-recruiter-brief"))}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/60 bg-[color-mix(in_oklab,var(--bg-elevated)_80%,var(--accent-glow))] px-5 py-3.5 font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:shadow-[0_0_20px_var(--accent-glow)] cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-5 py-3.5 font-sans font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:shadow-[0_0_20px_var(--accent-glow)] cursor-pointer"
             >
-              <span>🎯</span>
-              <span>30s Recruiter Brief</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span>Executive Brief</span>
             </button>
 
             <Link
               href="/work"
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-5 py-3.5 font-medium text-[var(--text-muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--text)]"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg)] px-5 py-3.5 font-sans font-medium text-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] hover:text-[var(--text)]"
             >
               <span>Work & Projects</span>
               <span aria-hidden>→</span>
@@ -204,7 +209,7 @@ export function HeroIntro() {
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent("open-command-palette"))}
               className="group inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-3.5 text-xs font-mono uppercase tracking-[0.14em] text-[var(--text-muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--text)] cursor-pointer"
-              aria-label="Open vector search palette"
+              aria-label="Open command palette"
             >
               <span className="text-[var(--accent)] font-bold">⌘K</span>
               <span className="hidden sm:inline">Search</span>

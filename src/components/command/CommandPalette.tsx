@@ -74,8 +74,8 @@ export function CommandPalette() {
       return;
     }
 
-    if (item.actionId === "open-interactive-story") {
-      window.dispatchEvent(new CustomEvent("open-interactive-story"));
+    if (item.actionId === "open-shutter-story" || item.actionId === "open-interactive-story") {
+      window.dispatchEvent(new CustomEvent("open-shutter-story"));
       return;
     }
 

@@ -372,11 +372,12 @@ export function ShutterStoryExperience() {
 
   const exitToPortfolio = () => {
     successionEngine.stop();
+    setIsShutterLifted(true);
     setIsExitingTheater(true);
     window.dispatchEvent(new CustomEvent("portfolio-revealed"));
     setTimeout(() => {
       setIsDismissed(true);
-    }, 700);
+    }, 550);
   };
 
   const shutterPointerDownY = useRef<number | null>(null);
@@ -617,7 +618,7 @@ export function ShutterStoryExperience() {
           scale: isShutterLifted ? 1 : 0.97,
           opacity: isExitingTheater ? 0 : 1,
         }}
-        transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
         className="fixed inset-0 z-40 flex flex-col justify-between overflow-hidden bg-[#06070a] text-[var(--text)] h-[100dvh]"
       >
         {/* Dynamic Scene Atmosphere Gradient */}

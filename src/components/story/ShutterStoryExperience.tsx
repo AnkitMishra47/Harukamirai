@@ -26,6 +26,20 @@ const PHOTO_INDEX: Record<string, Photo> = Object.fromEntries(
   ].map((p) => [p.src, p])
 );
 
+/**
+ * One readout of a scene's instrument panel.
+ *
+ * The same two rows are the scene's compact headline figure and, once the
+ * detail is open, the top of its full panel. Declared once so the two renderings
+ * cannot drift apart.
+ */
+interface FigureRow {
+  label: string;
+  value: string;
+  note: string;
+  valueColor: string;
+}
+
 interface StoryScene {
   id: number;
   actShort: string;
@@ -44,8 +58,25 @@ interface StoryScene {
   imageCaption?: string;
   imageMeta?: string;
   chips?: string[];
+  /** The two readouts that carry this scene's figure. Terminal and vector only. */
+  figureRows?: [FigureRow, FigureRow];
+  /**
+   * One external profile belonging to this scene, shown with the chips once the
+   * detail is open. Supplied by the site owner, never inferred.
+   */
+  link?: { label: string; href: string };
   type: "terminal" | "photo" | "vector" | "dossier";
 }
+
+/**
+ * Act 05's chess profile, read from `profile.links` instead of written here.
+ *
+ * The handle is Ankit's own and belongs with Email, LinkedIn and GitHub; a copy
+ * living in a scene is how it drifts, or gets mistaken for something invented.
+ * `content.test.ts` pins the entry, so a missing chip is a failing test rather
+ * than a page that throws.
+ */
+const CHESS_PROFILE = profile.links.find((l) => l.label === "Chess.com");
 
 const SCENES: StoryScene[] = [
   {
@@ -64,6 +95,10 @@ const SCENES: StoryScene[] = [
     metricLabel: "Academic & Career Start",
     metricValue: "86% BCA · Intern to Jr SWE",
     chips: ["OneIT Australia", "BCA 86% Distinction", "Java & Angular Platforms"],
+    figureRows: [
+      { label: "IST", value: "23:14:02", note: "DEEP WORK", valueColor: "#fbbf24" },
+      { label: "AWST", value: "01:44:02", note: "CLIENT SYNC", valueColor: "#38bdf8" },
+    ],
     type: "terminal",
   },
   {
@@ -82,7 +117,7 @@ const SCENES: StoryScene[] = [
     imageSrc: "/photos/setup.jpeg",
     imageAlt: "Ankit's remote engineering workstation with terminal buffers and desk lamp",
     imageCaption: "Workstation · Late-Night Focus",
-    imageMeta: "REMOTE ENGINEERING · FARIDABAD",
+    imageMeta: "REMOTE ENGINEERING",
     chips: ["Production Ownership", "Clean Architecture", "Late-Night Focus"],
     type: "photo",
   },
@@ -101,6 +136,15 @@ const SCENES: StoryScene[] = [
     metricLabel: "Production Query Latency",
     metricValue: "Sub-15ms · 25M+ Vectors",
     chips: ["PostgreSQL & pgvector", "Sub-15ms Latency", "Enterprise Middleware"],
+    figureRows: [
+      { label: "INDEXED CORPUS", value: "25,000,000", note: "Embeddings", valueColor: "#ffffff" },
+      {
+        label: "P99 FILTERED LATENCY",
+        value: "14.8ms",
+        note: "PostgreSQL Engine",
+        valueColor: "#34d399",
+      },
+    ],
     type: "vector",
   },
   {
@@ -138,9 +182,13 @@ const SCENES: StoryScene[] = [
       "When builds are green and projects ship, I head into the hills: quiet walks in the Himalayas, fresh air, a game of chess, and coffee that takes time to brew. Complex systems require an observant, unhurried mind, and time outside the terminal is what keeps my engineering sharp and patient.",
     imageSrc: "/photos/hills-walk.jpeg",
     imageAlt: "Walking through grassy Himalayan hills with cedar forest in the background",
-    imageCaption: "Himalayan Ridges · Himachal",
+    imageCaption: "Himalayan Ridges",
     imageMeta: "BALANCE & PERSPECTIVE",
     chips: ["Himalayan Ridges", "Mental Clarity", "Patience & Focus"],
+    link: CHESS_PROFILE && {
+      label: `${CHESS_PROFILE.label} · ${CHESS_PROFILE.value}`,
+      href: CHESS_PROFILE.href,
+    },
     type: "photo",
   },
   {
@@ -194,6 +242,39 @@ const SCENE_EXIT_OFFSET_PX = 110;
  */
 const TAP_SLOP_PX = 10;
 
+/**
+ * The compact form of a scene's instrument panel: two readouts, set large.
+ *
+ * It exists so that Acts 01 and 03, whose subject is a panel rather than a
+ * photograph, still have something occupying their column in the headline state.
+ * Every string here is already the scene's own; this is a smaller selection of
+ * it, not a summary of it. The card takes the same height budget as a photograph
+ * (`--frame-h`, set on the column) so the six scenes fill a comparable envelope.
+ */
+function CompactFigure({ rows }: { rows: readonly FigureRow[] }) {
+  return (
+    <div
+      className={`max-w-md mx-auto rounded-2xl border border-white/12 bg-white/[0.03] font-mono backdrop-blur-md ${styles.compactFigure}`}
+    >
+      {rows.map((row, i) => (
+        <div key={row.label} className={styles.figureRow}>
+          {i > 0 && <span className={styles.figureRule} aria-hidden />}
+          <span className={`uppercase text-white/45 ${styles.figureLabel}`}>{row.label}</span>
+          <span
+            className={`font-semibold ${styles.figureValue}`}
+            style={{ color: row.valueColor }}
+          >
+            {row.value}
+          </span>
+          <span className={`uppercase tracking-[0.14em] text-white/55 ${styles.figureNote}`}>
+            {row.note}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ShutterStoryExperience() {
   const [isDismissed, setIsDismissed] = useState(false);
   const [isShutterLifted, setIsShutterLifted] = useState(false);
@@ -234,9 +315,10 @@ export function ShutterStoryExperience() {
     return () => window.removeEventListener("open-shutter-story", handleReopen);
   }, []);
 
+  // The gate is shown on every visit by design - Ankit's call. There is
+  // deliberately no seen-flag: a returning visitor gets the story again.
   const liftShutter = () => {
     setIsShutterLifted(true);
-    sessionStorage.setItem("haruka_shutter_seen", "true");
     setCurrentSceneIdx(0);
     setDirection(1);
     setProgress(0);
@@ -245,7 +327,6 @@ export function ShutterStoryExperience() {
 
   const exitToPortfolio = () => {
     setIsExitingTheater(true);
-    sessionStorage.setItem("haruka_shutter_seen", "true");
     setTimeout(() => {
       setIsDismissed(true);
     }, 700);
@@ -442,17 +523,20 @@ export function ShutterStoryExperience() {
   const activeScene = SCENES[currentSceneIdx];
   const activePhoto = activeScene.imageSrc ? PHOTO_INDEX[activeScene.imageSrc] : undefined;
   const detailTextId = `scene-${activeScene.id}-detail`;
-  const detailPanelId = `scene-${activeScene.id}-panel`;
   /**
    * The right-hand column only earns its place when it has something in it. A
    * photograph is the point of its scene so it stays in the headline state; the
    * instrument panels are the gibberish, so they wait. Act 06 keeps its two
    * recruiter actions out in the open, which is what that scene is for.
    */
-  const hasHeadlineVisual = activeScene.type === "photo" || activeScene.type === "dossier";
-  const isSplit = hasHeadlineVisual || isDetailOpen;
-  /** A photo scene has nothing in its right column waiting on the toggle. */
-  const hasGatedPanel = activeScene.type !== "photo";
+  /*
+   * Every scene now carries a figure in its right-hand column - a photograph, a
+   * clock, a pair of numbers, four summary tiles - so the split is unconditional
+   * and no scene is ever text alone on an empty screen. Nothing in that column
+   * waits on the toggle: Acts 01 and 03 swap their compact figure for the full
+   * panel, which is a replacement rather than a disclosure, so the toggle owns
+   * exactly one region and `aria-controls` names exactly that one.
+   */
 
   return (
     <div className="fixed inset-0 z-50 select-none overflow-hidden font-sans h-[100dvh]">
@@ -499,7 +583,7 @@ export function ShutterStoryExperience() {
 
         {/* TOP HEADER HUD */}
         <header
-          className={`relative z-30 flex flex-col gap-2.5 max-w-5xl mx-auto w-full ${styles.gutter} ${styles.topInset}`}
+          className={`relative z-30 flex flex-col gap-2.5 max-w-5xl xl:max-w-6xl mx-auto w-full ${styles.gutter} ${styles.topInset}`}
         >
           {/* Progress Segments */}
           <div className="grid grid-cols-6 gap-1.5 sm:gap-2 w-full">
@@ -584,7 +668,7 @@ export function ShutterStoryExperience() {
 
         {/* MAIN STAGE (RESPONSIVE 2-COLUMN SPLIT SHOWCASE WITH SMOOTH TRANSITIONS & SAFE SCROLL) */}
         <main
-          className={`relative z-30 mx-auto max-w-5xl w-full py-3 sm:py-6 flex-1 min-h-0 ${styles.gutter} ${styles.stageScroller}`}
+          className={`relative z-30 mx-auto max-w-5xl xl:max-w-6xl w-full py-3 sm:py-6 flex-1 min-h-0 ${styles.gutter} ${styles.stageScroller}`}
         >
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
@@ -648,28 +732,24 @@ export function ShutterStoryExperience() {
               initial="enter"
               animate="center"
               exit="exit"
-              className={`w-full grid grid-cols-1 items-center ${styles.stageItem} ${
-                isSplit ? `lg:grid-cols-12 ${styles.split}` : ""
-              }`}
+              className={`w-full grid grid-cols-1 items-center lg:grid-cols-12 ${styles.stageItem} ${styles.split}`}
             >
               {/* LEFT COLUMN: HEADLINE, THEN THE DETAIL BEHIND THE TOGGLE */}
-              <div
-                className={`text-left ${styles.headlineStack} ${
-                  isSplit ? "lg:col-span-6" : "lg:max-w-3xl lg:mx-auto lg:text-center"
-                }`}
-              >
+              <div className={`text-left lg:col-span-6 ${styles.headlineStack}`}>
                 <p
-                  className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] font-semibold"
+                  className={`font-mono uppercase tracking-[0.2em] font-semibold ${styles.sceneEyebrow}`}
                   style={{ color: activeScene.accentColor }}
                 >
                   {activeScene.subtitle}
                 </p>
 
-                <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-semibold tracking-tight text-white leading-tight">
+                <h2
+                  className={`font-display font-semibold text-white ${styles.sceneTitle}`}
+                >
                   {activeScene.title}
                 </h2>
 
-                <p className="font-sans text-sm sm:text-base md:text-lg text-white/95 leading-snug font-medium pt-0.5">
+                <p className={`font-sans text-white/95 font-medium ${styles.sceneLead}`}>
                   {activeScene.narrativeLead}
                 </p>
 
@@ -677,9 +757,7 @@ export function ShutterStoryExperience() {
                   type="button"
                   data-detail-toggle
                   aria-expanded={isDetailOpen}
-                  aria-controls={
-                    hasGatedPanel ? `${detailTextId} ${detailPanelId}` : detailTextId
-                  }
+                  aria-controls={detailTextId}
                   onClick={() => setIsDetailOpen((open) => !open)}
                   className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3.5 py-1.5 font-mono text-[11px] sm:text-xs text-white/85 hover:bg-white/10 hover:text-white transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                 >
@@ -706,11 +784,7 @@ export function ShutterStoryExperience() {
 
                       {/* Tags / Chips */}
                       {activeScene.chips && (
-                        <div
-                          className={`flex flex-wrap gap-1.5 sm:gap-2 ${
-                            isSplit ? "" : "lg:justify-center"
-                          }`}
-                        >
+                        <div className="flex flex-wrap gap-1.5 sm:gap-2">
                           {activeScene.chips.map((c) => (
                             <span
                               key={c}
@@ -719,6 +793,20 @@ export function ShutterStoryExperience() {
                               {c}
                             </span>
                           ))}
+                          {activeScene.link && (
+                            <a
+                              href={activeScene.link.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="rounded-full border px-2.5 py-0.5 font-mono text-[11px] transition-colors hover:bg-white/10"
+                              style={{
+                                borderColor: `${activeScene.accentColor}66`,
+                                color: activeScene.accentColor,
+                              }}
+                            >
+                              {activeScene.link.label}
+                            </a>
+                          )}
                         </div>
                       )}
 
@@ -743,13 +831,18 @@ export function ShutterStoryExperience() {
 
               {/* RIGHT COLUMN: THE PHOTOGRAPH, AND THE PANELS ONCE ASKED FOR */}
               <div
-                className={`flex items-center justify-center w-full ${
-                  isSplit ? "lg:col-span-6" : "hidden"
-                }`}
+                className={`flex items-center justify-center w-full lg:col-span-6 ${styles.figureCol}`}
               >
-                {/* 1. Terminal Visualizer (Act 1) - detail only */}
-                {activeScene.type === "terminal" && (
-                  <div id={detailPanelId} hidden={!isDetailOpen} className="w-full">
+                {/*
+                  1. Act 01. The headline shows the two clocks alone, large: the
+                  scene's idea is two timezones, and that is a figure rather than
+                  something to read. The full terminal replaces it on demand.
+                */}
+                {activeScene.type === "terminal" && activeScene.figureRows && (
+                  <div className="w-full">
+                    {!isDetailOpen && (
+                      <CompactFigure rows={activeScene.figureRows} />
+                    )}
                     {isDetailOpen && (
                       <div className={`w-full max-w-md mx-auto rounded-2xl border border-white/15 bg-[#0b0f17]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md ${styles.detail}`}>
                         <div className="flex items-center justify-between border-b border-white/10 pb-2.5 mb-3 text-white/50">
@@ -763,14 +856,17 @@ export function ShutterStoryExperience() {
                         </div>
 
                         <div className="space-y-2 text-white/85">
-                          <div className="flex justify-between items-center rounded bg-white/5 px-2.5 py-1.5 border border-white/5 text-[11px] sm:text-xs">
-                            <span className="text-white/50">FARIDABAD IST:</span>
-                            <span className="text-amber-400 font-semibold">23:14:02 · DEEP WORK</span>
-                          </div>
-                          <div className="flex justify-between items-center rounded bg-white/5 px-2.5 py-1.5 border border-white/5 text-[11px] sm:text-xs">
-                            <span className="text-white/50">AWST:</span>
-                            <span className="text-sky-400 font-semibold">01:44:02 · CLIENT SYNC</span>
-                          </div>
+                          {activeScene.figureRows.map((row) => (
+                            <div
+                              key={row.label}
+                              className="flex justify-between items-center gap-2 rounded bg-white/5 px-2.5 py-1.5 border border-white/5 text-[11px] sm:text-xs"
+                            >
+                              <span className="text-white/50">{row.label}:</span>
+                              <span className="font-semibold" style={{ color: row.valueColor }}>
+                                {row.value} · {row.note}
+                              </span>
+                            </div>
+                          ))}
                           <div className="pt-2 text-[11px] text-white/60 space-y-1 border-t border-white/5">
                             <p className="text-emerald-400">&gt; [23:14] Resolved connection pool starvation.</p>
                             <p className="text-emerald-400">&gt; [23:19] Zero downtime hotfix verified.</p>
@@ -790,61 +886,74 @@ export function ShutterStoryExperience() {
                   has nothing to crop. See story-scene.module.css.
                 */}
                 {activeScene.type === "photo" && activePhoto && (
-                  <div className="relative group w-full flex justify-center">
+                  <figure
+                    className={`relative group ${styles.photoFigure}`}
+                    style={
+                      {
+                        "--ar": `${activePhoto.width} / ${activePhoto.height}`,
+                      } as React.CSSProperties
+                    }
+                  >
                     {/* Backlit Diffused Ambient Glow */}
                     <div
                       className="absolute -inset-2 rounded-2xl opacity-70 blur-xl transition-all duration-700 group-hover:opacity-95"
                       style={{
                         background: `radial-gradient(circle, ${activeScene.ambientGlow} 0%, transparent 70%)`,
                       }}
+                      aria-hidden
                     />
 
+                    {/*
+                      The bordered box IS the photograph. Nothing is drawn around
+                      it and nothing sits inside it, so a tall picture cannot end
+                      up with dark bands down either side.
+                    */}
                     <div
-                      className={`relative rounded-2xl overflow-hidden border border-white/20 bg-[#0d0f14] shadow-[0_20px_50px_rgba(0,0,0,0.85)] ${styles.photoCard}`}
-                      style={
-                        {
-                          "--ar": `${activePhoto.width} / ${activePhoto.height}`,
-                        } as React.CSSProperties
-                      }
+                      className={`overflow-hidden rounded-2xl border border-white/20 bg-[#0d0f14] shadow-[0_20px_50px_rgba(0,0,0,0.85)] ${styles.photoFrame}`}
                     >
-                      <div className={`overflow-hidden bg-black/40 ${styles.photoFrame}`}>
-                        <Image
-                          src={activePhoto.src}
-                          alt={activeScene.imageAlt || activePhoto.alt}
-                          fill
-                          unoptimized
-                          priority
-                          sizes="(min-width: 1024px) 460px, (min-width: 640px) 460px, 90vw"
-                          className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.02]"
-                          {...(activePhoto.blurDataURL
-                            ? { placeholder: "blur" as const, blurDataURL: activePhoto.blurDataURL }
-                            : {})}
-                        />
-                      </div>
-
-                      {/*
-                        Stacked, not two columns: the card is now as narrow as its
-                        photograph, and side by side these two strings ellipsised
-                        each other away at every viewport.
-                      */}
-                      <div className="p-2.5 sm:p-3 flex flex-col gap-0.5 text-[11px] font-mono border-t border-white/10 bg-black/75 backdrop-blur-md">
-                        <span className="text-white/90 font-medium">
-                          {activeScene.imageCaption}
-                        </span>
-                        <span
-                          className="text-[10px] uppercase font-semibold"
-                          style={{ color: activeScene.accentColor }}
-                        >
-                          {activeScene.imageMeta}
-                        </span>
-                      </div>
+                      <Image
+                        src={activePhoto.src}
+                        alt={activeScene.imageAlt || activePhoto.alt}
+                        fill
+                        unoptimized
+                        priority
+                        sizes="(min-width: 1024px) 460px, (min-width: 640px) 460px, 90vw"
+                        className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.02]"
+                        {...(activePhoto.blurDataURL
+                          ? { placeholder: "blur" as const, blurDataURL: activePhoto.blurDataURL }
+                          : {})}
+                      />
                     </div>
-                  </div>
+
+                    {/* The caption uses the column, not the picture's width. */}
+                    <figcaption className={`relative font-mono ${styles.photoCaption}`}>
+                      {/* Where it was taken is the photo's fact, not the
+                          scene's, so it is read from `photos.ts`. Most of the
+                          set has no location; those captions are unchanged. */}
+                      <span className="text-[11px] text-white/90 font-medium">
+                        {[activeScene.imageCaption, activePhoto.location]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </span>
+                      <span
+                        className="text-[10px] uppercase font-semibold"
+                        style={{ color: activeScene.accentColor }}
+                      >
+                        {activeScene.imageMeta}
+                      </span>
+                    </figcaption>
+                  </figure>
                 )}
 
-                {/* 3. Scale pgvector HNSW Stage (Act 3) - detail only */}
-                {activeScene.type === "vector" && (
-                  <div id={detailPanelId} hidden={!isDetailOpen} className="w-full">
+                {/*
+                  3. Act 03. Two numbers carry the headline; the rest of the
+                  telemetry waits behind the toggle.
+                */}
+                {activeScene.type === "vector" && activeScene.figureRows && (
+                  <div className="w-full">
+                    {!isDetailOpen && (
+                      <CompactFigure rows={activeScene.figureRows} />
+                    )}
                     {isDetailOpen && (
                       <div className={`w-full max-w-md mx-auto rounded-2xl border border-sky-500/30 bg-[#070e1c]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md space-y-3 ${styles.detail}`}>
                         <div className="flex items-center justify-between border-b border-white/10 pb-2.5 text-white/50">
@@ -853,16 +962,21 @@ export function ShutterStoryExperience() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-2.5 text-left">
-                          <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-3">
-                            <span className="text-[10px] text-white/50 block">INDEXED CORPUS</span>
-                            <span className="text-lg sm:text-xl font-bold text-white">25,000,000</span>
-                            <span className="text-[10px] text-sky-400 block pt-0.5">Embeddings</span>
-                          </div>
-                          <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-3">
-                            <span className="text-[10px] text-white/50 block">P99 FILTERED LATENCY</span>
-                            <span className="text-lg sm:text-xl font-bold text-emerald-400">14.8ms</span>
-                            <span className="text-[10px] text-white/50 block pt-0.5">PostgreSQL Engine</span>
-                          </div>
+                          {activeScene.figureRows.map((row) => (
+                            <div
+                              key={row.label}
+                              className="rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-3"
+                            >
+                              <span className="text-[10px] text-white/50 block">{row.label}</span>
+                              <span
+                                className="text-lg sm:text-xl font-bold block"
+                                style={{ color: row.valueColor }}
+                              >
+                                {row.value}
+                              </span>
+                              <span className="text-[10px] text-white/50 block pt-0.5">{row.note}</span>
+                            </div>
+                          ))}
                         </div>
 
                         <div className="rounded-xl border border-white/5 bg-black/40 p-2.5 sm:p-3 text-[11px] text-white/75 space-y-1">
@@ -891,7 +1005,9 @@ export function ShutterStoryExperience() {
                   recruiter can take the resume away. Only the stat grid waits.
                 */}
                 {activeScene.type === "dossier" && (
-                  <div className="w-full max-w-md mx-auto rounded-2xl border border-rose-500/30 bg-[#140a0e]/95 shadow-2xl p-4 sm:p-5 backdrop-blur-md space-y-3">
+                  <div
+                    className={`w-full max-w-md mx-auto rounded-2xl border border-rose-500/30 bg-[#140a0e]/95 shadow-2xl backdrop-blur-md ${styles.dossierCard}`}
+                  >
                     <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                       <span className="font-mono text-xs text-rose-400 uppercase tracking-wider font-semibold">
                         Executive Summary
@@ -899,27 +1015,29 @@ export function ShutterStoryExperience() {
                       <span className="size-2 rounded-full bg-rose-500 animate-pulse" />
                     </div>
 
-                    <div id={detailPanelId} hidden={!isDetailOpen}>
-                      {isDetailOpen && (
-                        <div className={`grid grid-cols-2 gap-2 text-left text-xs ${styles.detail}`}>
+                    {/*
+                      The four tiles are this scene's figure, not its detail: an
+                      executive summary at a glance is what Act 06 is for, and
+                      four two-word readouts are something to scan rather than
+                      something to read.
+                    */}
+                    <div className={`grid grid-cols-2 gap-2 text-left text-xs ${styles.dossierTiles}`}>
+                      <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
+                        <span className="text-[10px] text-white/50 block font-mono">TRAJECTORY</span>
+                        <span className="font-semibold text-white">3 Promotions in 3 Yrs</span>
+                      </div>
+                      <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
+                        <span className="text-[10px] text-white/50 block font-mono">SCALE</span>
+                        <span className="font-semibold text-white">25M+ Vectors</span>
+                      </div>
+                      <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
+                        <span className="text-[10px] text-white/50 block font-mono">HONOURS</span>
+                        <span className="font-semibold text-white">Double Honoree</span>
+                      </div>
                           <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                            <span className="text-[10px] text-white/50 block font-mono">TRAJECTORY</span>
-                            <span className="font-semibold text-white">3 Promotions in 3 Yrs</span>
-                          </div>
-                          <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                            <span className="text-[10px] text-white/50 block font-mono">SCALE</span>
-                            <span className="font-semibold text-white">25M+ Vectors</span>
-                          </div>
-                          <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                            <span className="text-[10px] text-white/50 block font-mono">HONOURS</span>
-                            <span className="font-semibold text-white">Double Honoree</span>
-                          </div>
-                          <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                            <span className="text-[10px] text-white/50 block font-mono">LOCATION</span>
-                            <span className="font-semibold text-white">Remote AWST</span>
-                          </div>
-                        </div>
-                      )}
+                        <span className="text-[10px] text-white/50 block font-mono">LOCATION</span>
+                        <span className="font-semibold text-white">Remote AWST</span>
+                      </div>
                     </div>
 
                     <div className="flex flex-col gap-2">
@@ -965,7 +1083,7 @@ export function ShutterStoryExperience() {
 
         {/* BOTTOM FOOTER NAVIGATION */}
         <footer
-          className={`relative z-30 flex items-center justify-between gap-3 pt-3.5 sm:pt-4 border-t border-white/10 max-w-5xl mx-auto w-full bg-[#06070a]/90 backdrop-blur-sm ${styles.gutter} ${styles.bottomInset}`}
+          className={`relative z-30 flex items-center justify-between gap-3 pt-3.5 sm:pt-4 border-t border-white/10 max-w-5xl xl:max-w-6xl mx-auto w-full bg-[#06070a]/90 backdrop-blur-sm ${styles.gutter} ${styles.bottomInset}`}
         >
           <div className="flex items-center gap-2">
             <button

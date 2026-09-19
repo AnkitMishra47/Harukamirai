@@ -8,13 +8,13 @@ const GrimoireDynamic = dynamic(() => import("./Grimoire").then((m) => m.Grimoir
 
 /**
  * Loads `Grimoire` (and with it the `motion` library) in its own chunk after
- * first paint. The wrapper reserves the book's exact footprint so nothing
- * shifts when the chunk arrives.
+ * first paint. The wrapper reserves the book's exact footprint from the same
+ * `--grimoire-w` the book itself uses, so nothing shifts when the chunk lands.
  */
-export function GrimoireLazy({ size = 400 }: { size?: number }) {
+export function GrimoireLazy() {
   return (
-    <div aria-hidden={false} style={{ width: size, height: size * 1.15 }}>
-      <GrimoireDynamic size={size} />
+    <div style={{ width: "var(--grimoire-w)", height: "calc(var(--grimoire-w) * 1.15)" }}>
+      <GrimoireDynamic />
     </div>
   );
 }

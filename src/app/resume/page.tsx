@@ -24,8 +24,12 @@ export default function ResumePage() {
         </p>
       </MagicReveal>
 
-      <div className="hero-in relative z-10 mt-4 print:hidden">
-        <GrimoireLazy size={450} />
+      {/* The resume page gives the book more room than the home hero does. */}
+      <div
+        className="hero-in relative z-10 mt-4 print:hidden"
+        style={{ "--grimoire-w": "clamp(240px, 80vw, 450px)" } as React.CSSProperties}
+      >
+        <GrimoireLazy />
       </div>
 
       <MagicReveal delay={1.2} className="mt-16 flex flex-col items-center gap-6 print:hidden">

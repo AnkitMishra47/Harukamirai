@@ -62,12 +62,13 @@ export function HeroIntro() {
         <ParticleField />
       </div>
 
+      {/* Desktop seal: centred on the hero, behind name and book alike. */}
       <div
         style={{
           transform: "scale(calc(1 + var(--hero-p, 0) * 0.3))",
           opacity: "calc(1 - var(--hero-p, 0) / 0.8)",
         }}
-        className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+        className="absolute left-1/2 top-1/2 z-0 hidden -translate-x-1/2 -translate-y-1/2 pointer-events-none lg:block"
       >
         <MagicCircle size={900} />
       </div>
@@ -88,14 +89,14 @@ export function HeroIntro() {
 
       <div className="relative z-10 mx-auto grid min-h-[88vh] max-w-6xl grid-cols-1 items-center gap-12 px-6 pt-24 pb-20 lg:grid-cols-[1.4fr_1fr]">
         <div>
-          <p className="hero-in hero-in-1 text-xs uppercase tracking-[0.32em] text-[var(--accent)]">
+          <p className="hero-in hero-in-1 text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--accent)]">
             <span className="font-jp text-base tracking-normal">アスタ</span>
             <span className="mx-2 opacity-40">·</span>
             <span className="font-jp text-base tracking-normal">反魔法</span>
             <span className="mx-3 opacity-40">·</span>
-            ANTI-MAGIC GRIMOIRE
+            <span className="whitespace-nowrap">ANTI-MAGIC GRIMOIRE</span>
           </p>
-          <p className="hero-in hero-in-2 mt-1.5 text-xs uppercase tracking-[0.32em] text-[var(--text-subtle)]">
+          <p className="hero-in hero-in-2 mt-1.5 text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--text-subtle)]">
             <span className="font-jp text-base tracking-normal">遥か未来</span>
             <span className="mx-3 opacity-40">·</span>
             No. 17
@@ -126,7 +127,7 @@ export function HeroIntro() {
             ))}
           </h1>
 
-          <div className="hero-in hero-in-4 mt-5 inline-flex items-center gap-3">
+          <div className="hero-in hero-in-4 mt-5 flex flex-wrap items-center gap-x-3 gap-y-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent)]/40 bg-[var(--accent-glow)] px-3 py-1.5">
               <span className="font-display text-base font-bold text-[var(--accent)]">A</span>
               <span className="text-xs text-[var(--text-subtle)]">·</span>
@@ -135,8 +136,8 @@ export function HeroIntro() {
                 engineer
               </span>
             </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-subtle)] hidden sm:inline">
-              ↑ not a coincidence
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-subtle)]">
+              <span className="hidden sm:inline" aria-hidden>↑ </span>not a coincidence
             </span>
           </div>
 
@@ -181,12 +182,24 @@ export function HeroIntro() {
 
         <div className="hero-book relative flex items-center justify-center lg:justify-end mt-8 lg:mt-0">
           <div className="relative">
+            {/*
+              Mobile seal: sized off the book rather than the viewport, and
+              centred on it, so it reads as the book's own casting circle
+              instead of a pattern running behind the paragraph.
+            */}
+            <div className="hero-seal-sm pointer-events-none absolute left-1/2 top-1/2 -z-10 lg:hidden" aria-hidden>
+              <MagicCircle size={900} />
+            </div>
             <div
               aria-hidden
-              className="hero-aura absolute left-1/2 top-1/2 -z-10 h-[460px] w-[460px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-              style={{ background: "radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)" }}
+              className="hero-aura absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 rounded-full"
+              style={{
+                width: "calc(var(--grimoire-w) * 1.15)",
+                height: "calc(var(--grimoire-w) * 1.15)",
+                background: "radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)",
+              }}
             />
-            <GrimoireLazy size={400} />
+            <GrimoireLazy />
           </div>
         </div>
       </div>

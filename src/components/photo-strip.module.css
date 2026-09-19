@@ -1,0 +1,67 @@
+/*
+ * Off-the-clock photo strip.
+ *
+ * Every print keeps its own aspect ratio and they all share one height, the way
+ * photographs land on a contact sheet. The trick is that each figure's
+ * flex-grow IS its aspect ratio, with a zero basis: widths then distribute as
+ * w(i) = H * aspect(i), which is exactly the width each photo needs at the
+ * common height H. Nothing is cropped, so no photo is ever upscaled to cover a
+ * frame it does not fit.
+ *
+ * `--ar` (e.g. `1448 / 1086`) and `--ar-num` (e.g. `1.3333`) come from the
+ * photo's real pixel size in src/content/photos.ts.
+ */
+
+.strip {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.frame {
+  margin: 0;
+  width: 100%;
+}
+
+.plate {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--ar);
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--bg-inset);
+  /* A print resting on the page, not a UI card. */
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.16),
+    0 8px 22px -12px rgba(0, 0, 0, 0.5);
+}
+
+.plate img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.caption {
+  margin-top: 0.7rem;
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+@media (min-width: 640px) {
+  .strip {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .frame {
+    /* grow in proportion to aspect ratio, from a zero basis */
+    width: auto;
+    flex: var(--ar-num) 1 0%;
+  }
+}

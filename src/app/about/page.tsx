@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { PhotoStrip } from "@/components/PhotoStrip";
 import { RichText } from "@/components/RichText";
 import { awards, photos, profile, skills, testimonials, timeline } from "@/content";
 
@@ -176,29 +177,7 @@ export default function AboutPage() {
           Hills, rivers, and the occasional barefoot walk. Faridabad is flat; the mountains are a
           night&apos;s drive.
         </p>
-        <div className="grid gap-4 grid-cols-3">
-          {photos.offTheClock.map((p, i) => (
-            <figure
-              key={p.src}
-              className={`relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] ${
-                i === 0 ? "aspect-[4/3] col-span-3 md:col-span-2 md:row-span-2 md:aspect-auto" : "aspect-[3/4]"
-              }`}
-            >
-              <Image
-                src={p.src}
-                alt={p.alt}
-                fill
-                sizes={i === 0 ? "(min-width: 768px) 640px, 100vw" : "(min-width: 768px) 320px, 33vw"}
-                className="object-cover transition-transform duration-700 hover:scale-[1.03]"
-              />
-              {p.caption && (
-                <figcaption className="absolute bottom-3 left-3 rounded-full bg-black/45 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-white/90">
-                  {p.caption}
-                </figcaption>
-              )}
-            </figure>
-          ))}
-        </div>
+        <PhotoStrip photos={photos.offTheClock} />
       </section>
 
       {/* SLOGAN BANNER */}

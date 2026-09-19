@@ -58,4 +58,15 @@ export type CaseStudy = {
   featured?: boolean;
 };
 
-export type Photo = { src: string; alt: string; caption?: string };
+export type Photo = {
+  src: string;
+  alt: string;
+  caption?: string;
+  /**
+   * Intrinsic pixel size of the file on disk. Layouts size frames from the
+   * real aspect ratio instead of cropping to a fixed one, and next/image gets
+   * intrinsic dimensions. `content.test.ts` checks these against the files.
+   */
+  width: number;
+  height: number;
+};

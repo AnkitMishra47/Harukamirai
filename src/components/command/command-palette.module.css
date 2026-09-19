@@ -165,13 +165,12 @@
 
 .tiltedCharmsBar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.45rem 0.55rem;
   padding: 0.65rem 1.25rem;
   border-bottom: 1px solid var(--border);
   background: color-mix(in oklab, var(--bg) 80%, transparent);
-  overflow-x: auto;
-  scrollbar-width: none;
 }
 
 .charmsLabel {
@@ -182,6 +181,7 @@
   color: var(--gold);
   font-weight: 600;
   white-space: nowrap;
+  margin-right: 0.25rem;
 }
 
 .tiltedCharm {

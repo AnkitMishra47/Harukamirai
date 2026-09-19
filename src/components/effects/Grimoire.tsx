@@ -109,11 +109,11 @@ export function Grimoire() {
         }}
       />
 
-      {/* Floor shadow */}
+      {/* Floor shadow — box-shadow instead of filter:blur to stay on compositor */}
       <div
         aria-hidden
-        className="pointer-events-none absolute bottom-0 left-1/2 h-3 w-4/5 -translate-x-1/2 rounded-full"
-        style={{ background: "rgba(0,0,0,0.45)", filter: "blur(8px)" }}
+        className="pointer-events-none absolute bottom-0 left-1/2 h-0 w-3/5 -translate-x-1/2 rounded-full"
+        style={{ boxShadow: "0 0 12px 6px rgba(0,0,0,0.35)" }}
       />
 
       {/* Bookmark ribbons - visible once the book opens */}

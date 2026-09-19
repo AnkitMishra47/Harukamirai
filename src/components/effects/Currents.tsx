@@ -9,7 +9,7 @@ import { MagicReveal } from "./MagicReveal";
  */
 export function Currents() {
   return (
-    <section className="mx-auto max-w-7xl px-6 lg:px-12 py-28 md:py-36">
+    <section className="mx-auto max-w-7xl px-6 lg:px-12 py-14 md:py-36">
       <MagicReveal>
         <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">
           Currents · 今
@@ -17,13 +17,16 @@ export function Currents() {
         <h2 className="font-display text-5xl md:text-6xl mt-2 text-[var(--text)]">
           Reading, drinking, watching.
         </h2>
+        <p className="text-xs text-[var(--text-subtle)] mt-1">
+          Last updated: Sep 2026
+        </p>
         <p className="mt-4 max-w-xl text-[var(--text-muted)]">
           A site about an engineer who reads manga should probably show that.
         </p>
       </MagicReveal>
 
-      <div className="mt-16 grid gap-8 md:grid-cols-3">
-        <MagicReveal delay={0.05}>
+      <div className="mt-16 grid gap-8 md:grid-cols-3 auto-rows-fr">
+        <MagicReveal delay={0.05} className="h-full">
           <Card label="Reading" jp="読書">
             <MangaBook />
             <CardMeta
@@ -34,7 +37,7 @@ export function Currents() {
           </Card>
         </MagicReveal>
 
-        <MagicReveal delay={0.18}>
+        <MagicReveal delay={0.18} className="h-full">
           <Card label="Drinking" jp="珈琲">
             <CoffeeCup />
             <CardMeta
@@ -45,7 +48,7 @@ export function Currents() {
           </Card>
         </MagicReveal>
 
-        <MagicReveal delay={0.32}>
+        <MagicReveal delay={0.32} className="h-full">
           <Card label="Playing" jp="将棋">
             <ChessBoard />
             <CardMeta
@@ -71,7 +74,7 @@ function Card({
 }) {
   return (
     <HoverLift y={-6}>
-      <div className="group relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-7 transition-all hover:border-[var(--accent)] hover:shadow-[0_30px_80px_-30px_var(--accent-glow)]">
+      <div className="group relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-7 transition-all hover:border-[var(--accent)] hover:shadow-[0_30px_80px_-30px_var(--accent-glow)] h-full flex flex-col">
         <div className="flex items-center justify-between">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
             {label}

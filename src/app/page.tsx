@@ -4,6 +4,7 @@ import { MagicCircle } from "@/components/effects/MagicCircle";
 import { MagicReveal, BrushDivider } from "@/components/effects/MagicReveal";
 import { Currents } from "@/components/effects/Currents";
 import { HoverLift } from "@/components/effects/HoverLift";
+import { TechPill } from "@/components/TechPill";
 import { awards, caseStudies, profile } from "@/content";
 
 export default function HomePage() {
@@ -27,7 +28,7 @@ export default function HomePage() {
       </section>
 
       {/* FEATURED WORK */}
-      <section className="mx-auto max-w-7xl px-6 lg:px-12 py-28 md:py-36">
+      <section className="mx-auto max-w-7xl px-6 lg:px-12 py-14 md:py-36">
         <MagicReveal>
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">
             Featured spells
@@ -41,24 +42,28 @@ export default function HomePage() {
           {featured.map((c, i) => (
             <MagicReveal key={c.slug} delay={0.1 + i * 0.15} className={i === 0 ? "md:col-span-3" : "md:col-span-2"}>
               <HoverLift>
-                <article
-                  className={`group relative h-full overflow-hidden rounded-2xl border p-8 transition-all ${
-                    i === 0
-                      ? "border-[var(--border-strong)] bg-[var(--bg-elevated)] hover:border-[var(--accent)] hover:shadow-[0_20px_60px_-20px_var(--accent-glow)]"
-                      : "border-[var(--border)] bg-[var(--bg-elevated)] hover:border-[var(--accent)]"
-                  }`}
-                >
-                  <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{c.kicker}</p>
-                  <h3 className="font-display text-3xl mt-3 text-[var(--text)]">{c.title}</h3>
-                  <p className="mt-4 text-[var(--text-muted)] leading-relaxed">{c.domain}</p>
-                  <div className="mt-6 flex flex-wrap gap-2 text-xs">
-                    {c.stack.slice(0, 5).map((t) => (
-                      <span key={t} className="rounded-full border border-[var(--border)] bg-[var(--bg)] px-3 py-1 text-[var(--text-muted)]">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </article>
+                <Link href={`/work#${c.slug}`} className="block h-full">
+                  <article
+                    className={`group relative flex flex-col h-full overflow-hidden rounded-2xl border p-8 transition-all ${
+                      i === 0
+                        ? "border-[var(--border-strong)] bg-[var(--bg-elevated)] hover:border-[var(--accent)] hover:shadow-[0_20px_60px_-20px_var(--accent-glow)]"
+                        : "border-[var(--border)] bg-[var(--bg-elevated)] hover:border-[var(--accent)]"
+                    }`}
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[var(--accent)] to-transparent opacity-70 group-hover:opacity-100 transition-opacity" />
+                    <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{c.kicker}</p>
+                    <h3 className="font-display text-3xl mt-3 text-[var(--text)]">{c.title}</h3>
+                    <p className="mt-4 text-[var(--text-muted)] leading-relaxed">{c.domain}</p>
+                    <div className="mt-6 mb-8 flex flex-wrap gap-2 text-xs">
+                      {c.stack.slice(0, 5).map((t) => (
+                        <TechPill key={t}>{t}</TechPill>
+                      ))}
+                    </div>
+                    <div className="mt-auto pt-4 flex items-center text-sm font-medium text-[var(--accent)]">
+                      Read case study <span className="ml-1 transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+                    </div>
+                  </article>
+                </Link>
               </HoverLift>
             </MagicReveal>
           ))}
@@ -77,7 +82,7 @@ export default function HomePage() {
 
       <Currents />
 
-      <section className="mx-auto max-w-3xl px-6 pb-32">
+      <section className="mx-auto max-w-3xl px-6 pb-16 md:pb-32">
         <BrushDivider />
         <MagicReveal>
           <p className="font-display text-2xl md:text-3xl leading-relaxed text-[var(--text)]">

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "motion/react";
 import { searchCareerIndex, SUGGESTED_QUERIES, SearchResultItem } from "./search-index";
 
 export function CommandPalette() {
@@ -52,6 +53,17 @@ export function CommandPalette() {
     }
   }, [isOpen]);
 
+  // Lock body scroll when menu open
+  useEffect(() => {
+    if (isOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [isOpen]);
+
   // Keyboard navigation within list
   const handleInputKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
@@ -88,19 +100,29 @@ export function CommandPalette() {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 sm:pt-24">
+    <AnimatePresence>
+      {isOpen && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
+      className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 sm:pt-24"
+    >
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/75 backdrop-blur-sm"
         onClick={() => setIsOpen(false)}
         aria-hidden
       />
 
       {/* Dialog */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+        transition={{ duration: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
         className="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-[var(--bg-elevated)] shadow-[0_25px_70px_-15px_rgba(0,0,0,0.7)]"
         role="dialog"
         aria-modal="true"
@@ -212,7 +234,9 @@ export function CommandPalette() {
           </div>
           <span className="text-[10px] text-[var(--text-subtle)]">Press Esc to exit</span>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

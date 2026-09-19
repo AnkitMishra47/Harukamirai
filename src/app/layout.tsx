@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import { themeInitScript } from "@/lib/theme-init";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
+import { ScrollToTop } from "@/components/ScrollToTop";
+import { PageTransition } from "@/components/PageTransition";
 import { CursorTrail } from "@/components/effects/CursorTrail";
 import { ThemeBurst } from "@/components/effects/ThemeBurst";
 import { AmbientCircle } from "@/components/effects/AmbientCircle";
@@ -69,7 +71,10 @@ export default function RootLayout({
         <CommandPalette />
         <ShutterStoryExperience />
         <RecruiterBriefModal />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">
+          <PageTransition>{children}</PageTransition>
+        </main>
+        <ScrollToTop />
         <Footer />
       </body>
     </html>

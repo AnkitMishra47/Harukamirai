@@ -22,7 +22,7 @@ export function ResumeSheet() {
           </a>{" "}
           ·{" "}
           <a href={linkedin.href} target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-[var(--accent)]">
-            linkedin.com{linkedin.value}
+            {linkedin.value}
           </a>{" "}
           · {profile.domain}
         </p>

@@ -87,17 +87,8 @@ export function HeroIntro() {
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto grid min-h-[88vh] max-w-7xl grid-cols-1 items-center gap-12 px-6 lg:px-12 pt-24 pb-20 lg:grid-cols-[1.3fr_1fr]">
+      <div className="relative z-10 mx-auto grid min-h-[70vh] md:min-h-[88vh] max-w-7xl grid-cols-1 items-center gap-8 md:gap-12 px-6 lg:px-12 pt-10 md:pt-24 pb-12 md:pb-20 lg:grid-cols-[1.3fr_1fr]">
         <div>
-          <div className="hero-in hero-in-1 mb-3.5 inline-flex items-center gap-2.5 rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--bg-elevated)_70%,var(--accent-glow))] px-3.5 py-1.5 shadow-[0_0_15px_var(--accent-glow)] backdrop-blur-sm">
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75" />
-              <span className="relative inline-flex size-2 rounded-full bg-[var(--accent)]" />
-            </span>
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
-              Welcome to Haruka Mirai · Grimoire No. 17
-            </span>
-          </div>
 
           <p className="hero-in hero-in-1 flex flex-wrap items-center text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--accent)]">
             <span className="font-jp text-sm tracking-normal">アスタ</span>
@@ -144,7 +135,7 @@ export function HeroIntro() {
                 <span className="opacity-70">·</span>
                 <span>I</span>
               </span>
-              <span className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--text)] leading-none">
+              <span className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--text)]">
                 Software Engineer
               </span>
             </div>
@@ -172,47 +163,39 @@ export function HeroIntro() {
             .
           </p>
 
-          <div className="hero-in hero-in-6 mt-10 flex flex-wrap items-center gap-3 text-sm">
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent("open-shutter-story"))}
-              className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-[var(--accent)] px-6 py-3.5 font-sans font-medium text-[var(--bg)] shadow-[0_4px_20px_var(--accent-glow)] transition-all hover:shadow-[0_0_30px_var(--accent-glow)] cursor-pointer"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="relative z-10">
-                <polygon points="5 3 19 12 5 21 5 3" />
-              </svg>
-              <span className="relative z-10 font-semibold tracking-wide">Experience Storyline</span>
-              <span className="absolute inset-0 -translate-x-full bg-[var(--accent-hover)] transition-transform duration-500 group-hover:translate-x-0" />
-            </button>
+          <div className="hero-in hero-in-6 mt-10 flex flex-col items-start gap-5">
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("open-shutter-story"))}
+                className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-[var(--accent)] px-6 py-3.5 font-sans font-medium text-[var(--bg)] shadow-[0_4px_20px_var(--accent-glow)] transition-all hover:shadow-[0_0_30px_var(--accent-glow)] cursor-pointer"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="relative z-10">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <span className="relative z-10 font-semibold tracking-wide">Experience Storyline</span>
+                <span className="absolute inset-0 -translate-x-full bg-[var(--accent-hover)] transition-transform duration-500 group-hover:translate-x-0" />
+              </button>
+
+              <Link
+                href="/work"
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg)] px-5 py-3.5 font-sans font-medium text-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] hover:text-[var(--text)]"
+              >
+                <span>View My Work</span>
+                <span aria-hidden>→</span>
+              </Link>
+            </div>
 
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent("open-recruiter-brief"))}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-5 py-3.5 font-sans font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:shadow-[0_0_20px_var(--accent-glow)] cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors pl-2 cursor-pointer"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12 6 12 12 16 14" />
               </svg>
-              <span>Executive Brief</span>
-            </button>
-
-            <Link
-              href="/work"
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg)] px-5 py-3.5 font-sans font-medium text-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] hover:text-[var(--text)]"
-            >
-              <span>Work & Projects</span>
-              <span aria-hidden>→</span>
-            </Link>
-
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent("open-command-palette"))}
-              className="group inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-3.5 text-xs font-mono uppercase tracking-[0.14em] text-[var(--text-muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--text)] cursor-pointer"
-              aria-label="Open command palette"
-            >
-              <span className="text-[var(--accent)] font-bold">⌘K</span>
-              <span className="hidden sm:inline">Search</span>
+              <span>Quick overview for recruiters</span>
             </button>
           </div>
         </div>

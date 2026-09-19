@@ -69,4 +69,5 @@ export type Photo = {
    */
   width: number;
   height: number;
+  blurDataURL?: string;
 };

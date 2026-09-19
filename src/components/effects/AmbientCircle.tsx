@@ -28,11 +28,16 @@ export function AmbientCircle() {
       className="pointer-events-none fixed inset-0 -z-50 flex items-center justify-center overflow-hidden"
       aria-hidden
     >
+      <style>{`
+        [data-theme='leaf-5'] .ambient-circle {
+          opacity: 0.08 !important;
+        }
+      `}</style>
       <svg
         viewBox="0 0 800 800"
         width={1100}
         height={1100}
-        className="spin-cw opacity-[0.05] dark:opacity-[0.08]"
+        className="spin-cw opacity-[0.05] ambient-circle"
         style={{ "--spin": "120s", transformOrigin: "50% 50%" } as React.CSSProperties}
       >
         <circle cx="400" cy="400" r="360" fill="none" stroke="var(--accent)" strokeWidth="1" strokeOpacity="0.8" />

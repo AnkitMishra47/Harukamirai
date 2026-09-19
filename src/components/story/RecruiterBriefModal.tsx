@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { profile } from "@/content";
+import { trackDownload } from "@/lib/track-download";
 
 export function RecruiterBriefModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +22,17 @@ export function RecruiterBriefModal() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen]);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
   }, [isOpen]);
 
   const copyEmail = () => {
@@ -138,6 +150,7 @@ export function RecruiterBriefModal() {
             <a
               href={profile.resumePdf}
               download
+              onClick={() => trackDownload(profile.resumePdf)}
               className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--bg)] shadow-md hover:bg-[var(--accent-hover)] transition-colors cursor-pointer"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -151,13 +164,13 @@ export function RecruiterBriefModal() {
             <button
               type="button"
               onClick={copyEmail}
-              className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--bg)] px-4 py-2.5 text-sm font-medium text-[var(--text)] hover:border-[var(--accent)] transition-colors cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--bg)] py-2.5 text-sm font-medium text-[var(--text)] hover:border-[var(--accent)] transition-colors cursor-pointer min-w-[190px] px-4"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
               </svg>
-              <span>{copied ? "Copied to Clipboard!" : "Copy Email"}</span>
+              <span>{copied ? "Copied!" : "Copy Email"}</span>
             </button>
           </div>
 

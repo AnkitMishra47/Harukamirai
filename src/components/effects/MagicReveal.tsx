@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /** True once the element has entered the viewport; never flips back. */
-function useInViewOnce<T extends Element>(margin = "-80px") {
+function useInViewOnce<T extends Element>(margin = "100px") {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {

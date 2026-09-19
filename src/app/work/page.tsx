@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MagicReveal } from "@/components/effects/MagicReveal";
+import { CaseStudyGrid } from "@/components/CaseStudyGrid";
 import { caseStudies, profile, timeline } from "@/content";
-import type { CaseStudy } from "@/content";
 
 export const metadata: Metadata = {
   title: `Work - ${profile.name}`,
@@ -15,8 +15,8 @@ export default function WorkPage() {
   const career = timeline.filter((t) => t.kind === "role" || t.kind === "award");
 
   return (
-    <article className="mx-auto max-w-7xl px-6 lg:px-12 py-20 md:py-28">
-      <header className="mb-20">
+    <article className="mx-auto max-w-7xl px-6 lg:px-12 py-10 md:py-28">
+      <header className="mb-8 md:mb-14">
         <MagicReveal>
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">Work</p>
           <h1 className="font-display text-5xl md:text-6xl mt-3 text-[var(--text)] leading-[1.02]">
@@ -30,27 +30,8 @@ export default function WorkPage() {
         </MagicReveal>
       </header>
 
-      {/* INDEPENDENT CLIENT WORK */}
-      {independent.length > 0 && (
-        <section className="mb-28">
-          <MagicReveal>
-            <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
-              Featured · Independent client work
-            </p>
-            <h2 className="font-display text-4xl mt-3 text-[var(--text)]">Outside the day job.</h2>
-          </MagicReveal>
-          <div className="mt-10 space-y-12">
-            {independent.map((c) => (
-              <MagicReveal key={c.slug}>
-                <CaseStudyCard study={c} />
-              </MagicReveal>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* ONEIT CASE STUDIES */}
-      <section className="mb-28">
+      <section className="mb-14 md:mb-28">
         <MagicReveal>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
             Inside OneIT · Selected work
@@ -63,17 +44,24 @@ export default function WorkPage() {
           </p>
         </MagicReveal>
 
-        <div className="mt-12 space-y-12">
-          {oneit.map((c, i) => (
-            <MagicReveal key={c.slug} delay={i * 0.05}>
-              <CaseStudyCard study={c} />
-            </MagicReveal>
-          ))}
-        </div>
+        <CaseStudyGrid studies={oneit} />
       </section>
 
+      {/* INDEPENDENT CLIENT WORK */}
+      {independent.length > 0 && (
+        <section className="mb-14 md:mb-28">
+          <MagicReveal>
+            <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
+              Featured · Independent client work
+            </p>
+            <h2 className="font-display text-4xl mt-3 text-[var(--text)]">Outside the day job.</h2>
+          </MagicReveal>
+          <CaseStudyGrid studies={independent} />
+        </section>
+      )}
+
       {/* ONEIT TIMELINE */}
-      <section className="mb-24">
+      <section className="mb-14 md:mb-24">
         <MagicReveal>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
             Day job · {career[0].date} - present
@@ -104,7 +92,7 @@ export default function WorkPage() {
         </ol>
       </section>
 
-      <div className="mt-24 text-center">
+      <div className="mt-14 md:mt-24 text-center">
         <MagicReveal delay={0.5}>
           <Link
             href="/contact"
@@ -124,74 +112,4 @@ function numberWord(n: number) {
   return ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"][n] ?? String(n);
 }
 
-function CaseStudyCard({ study }: { study: CaseStudy }) {
-  return (
-    <article
-      id={study.slug}
-      className="group relative scroll-mt-28 rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-8 transition-all hover:border-[var(--accent)] hover:shadow-[0_0_30px_var(--accent-glow)]"
-    >
-      <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{study.kicker}</p>
-      <h3 className="font-display text-2xl md:text-3xl mt-3 text-[var(--text)] leading-tight">{study.title}</h3>
-      <p className="mt-3 text-[var(--text-muted)] leading-relaxed">{study.domain}</p>
 
-      <div className="mt-7 grid gap-7 md:grid-cols-3">
-        <div className="md:col-span-2 space-y-5">
-          <Block label="Problem">
-            <p className="mt-1.5 text-[var(--text-muted)] leading-relaxed">{study.problem}</p>
-          </Block>
-          <Block label="Approach">
-            <ul className="mt-2 space-y-2 text-[var(--text-muted)]">
-              {study.approach.map((line) => (
-                <li key={line} className="leading-relaxed">
-                  <span className="mr-2 text-[var(--accent)]">▹</span>
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </Block>
-          <Block label="Result">
-            <p className="mt-1.5 text-[var(--text-muted)] leading-relaxed">{study.result}</p>
-          </Block>
-        </div>
-
-        <aside className="space-y-3 md:border-l md:border-[var(--border)] md:pl-7">
-          {study.metrics.map((m) => (
-            <div key={m.label} className="rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--text-subtle)]">{m.label}</p>
-              <p className="font-display text-xl mt-1 text-[var(--text)] leading-tight">{m.value}</p>
-            </div>
-          ))}
-        </aside>
-      </div>
-
-      <div className="mt-7 flex flex-wrap items-center gap-2">
-        {study.stack.map((s) => (
-          <span key={s} className="rounded-full border border-[var(--border)] bg-[var(--bg)] px-3 py-1 text-xs text-[var(--text-muted)]">
-            {s}
-          </span>
-        ))}
-        {study.links?.map((l) => (
-          <a
-            key={l.href}
-            href={l.href}
-            target="_blank"
-            rel="noreferrer"
-            className="ml-auto inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.16em] text-[var(--accent)] transition-colors hover:text-[var(--accent-hover)]"
-          >
-            {l.label}
-            <span aria-hidden>↗</span>
-          </a>
-        ))}
-      </div>
-    </article>
-  );
-}
-
-function Block({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-subtle)]">{label}</p>
-      {children}
-    </div>
-  );
-}

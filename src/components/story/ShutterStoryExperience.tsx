@@ -3,7 +3,14 @@
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
-import { profile } from "@/content";
+import { profile, photos } from "@/content";
+import { trackDownload } from "@/lib/track-download";
+
+/** Map scene imageSrc → blurDataURL from the photos module. */
+const BLUR_MAP: Record<string, string | undefined> = {
+  [photos.setup.src]: photos.setup.blurDataURL,
+  [photos.awardTrophy.src]: photos.awardTrophy.blurDataURL,
+};
 
 interface StoryScene {
   id: number;
@@ -151,8 +158,8 @@ const SCENES: StoryScene[] = [
 const SCENE_DURATION_MS = 12000;
 
 export function ShutterStoryExperience() {
-  const [isDismissed, setIsDismissed] = useState(true);
-  const [isShutterLifted, setIsShutterLifted] = useState(true);
+  const [isDismissed, setIsDismissed] = useState(false);
+  const [isShutterLifted, setIsShutterLifted] = useState(false);
   const [isExitingTheater, setIsExitingTheater] = useState(false);
   const [currentSceneIdx, setCurrentSceneIdx] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -554,6 +561,7 @@ export function ShutterStoryExperience() {
                           unoptimized
                           priority
                           className="object-contain sm:object-cover sm:object-top transition-transform duration-700 group-hover:scale-[1.02]"
+                          {...(activeScene.imageSrc && BLUR_MAP[activeScene.imageSrc] ? { placeholder: "blur" as const, blurDataURL: BLUR_MAP[activeScene.imageSrc] } : {})}
                         />
                       </div>
 
@@ -644,6 +652,7 @@ export function ShutterStoryExperience() {
                       <a
                         href={profile.resumePdf}
                         download
+                        onClick={() => trackDownload(profile.resumePdf)}
                         className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 font-sans text-xs font-semibold text-[var(--bg)] shadow-[0_0_20px_var(--accent-glow)] transition-all hover:scale-[1.02]"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -681,7 +690,7 @@ export function ShutterStoryExperience() {
         </main>
 
         {/* BOTTOM FOOTER NAVIGATION */}
-        <footer className="relative z-30 flex items-center justify-between px-4 pb-3.5 sm:px-8 sm:pb-4 md:px-12 border-t border-white/10 max-w-5xl mx-auto w-full bg-[#06070a]/90 backdrop-blur-sm pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
+        <footer className="relative z-30 flex items-center justify-between px-6 py-3.5 sm:px-8 sm:py-4 md:px-12 border-t border-white/10 max-w-5xl mx-auto w-full bg-[#06070a]/90 backdrop-blur-sm" style={{ paddingBottom: 'calc(0.875rem + env(safe-area-inset-bottom, 0px))' }}>
           <div className="flex items-center gap-2">
             <button
               type="button"

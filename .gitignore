@@ -14,3 +14,9 @@ public/photos/*SWI*
 # IDE / assistant scratch state
 .idea/
 .junie/
+
+# Stray env debris (shell redirect accidents); real config uses .env*.local
+.env
+src/.env
+src/content/.env
+.playwright-mcp/

@@ -102,3 +102,56 @@ describe("grimoire chapter derivation", () => {
     expect(new Set(years).size).toBe(years.length);
   });
 });
+
+import { readFileSync } from "node:fs";
+
+/**
+ * Reads width/height straight out of a JPEG's SOF marker so the test needs no
+ * image dependency. Returns null for anything that is not a JPEG.
+ */
+function jpegSize(file: string): { width: number; height: number } | null {
+  const buf = readFileSync(file);
+  if (buf.readUInt16BE(0) !== 0xffd8) return null;
+  let i = 2;
+  while (i < buf.length - 9) {
+    if (buf[i] !== 0xff) {
+      i++;
+      continue;
+    }
+    const marker = buf[i + 1];
+    // SOF0-SOF15 carry the frame size; C4/C8/CC are Huffman/arithmetic tables.
+    if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+      return { height: buf.readUInt16BE(i + 5), width: buf.readUInt16BE(i + 7) };
+    }
+    i += 2 + buf.readUInt16BE(i + 2);
+  }
+  return null;
+}
+
+describe("photo dimensions", () => {
+  it("match the files on disk, so galleries can lay out by true aspect ratio", () => {
+    const all = [photos.portrait, photos.awardTrophy, photos.openRoad, ...photos.offTheClock];
+    for (const p of all) {
+      const actual = jpegSize(path.join(process.cwd(), "public", p.src));
+      expect(actual, `${p.src} is not a readable JPEG`).not.toBeNull();
+      expect({ src: p.src, ...actual }).toEqual({
+        src: p.src,
+        width: p.width,
+        height: p.height,
+      });
+    }
+  });
+
+  it("never asks a frame for more pixels than the file has", () => {
+    // The Off-the-clock strip renders every print at the same height with its
+    // natural width, inside a 1024px container. Worst case is 2x DPR desktop.
+    const STRIP_HEIGHT_CSS = 357;
+    const DPR = 2;
+    for (const p of photos.offTheClock) {
+      const neededHeight = STRIP_HEIGHT_CSS * DPR;
+      expect(p.height, `${p.src} would be upscaled in the strip`).toBeGreaterThanOrEqual(
+        neededHeight,
+      );
+    }
+  });
+});

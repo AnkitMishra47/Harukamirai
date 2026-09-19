@@ -10,3 +10,7 @@ next-env.d.ts
 # Specific filenames + a blanket PDF rule under /public/photos.
 public/photos/*.pdf
 public/photos/*SWI*
+
+# IDE / assistant scratch state
+.idea/
+.junie/

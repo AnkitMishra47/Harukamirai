@@ -1,38 +1,57 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { MagicCircle } from "@/components/effects/MagicCircle";
 import { ParticleField } from "@/components/effects/ParticleField";
-import { Grimoire } from "@/components/effects/Grimoire";
+import { GrimoireLazy } from "@/components/effects/GrimoireLazy";
 import { profile } from "@/content";
 
 /**
  * Home hero. Text is rendered in HTML and revealed with CSS keyframes
  * (`.hero-in`) so it paints before hydration; only the scroll parallax on the
  * circle and the book needs JavaScript.
+ *
+ * The parallax is one passive, rAF-throttled scroll listener that writes
+ * `--hero-p` (0 = hero at the top of the viewport, 1 = hero fully scrolled
+ * out) on the section. The circle and the book read it in CSS `calc()`.
+ * It only listens while the hero is on screen, and not under reduced motion
+ * (the section then keeps the default of 0).
  */
 export function HeroIntro() {
   const heroRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const grimoireY = useTransform(scrollYProgress, [0, 1], [0, -120]);
-  const grimoireRotate = useTransform(scrollYProgress, [0, 1], [0, 8]);
-  const circleScale = useTransform(scrollYProgress, [0, 1], [1, 1.3]);
-  const circleOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
-  // Disable Grimoire scroll transforms below `lg` - on mobile the layout
-  // stacks vertically and the y/rotate offsets drag the book over the CTAs.
-  const [isLg, setIsLg] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    setIsLg(mq.matches);
-    const onChange = (e: MediaQueryListEvent) => setIsLg(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
+    const el = heroRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let raf = 0;
+    const write = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -r.top / r.height));
+      el.style.setProperty("--hero-p", p.toFixed(4));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(write);
+    };
+
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+      } else {
+        window.removeEventListener("scroll", onScroll);
+      }
+    });
+    io.observe(el);
+
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   const [first, second] = profile.nameLines;
@@ -43,12 +62,15 @@ export function HeroIntro() {
         <ParticleField />
       </div>
 
-      <motion.div
-        style={{ scale: circleScale, opacity: circleOpacity }}
+      <div
+        style={{
+          transform: "scale(calc(1 + var(--hero-p, 0) * 0.3))",
+          opacity: "calc(1 - var(--hero-p, 0) / 0.8)",
+        }}
         className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
       >
         <MagicCircle size={900} />
-      </motion.div>
+      </div>
 
       <div
         className="absolute inset-0 z-0 pointer-events-none"
@@ -157,19 +179,16 @@ export function HeroIntro() {
           </div>
         </div>
 
-        <motion.div
-          style={isLg ? { y: grimoireY, rotate: grimoireRotate } : undefined}
-          className="relative flex items-center justify-center lg:justify-end mt-8 lg:mt-0"
-        >
+        <div className="hero-book relative flex items-center justify-center lg:justify-end mt-8 lg:mt-0">
           <div className="relative">
             <div
               aria-hidden
               className="hero-aura absolute left-1/2 top-1/2 -z-10 h-[460px] w-[460px] -translate-x-1/2 -translate-y-1/2 rounded-full"
               style={{ background: "radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)" }}
             />
-            <Grimoire size={400} />
+            <GrimoireLazy size={400} />
           </div>
-        </motion.div>
+        </div>
       </div>
 
       <div className="hero-in hero-in-7 absolute bottom-8 left-1/2 -translate-x-1/2 text-xs uppercase tracking-[0.32em] text-[var(--text-subtle)]">

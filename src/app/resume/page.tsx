@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Grimoire } from "@/components/effects/Grimoire";
+import { GrimoireLazy } from "@/components/effects/GrimoireLazy";
 import { MagicReveal } from "@/components/effects/MagicReveal";
 import { ResumeSheet } from "@/components/ResumeSheet";
 import { profile } from "@/content";
@@ -25,7 +25,7 @@ export default function ResumePage() {
       </MagicReveal>
 
       <div className="hero-in relative z-10 mt-4 print:hidden">
-        <Grimoire size={450} />
+        <GrimoireLazy size={450} />
       </div>
 
       <MagicReveal delay={1.2} className="mt-16 flex flex-col items-center gap-6 print:hidden">

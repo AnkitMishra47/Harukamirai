@@ -165,7 +165,7 @@ export function AdventureQuest() {
                 ✕
               </button>
 
-              <header>
+              <header className={styles.header}>
                 <p className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--gold)]">
                   Grimoire Expedition Map
                 </p>

@@ -13,7 +13,6 @@
   background: rgba(6, 7, 10, 0.75);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  overflow-y: auto;
 }
 
 @media (min-width: 640px) {
@@ -28,6 +27,9 @@
   max-width: 48rem;
   max-height: calc(100dvh - 3rem);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
   border-radius: 1.25rem;
   border: 1px solid var(--border-strong);
   background: var(--bg-elevated);
@@ -43,10 +45,29 @@
   }
 }
 
+.dialog::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dialog::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 1rem 0;
+}
+
+.dialog::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+
+.dialog::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
 .closeBtn {
   position: absolute;
   top: 1.25rem;
   right: 1.25rem;
+  z-index: 10;
   display: grid;
   place-items: center;
   width: 2.25rem;
@@ -69,12 +90,18 @@
   transform: scale(1.08);
 }
 
+.header {
+  padding-right: 2.75rem;
+}
+
 .kicker {
   font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
   font-size: 0.75rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent);
+  word-break: break-word;
+  padding-right: 0.5rem;
 }
 
 .title {

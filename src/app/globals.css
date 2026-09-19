@@ -168,22 +168,21 @@ body {
    ============================================================ */
 html {
   scrollbar-width: thin;
-  scrollbar-color: var(--border-strong) var(--bg);
+  scrollbar-color: var(--border-strong) transparent;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--border-strong);
   border-radius: 999px;
-  border: 2px solid var(--bg);
   transition: background-color 200ms ease;
 }
 
@@ -192,7 +191,7 @@ html {
 }
 
 ::-webkit-scrollbar-corner {
-  background: var(--bg);
+  background: transparent;
 }
 
 /* Hide scrollbar utility for clean horizontal strips when needed */

@@ -88,7 +88,7 @@ export function CaseStudyModal({ study, onClose }: CaseStudyModalProps) {
               ✕
             </button>
 
-            <header>
+            <header className={styles.header}>
               <p className={styles.kicker}>{study.kicker}</p>
               <h2 id="case-study-modal-title" className={styles.title}>
                 {study.title}

@@ -104,6 +104,9 @@
   max-width: 44rem;
   max-height: calc(100dvh - 3rem);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold) transparent;
   border-radius: 1.25rem;
   border: 1px solid var(--gold);
   background: var(--bg-elevated);
@@ -119,10 +122,25 @@
   }
 }
 
+.modalDialog::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modalDialog::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 1rem 0;
+}
+
+.modalDialog::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--gold) 50%, var(--border));
+  border-radius: 999px;
+}
+
 .closeBtn {
   position: absolute;
   top: 1.25rem;
   right: 1.25rem;
+  z-index: 10;
   display: grid;
   place-items: center;
   width: 2.25rem;
@@ -141,6 +159,10 @@
   color: var(--text);
   border-color: var(--gold);
   transform: scale(1.08);
+}
+
+.header {
+  padding-right: 2.75rem;
 }
 
 .relicGrid {

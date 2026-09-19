@@ -63,7 +63,7 @@ export function RecruiterBriefModal() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="recruiter-brief-title"
-        className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[var(--border-strong)] bg-[var(--bg-elevated)] p-6 sm:p-8 shadow-[0_25px_80px_-15px_rgba(0,0,0,0.8)] text-left"
+        className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain rounded-2xl border border-[var(--border-strong)] bg-[var(--bg-elevated)] p-6 sm:p-8 shadow-[0_25px_80px_-15px_rgba(0,0,0,0.8)] text-left"
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] pb-5">

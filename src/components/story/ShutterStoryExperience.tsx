@@ -1358,21 +1358,21 @@ export function ShutterStoryExperience() {
           isShutterLifted
             ? { y: "-100%" }
             : {
-                y: shouldReduceMotion ? 0 : [0, -50, -50, 0],
+                y: shouldReduceMotion ? 0 : [0, -75, -75, 0],
               }
         }
         transition={
           isShutterLifted
             ? { duration: 0.9, ease: [0.16, 1, 0.3, 1] }
             : {
-                duration: 4.8,
-                times: [0, 0.25, 0.65, 1],
+                duration: 3.8,
+                times: [0, 0.28, 0.68, 1],
                 repeat: Infinity,
-                repeatDelay: 2.5,
-                ease: "easeInOut",
+                repeatDelay: 1.8,
+                ease: [0.22, 1, 0.36, 1],
               }
         }
-        className="fixed inset-0 z-50 flex flex-col justify-between bg-[#08090c] text-[var(--text)] select-none pointer-events-auto h-[100dvh] cursor-grab active:cursor-grabbing"
+        className="fixed inset-0 z-50 flex flex-col justify-between bg-[#08090c] text-[var(--text)] select-none pointer-events-auto h-[100dvh] cursor-grab active:cursor-grabbing border-b border-amber-400/25 shadow-[0_25px_60px_rgba(0,0,0,0.95)]"
         style={{
           backgroundImage:
             "linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px)",
@@ -1475,10 +1475,10 @@ export function ShutterStoryExperience() {
         {/* Shutter Bottom Architectural Grip Lip (Draggable & Clickable) */}
         <footer
           onClick={liftShutter}
-          className={`relative z-10 flex items-center justify-between gap-3 pt-3.5 sm:pt-4 border-t border-white/15 bg-black/60 hover:bg-white/[0.06] font-mono text-[11px] text-white/60 hover:text-white transition-colors cursor-pointer ${styles.gutter} ${styles.bottomInset} group`}
+          className={`relative z-10 flex items-center justify-between gap-3 pt-3.5 sm:pt-4 border-t border-white/15 bg-black/80 hover:bg-black/90 font-mono text-[11px] text-white/70 hover:text-white transition-colors cursor-pointer ${styles.gutter} ${styles.bottomInset} group shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]`}
         >
           <span>Ankit Mishra · Senior SWE</span>
-          <span className="inline-flex items-center gap-1.5 font-semibold text-amber-300 tracking-wider">
+          <span className="inline-flex items-center gap-1.5 font-semibold text-amber-300 tracking-wider group-hover:text-amber-200 transition-colors">
             <svg
               width="12"
               height="12"

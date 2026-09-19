@@ -5,6 +5,7 @@ import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "motion/react";
 import { profile, photos, type Photo } from "@/content";
 import { trackDownload } from "@/lib/track-download";
+import { successionEngine } from "@/lib/audio-synthesizer";
 import styles from "./story-scene.module.css";
 
 /**
@@ -91,10 +92,10 @@ const SCENES: StoryScene[] = [
     narrativeLead:
       "Every senior engineer begins as someone willing to sit with the problem when everyone else has logged off.",
     narrativeBody:
-      "In July 2022, I joined OneIT Australia as an intern right after completing my BCA with 86%. Working remotely across Australian business hours meant diagnosing production deadlocks at 11 PM on a Tuesday, then sitting for university exams the next morning. It built my habit of staying calm and methodical under pressure.",
+      "In July 2022, I joined OneIT Australia as an intern right after completing my Bachelor's in Computer Applications with 86% distinction. Working remotely across Australian business hours meant diagnosing production deadlocks at 11 PM on a Tuesday, then sitting for university exams the next morning. It built my habit of staying calm and methodical under pressure.",
     metricLabel: "Academic & Career Start",
-    metricValue: "86% BCA · Intern to Jr SWE",
-    chips: ["OneIT Australia", "BCA 86% Distinction", "Java & Angular Platforms"],
+    metricValue: "86% Distinction · Intern to Jr SWE",
+    chips: ["OneIT Australia", "Bachelor's 86% Distinction", "Java & Angular Platforms"],
     figureRows: [
       { label: "IST", value: "23:14:02", note: "DEEP WORK", valueColor: "#fbbf24" },
       { label: "AWST", value: "01:44:02", note: "CLIENT SYNC", valueColor: "#38bdf8" },
@@ -209,7 +210,7 @@ const SCENES: StoryScene[] = [
   },
 ];
 
-const SCENE_DURATION_MS = 12000;
+const SCENE_DURATION_MS = 8500;
 
 /**
  * Swipe navigation tuning.
@@ -242,6 +243,29 @@ const SCENE_EXIT_OFFSET_PX = 110;
  */
 const TAP_SLOP_PX = 10;
 
+/** Live clock for IST and AWST timezones */
+function useLiveTimezones() {
+  const [times, setTimes] = useState<{ IST: string; AWST: string }>({
+    IST: "00:00:00",
+    AWST: "00:00:00",
+  });
+
+  useEffect(() => {
+    const update = () => {
+      const now = new Date();
+      setTimes({
+        IST: now.toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour12: false }),
+        AWST: now.toLocaleTimeString("en-GB", { timeZone: "Australia/Perth", hour12: false }),
+      });
+    };
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return times;
+}
+
 /**
  * The compact form of a scene's instrument panel: two readouts, set large.
  *
@@ -252,25 +276,34 @@ const TAP_SLOP_PX = 10;
  * (`--frame-h`, set on the column) so the six scenes fill a comparable envelope.
  */
 function CompactFigure({ rows }: { rows: readonly FigureRow[] }) {
+  const liveTimes = useLiveTimezones();
+
   return (
     <div
       className={`max-w-md mx-auto rounded-2xl border border-white/12 bg-white/[0.03] font-mono backdrop-blur-md ${styles.compactFigure}`}
     >
-      {rows.map((row, i) => (
-        <div key={row.label} className={styles.figureRow}>
-          {i > 0 && <span className={styles.figureRule} aria-hidden />}
-          <span className={`uppercase text-white/45 ${styles.figureLabel}`}>{row.label}</span>
-          <span
-            className={`font-semibold ${styles.figureValue}`}
-            style={{ color: row.valueColor }}
-          >
-            {row.value}
-          </span>
-          <span className={`uppercase tracking-[0.14em] text-white/55 ${styles.figureNote}`}>
-            {row.note}
-          </span>
-        </div>
-      ))}
+      {rows.map((row, i) => {
+        const displayValue =
+          row.label === "IST" || row.label === "AWST"
+            ? liveTimes[row.label as "IST" | "AWST"] || row.value
+            : row.value;
+
+        return (
+          <div key={row.label} className={styles.figureRow}>
+            {i > 0 && <span className={styles.figureRule} aria-hidden />}
+            <span className={`uppercase text-white/45 ${styles.figureLabel}`}>{row.label}</span>
+            <span
+              className={`font-semibold tabular-nums ${styles.figureValue}`}
+              style={{ color: row.valueColor }}
+            >
+              {displayValue}
+            </span>
+            <span className={`uppercase tracking-[0.14em] text-white/55 ${styles.figureNote}`}>
+              {row.note}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -282,6 +315,7 @@ export function ShutterStoryExperience() {
   const [currentSceneIdx, setCurrentSceneIdx] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
+  const [isMusicMuted, setIsMusicMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   /**
    * Separate from `isPaused` on purpose: a drag suspends the auto-advance timer
@@ -309,10 +343,14 @@ export function ShutterStoryExperience() {
       setDirection(1);
       setProgress(0);
       setIsPaused(false);
+      successionEngine.play();
     };
 
     window.addEventListener("open-shutter-story", handleReopen);
-    return () => window.removeEventListener("open-shutter-story", handleReopen);
+    return () => {
+      window.removeEventListener("open-shutter-story", handleReopen);
+      successionEngine.stop();
+    };
   }, []);
 
   // The gate is shown on every visit by design - Ankit's call. There is
@@ -323,9 +361,17 @@ export function ShutterStoryExperience() {
     setDirection(1);
     setProgress(0);
     setIsPaused(false);
+    successionEngine.play();
+  };
+
+  const toggleSoundtrack = () => {
+    const next = !isMusicMuted;
+    setIsMusicMuted(next);
+    successionEngine.setMute(next);
   };
 
   const exitToPortfolio = () => {
+    successionEngine.stop();
     setIsExitingTheater(true);
     setTimeout(() => {
       setIsDismissed(true);
@@ -484,20 +530,15 @@ export function ShutterStoryExperience() {
       return;
     }
 
-    const interval = 80;
+    const interval = 40;
     const step = (interval / SCENE_DURATION_MS) * 100;
 
     progressTimerRef.current = window.setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
-          if (currentSceneIdx < SCENES.length - 1) {
-            setDirection(1);
-            setCurrentSceneIdx((curr) => curr + 1);
-            return 0;
-          } else {
-            setIsPaused(true);
-            return 100;
-          }
+          setDirection(1);
+          setCurrentSceneIdx((curr) => (curr + 1) % SCENES.length);
+          return 0;
         }
         return prev + step;
       });
@@ -625,6 +666,37 @@ export function ShutterStoryExperience() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
+              {/* Succession Soundwave Equalizer Toggle */}
+              <button
+                type="button"
+                onClick={toggleSoundtrack}
+                aria-label={isMusicMuted ? "Unmute Succession Theme" : "Mute Succession Theme"}
+                title={isMusicMuted ? "Unmute Succession Soundtrack" : "Mute Succession Soundtrack"}
+                className={`font-mono text-xs px-2.5 py-1 rounded border transition-all cursor-pointer inline-flex items-center gap-1.5 ${
+                  isMusicMuted
+                    ? "text-white/40 border-white/10 bg-white/5 hover:text-white"
+                    : "text-amber-400 border-amber-400/40 bg-amber-400/10 shadow-[0_0_12px_rgba(245,158,11,0.2)]"
+                }`}
+              >
+                <span className="inline-flex items-end gap-[2px] h-[11px]" aria-hidden>
+                  <span
+                    className={`w-[2px] rounded-full bg-current ${!isMusicMuted ? "animate-pulse" : ""}`}
+                    style={{ height: isMusicMuted ? "2px" : "8px" }}
+                  />
+                  <span
+                    className={`w-[2px] rounded-full bg-current ${!isMusicMuted ? "animate-pulse" : ""}`}
+                    style={{ height: isMusicMuted ? "4px" : "11px", animationDelay: "150ms" }}
+                  />
+                  <span
+                    className={`w-[2px] rounded-full bg-current ${!isMusicMuted ? "animate-pulse" : ""}`}
+                    style={{ height: isMusicMuted ? "2px" : "6px", animationDelay: "300ms" }}
+                  />
+                </span>
+                <span className="hidden sm:inline text-[11px]">
+                  {isMusicMuted ? "Audio Muted" : "Succession Theme"}
+                </span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => setIsPaused((p) => !p)}
@@ -704,28 +776,24 @@ export function ShutterStoryExperience() {
               // stage can still be scrolled when it overflows a short screen.
               style={{ touchAction: "pan-y" }}
               variants={{
-                enter: (dir: number) => ({
-                  x: shouldReduceMotion ? 0 : dir > 0 ? 30 : -30,
+                enter: () => ({
                   opacity: 0,
+                  scale: 0.98,
                 }),
                 center: {
-                  x: 0,
                   opacity: 1,
+                  scale: 1,
                   transition: {
-                    duration: shouldReduceMotion ? 0.18 : 0.4,
-                    ease: [0.22, 1, 0.36, 1],
+                    duration: shouldReduceMotion ? 0.3 : 0.85,
+                    ease: [0.16, 1, 0.3, 1],
                   },
                 },
-                exit: (dir: number) => ({
-                  x: shouldReduceMotion
-                    ? 0
-                    : dir > 0
-                    ? -SCENE_EXIT_OFFSET_PX
-                    : SCENE_EXIT_OFFSET_PX,
+                exit: () => ({
                   opacity: 0,
+                  scale: 0.96,
                   transition: {
-                    duration: shouldReduceMotion ? 0.12 : 0.28,
-                    ease: [0.22, 1, 0.36, 1],
+                    duration: shouldReduceMotion ? 0.25 : 0.75,
+                    ease: [0.4, 0, 0.2, 1],
                   },
                 }),
               }}
@@ -734,26 +802,122 @@ export function ShutterStoryExperience() {
               exit="exit"
               className={`w-full grid grid-cols-1 items-center lg:grid-cols-12 ${styles.stageItem} ${styles.split}`}
             >
-              {/* LEFT COLUMN: HEADLINE, THEN THE DETAIL BEHIND THE TOGGLE */}
-              <div className={`text-left lg:col-span-6 ${styles.headlineStack}`}>
-                <p
+              {/* LEFT COLUMN: HEADLINE GLIDES IN SLOWLY FROM THE LEFT, SETTLES, AND CONVERGES SLOWLY ON EXIT */}
+              <motion.div
+                variants={{
+                  enter: () => ({
+                    x: shouldReduceMotion ? 0 : -95,
+                    opacity: 0,
+                    scale: 0.98,
+                  }),
+                  center: {
+                    x: 0,
+                    opacity: 1,
+                    scale: 1,
+                    transition: {
+                      duration: shouldReduceMotion ? 0.3 : 0.85,
+                      ease: [0.16, 1, 0.3, 1],
+                      delay: shouldReduceMotion ? 0 : 0.04,
+                    },
+                  },
+                  exit: () => ({
+                    x: shouldReduceMotion ? 0 : 80,
+                    opacity: 0,
+                    scale: 0.95,
+                    transition: {
+                      duration: shouldReduceMotion ? 0.25 : 0.75,
+                      ease: [0.4, 0, 0.2, 1],
+                    },
+                  }),
+                }}
+                className={`text-left lg:col-span-6 ${styles.headlineStack}`}
+              >
+                <motion.p
+                  variants={{
+                    enter: () => ({ x: shouldReduceMotion ? 0 : -70, opacity: 0 }),
+                    center: {
+                      x: 0,
+                      opacity: 1,
+                      transition: { duration: shouldReduceMotion ? 0.3 : 0.75, ease: [0.16, 1, 0.3, 1] },
+                    },
+                    exit: () => ({
+                      x: shouldReduceMotion ? 0 : 60,
+                      opacity: 0,
+                      transition: { duration: shouldReduceMotion ? 0.25 : 0.65, ease: [0.4, 0, 0.2, 1] },
+                    }),
+                  }}
                   className={`font-mono uppercase tracking-[0.2em] font-semibold ${styles.sceneEyebrow}`}
                   style={{ color: activeScene.accentColor }}
                 >
                   {activeScene.subtitle}
-                </p>
+                </motion.p>
 
-                <h2
+                {/* Title sweeps in slowly from the left, settles, and glides rightward to converge on exit */}
+                <motion.h2
+                  variants={{
+                    enter: () => ({ x: shouldReduceMotion ? 0 : -85, opacity: 0 }),
+                    center: {
+                      x: 0,
+                      opacity: 1,
+                      transition: {
+                        duration: shouldReduceMotion ? 0.3 : 0.85,
+                        ease: [0.16, 1, 0.3, 1],
+                        delay: shouldReduceMotion ? 0 : 0.08,
+                      },
+                    },
+                    exit: () => ({
+                      x: shouldReduceMotion ? 0 : 75,
+                      opacity: 0,
+                      transition: { duration: shouldReduceMotion ? 0.25 : 0.7, ease: [0.4, 0, 0.2, 1] },
+                    }),
+                  }}
                   className={`font-display font-semibold text-white ${styles.sceneTitle}`}
                 >
                   {activeScene.title}
-                </h2>
+                </motion.h2>
 
-                <p className={`font-sans text-white/95 font-medium ${styles.sceneLead}`}>
+                {/* Narrative lead sweeps in slowly from the left, settles, and glides rightward to converge on exit */}
+                <motion.p
+                  variants={{
+                    enter: () => ({ x: shouldReduceMotion ? 0 : -70, opacity: 0 }),
+                    center: {
+                      x: 0,
+                      opacity: 1,
+                      transition: {
+                        duration: shouldReduceMotion ? 0.3 : 0.85,
+                        ease: [0.16, 1, 0.3, 1],
+                        delay: shouldReduceMotion ? 0 : 0.16,
+                      },
+                    },
+                    exit: () => ({
+                      x: shouldReduceMotion ? 0 : 60,
+                      opacity: 0,
+                      transition: { duration: shouldReduceMotion ? 0.25 : 0.7, ease: [0.4, 0, 0.2, 1] },
+                    }),
+                  }}
+                  className={`font-sans text-white/95 font-medium ${styles.sceneLead}`}
+                >
                   {activeScene.narrativeLead}
-                </p>
+                </motion.p>
 
-                <button
+                <motion.button
+                  variants={{
+                    enter: () => ({ x: shouldReduceMotion ? 0 : -45, opacity: 0 }),
+                    center: {
+                      x: 0,
+                      opacity: 1,
+                      transition: {
+                        duration: shouldReduceMotion ? 0.3 : 0.8,
+                        ease: [0.16, 1, 0.3, 1],
+                        delay: shouldReduceMotion ? 0 : 0.24,
+                      },
+                    },
+                    exit: () => ({
+                      x: shouldReduceMotion ? 0 : 40,
+                      opacity: 0,
+                      transition: { duration: shouldReduceMotion ? 0.25 : 0.65, ease: [0.4, 0, 0.2, 1] },
+                    }),
+                  }}
                   type="button"
                   data-detail-toggle
                   aria-expanded={isDetailOpen}
@@ -773,7 +937,7 @@ export function ShutterStoryExperience() {
                   >
                     <polyline points={isDetailOpen ? "18 15 12 9 6 15" : "6 9 12 15 18 9"} />
                   </svg>
-                </button>
+                </motion.button>
 
                 <div id={detailTextId} hidden={!isDetailOpen}>
                   {isDetailOpen && (
@@ -827,10 +991,36 @@ export function ShutterStoryExperience() {
                     </div>
                   )}
                 </div>
-              </div>
+              </motion.div>
 
-              {/* RIGHT COLUMN: THE PHOTOGRAPH, AND THE PANELS ONCE ASKED FOR */}
-              <div
+              {/* RIGHT COLUMN: THE FIGURE GLIDES IN SLOWLY FROM THE RIGHT, SETTLES, AND CONVERGES ON EXIT */}
+              <motion.div
+                variants={{
+                  enter: () => ({
+                    x: shouldReduceMotion ? 0 : 95,
+                    opacity: 0,
+                    scale: 0.98,
+                  }),
+                  center: {
+                    x: 0,
+                    opacity: 1,
+                    scale: 1,
+                    transition: {
+                      duration: shouldReduceMotion ? 0.3 : 0.85,
+                      ease: [0.16, 1, 0.3, 1],
+                      delay: shouldReduceMotion ? 0 : 0.06,
+                    },
+                  },
+                  exit: () => ({
+                    x: shouldReduceMotion ? 0 : -80,
+                    opacity: 0,
+                    scale: 0.95,
+                    transition: {
+                      duration: shouldReduceMotion ? 0.25 : 0.75,
+                      ease: [0.4, 0, 0.2, 1],
+                    },
+                  }),
+                }}
                 className={`flex items-center justify-center w-full lg:col-span-6 ${styles.figureCol}`}
               >
                 {/*
@@ -1069,14 +1259,28 @@ export function ShutterStoryExperience() {
                       <button
                         type="button"
                         onClick={exitToPortfolio}
-                        className="inline-flex items-center justify-center gap-1.5 font-mono text-[11px] text-white/60 hover:text-white pt-0.5 transition-colors cursor-pointer"
+                        className="inline-flex items-center justify-center gap-1.5 font-mono text-[11px] text-white/60 hover:text-white pt-0.5 transition-colors cursor-pointer group"
                       >
-                        <span>Explore Full Portfolio →</span>
+                        <span>Explore Full Portfolio</span>
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="shrink-0 transition-transform group-hover:translate-x-0.5"
+                          aria-hidden
+                        >
+                          <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
                       </button>
                     </div>
                   </div>
                 )}
-              </div>
+              </motion.div>
             </motion.div>
           </AnimatePresence>
         </main>
@@ -1115,9 +1319,23 @@ export function ShutterStoryExperience() {
           <button
             type="button"
             onClick={exitToPortfolio}
-            className="font-mono text-xs text-white/60 hover:text-white transition-colors cursor-pointer"
+            className="font-mono text-xs text-white/60 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1.5 group"
           >
-            Skip to Portfolio →
+            <span>Skip to Portfolio</span>
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="shrink-0 transition-transform group-hover:translate-x-0.5"
+              aria-hidden
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </button>
         </footer>
       </motion.div>
@@ -1160,9 +1378,23 @@ export function ShutterStoryExperience() {
           <button
             type="button"
             onClick={exitToPortfolio}
-            className="font-mono text-xs text-white/50 hover:text-white transition-colors cursor-pointer"
+            className="font-mono text-xs text-white/50 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1.5 group"
           >
-            Skip to index →
+            <span>Skip to index</span>
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="shrink-0 transition-transform group-hover:translate-x-0.5"
+              aria-hidden
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </button>
         </header>
 
@@ -1195,7 +1427,10 @@ export function ShutterStoryExperience() {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2.5"
-                className="transition-transform group-hover:-translate-y-0.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="shrink-0 transition-transform group-hover:-translate-y-0.5"
+                aria-hidden
               >
                 <polyline points="18 15 12 9 6 15" />
               </svg>

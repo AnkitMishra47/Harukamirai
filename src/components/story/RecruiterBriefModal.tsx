@@ -189,9 +189,23 @@ export function RecruiterBriefModal() {
             <Link
               href="/work"
               onClick={() => setIsOpen(false)}
-              className="font-medium text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+              className="font-medium text-[var(--text-muted)] hover:text-[var(--text)] transition-colors inline-flex items-center gap-1 group"
             >
-              View Work →
+              <span>View Work</span>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="shrink-0 transition-transform group-hover:translate-x-0.5"
+                aria-hidden
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
             </Link>
           </div>
         </div>

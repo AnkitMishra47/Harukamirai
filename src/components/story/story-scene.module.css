@@ -85,6 +85,7 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  overflow-x: hidden;
   overscroll-behavior: contain;
 }
 
@@ -100,6 +101,7 @@
   margin-block: auto;
   gap: clamp(1rem, 3.4dvh, 1.75rem);
   padding-block: 0.5rem;
+  overflow-x: clip;
 }
 
 .headlineStack {

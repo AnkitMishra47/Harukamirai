@@ -1,0 +1,388 @@
+html.af-theme-dark * {
+  box-sizing: border-box;
+}
+
+html.af-theme-dark {
+  scroll-behavior: smooth;
+  --af-mobile-toc-border: rgba(177, 198, 188, 0.25);
+  --af-mobile-toc-shadow: rgba(0, 0, 0, 0.4);
+  --af-mobile-toc-toggle-bg: rgba(23, 26, 24, 0.94);
+  --af-mobile-toc-toggle-fg: #eef7f1;
+  --af-mobile-toc-toggle-border: rgba(177, 198, 188, 0.25);
+  --af-mobile-toc-toggle-hover-bg: #24302c;
+  --af-mobile-toc-backdrop: rgba(0, 0, 0, 0.48);
+}
+
+html.af-theme-dark body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14.5px;
+  line-height: 1.6;
+  background: #111412;
+  color: #e7e3d8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html.af-theme-dark .layout {
+  display: flex;
+  align-items: flex-start;
+}
+
+html.af-theme-dark aside.toc {
+  width: 270px;
+  min-width: 270px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: #171a18;
+  color: #c7d2cb;
+  padding: 1.75em 1.25em;
+  overflow-y: auto;
+  border-right: 1px solid #2b322e;
+}
+
+html.af-theme-dark aside.toc h2 {
+  color: #eef7f1;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  margin: 0 0 0.4em;
+  padding-bottom: 0.75em;
+  border-bottom: 1px solid #2b322e;
+}
+
+html.af-theme-dark aside.toc .subtitle {
+  color: #8e9d95;
+  font-size: 12px;
+  margin: 0 0 1.5em;
+  font-weight: 400;
+  font-style: normal;
+}
+
+html.af-theme-dark aside.toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+html.af-theme-dark aside.toc li {
+  margin: 0;
+}
+
+html.af-theme-dark aside.toc a {
+  color: #b9c7c0;
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 400;
+  display: block;
+  padding: 0.5em 0.75em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+html.af-theme-dark aside.toc a:hover,
+html.af-theme-dark aside.toc a.active {
+  background: #24302c;
+  color: #eef7f1;
+}
+
+html.af-theme-dark aside.toc a.active {
+  border-left-color: #91d1bd;
+  font-weight: 500;
+}
+
+html.af-theme-dark main {
+  flex: 1;
+  max-width: 980px;
+  padding: 2.5em 3.5em 6em;
+  margin: 0 auto;
+}
+
+html.af-theme-dark h1 {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: 0;
+  border-bottom: 1px solid #303833;
+  padding-bottom: 0.5em;
+  margin-top: 0;
+  margin-bottom: 0.4em;
+  color: #f5f0e6;
+}
+
+html.af-theme-dark h2 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0;
+  border-bottom: 1px solid #303833;
+  padding-bottom: 0.35em;
+  margin-top: 2.75em;
+  margin-bottom: 0.75em;
+  color: #f5f0e6;
+}
+
+html.af-theme-dark h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 1.6em;
+  margin-bottom: 0.4em;
+  color: #d8e7df;
+  letter-spacing: 0;
+}
+
+html.af-theme-dark h3 + p,
+html.af-theme-dark h3 + table,
+html.af-theme-dark h3 + ul,
+html.af-theme-dark h3 + ol,
+html.af-theme-dark h3 + pre {
+  margin-top: 0.3em;
+}
+
+html.af-theme-dark p.lede {
+  font-size: 16.5px;
+  color: #b9c0b8;
+  font-weight: 400;
+  margin: 0.4em 0 2em;
+  line-height: 1.55;
+  font-style: normal;
+}
+
+html.af-theme-dark p {
+  margin: 0.6em 0;
+}
+
+html.af-theme-dark table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.85em 0;
+  font-size: 14px;
+}
+
+html.af-theme-dark th,
+html.af-theme-dark td {
+  border: 1px solid #303833;
+  padding: 0.6em 0.85em;
+  text-align: left;
+  vertical-align: top;
+}
+
+html.af-theme-dark th {
+  background: #1f2723;
+  font-weight: 600;
+  color: #eef7f1;
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+html.af-theme-dark tr:nth-child(even) td {
+  background: #171c19;
+}
+
+html.af-theme-dark code {
+  font-family: "SF Mono", "JetBrains Mono", "Fira Code", Consolas, "Liberation Mono", Menlo, monospace;
+  background: #202722;
+  color: #f1d58f;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  border: 1px solid #36403a;
+}
+
+html.af-theme-dark pre {
+  background: #0b0e0c;
+  color: #dce5dd;
+  border: 1px solid #303833;
+  border-radius: 6px;
+  padding: 1em 1.2em;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 0.85em 0;
+}
+
+html.af-theme-dark pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  font-size: 13px;
+}
+
+html.af-theme-dark ul,
+html.af-theme-dark ol {
+  padding-left: 1.5em;
+}
+
+html.af-theme-dark li {
+  margin: 0.25em 0;
+}
+
+html.af-theme-dark .cue {
+  background: #152331;
+  border-left: 3px solid #5a92d6;
+  padding: 0.75em 1em;
+  margin: 1em 0;
+  border-radius: 0 4px 4px 0;
+}
+
+html.af-theme-dark .cue strong {
+  color: #9cc8ff;
+}
+
+html.af-theme-dark .note {
+  background: #14241c;
+  border-left: 3px solid #62a87a;
+  padding: 0.75em 1em;
+  margin: 1em 0;
+  border-radius: 0 4px 4px 0;
+}
+
+html.af-theme-dark .note strong {
+  color: #9ed6ae;
+}
+
+html.af-theme-dark .warning {
+  --af-alert-icon-color: #d39a37;
+  background: #2a2315;
+  border-left: 3px solid #d39a37;
+  padding: 0.75em 1em;
+  margin: 1em 0;
+  border-radius: 0 4px 4px 0;
+}
+
+html.af-theme-dark .warning strong {
+  color: #f0c06d;
+}
+
+html.af-theme-dark .danger {
+  --af-alert-icon-color: #d1665f;
+  background: #2a1818;
+  border: 1px solid #d1665f;
+  border-left: 3px solid #d1665f;
+  padding: 0.85em 1em;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+html.af-theme-dark .danger strong {
+  color: #ff9a93;
+}
+
+html.af-theme-dark .beat {
+  background: #21302b;
+  color: #f2faf5;
+  padding: 0.65em 1em;
+  border-radius: 4px;
+  margin: 2.25em 0 0.75em;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0;
+  border-bottom: none;
+}
+
+html.af-theme-dark .tag {
+  display: inline-block;
+  background: #202722;
+  color: #cfd8d1;
+  border: 1px solid #36403a;
+  border-radius: 4px;
+  padding: 0.15em 0.55em;
+  margin: 0.2em 0.2em 0.2em 0;
+  font-size: 12.5px;
+  font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+  white-space: nowrap;
+}
+
+html.af-theme-dark .entry {
+  background: #151917;
+  border: 1px solid #303833;
+  border-radius: 6px;
+  padding: 0.85em 1.25em 1em;
+  margin: 1em 0;
+}
+
+html.af-theme-dark .entry h3 {
+  margin-top: 0.3em;
+  color: #eef7f1;
+}
+
+html.af-theme-dark .entry .meta {
+  color: #9aa69f;
+  font-size: 13px;
+  margin: -0.1em 0 0.7em;
+  font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+  font-style: normal;
+}
+
+html.af-theme-dark .af-toolbar,
+html.af-theme-dark .af-toolbar-launcher {
+  border-color: rgba(177, 198, 188, 0.25);
+  background: rgba(23, 26, 24, 0.94);
+  color: #eef7f1;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+html.af-theme-dark .af-toolbar select {
+  border-color: rgba(177, 198, 188, 0.3);
+  background: #111412;
+  color: #eef7f1;
+}
+
+html.af-theme-dark .af-toolbar-close {
+  border-color: rgba(177, 198, 188, 0.25);
+  background: #202722;
+  color: #eef7f1;
+}
+
+html.af-theme-dark .af-toolbar-close:hover,
+html.af-theme-dark .af-toolbar-launcher:hover {
+  background: #24302c;
+}
+
+html.af-theme-dark .af-collapsible,
+html.af-theme-dark [data-af-collapsible] {
+  border-color: #303833;
+  background: #151917;
+}
+
+html.af-theme-dark .af-collapse-toggle {
+  border-bottom-color: #303833;
+  background: #1d2420;
+  color: #eef7f1;
+}
+
+html.af-theme-dark .af-collapse-icon {
+  border-color: rgba(177, 198, 188, 0.3);
+  background: #111412;
+}
+
+@media (max-width: 1100px) {
+  html.af-theme-dark main {
+    padding: 2.5em 2em 6em;
+  }
+}
+
+@media (max-width: 900px) {
+  html.af-theme-dark .layout {
+    flex-direction: column;
+  }
+
+  html.af-theme-dark aside.toc {
+    width: 100%;
+    height: auto;
+    position: sticky;
+    top: 0;
+    max-height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid #2b322e;
+    z-index: 10;
+  }
+
+  html.af-theme-dark main {
+    padding: 1.75em;
+  }
+}

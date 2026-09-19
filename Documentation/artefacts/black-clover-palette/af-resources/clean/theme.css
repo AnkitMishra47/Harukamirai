@@ -1,0 +1,346 @@
+html.af-theme-clean * {
+  box-sizing: border-box;
+}
+
+html.af-theme-clean {
+  scroll-behavior: smooth;
+  --af-mobile-toc-border: rgba(38, 34, 29, 0.22);
+  --af-mobile-toc-shadow: rgba(38, 34, 29, 0.18);
+  --af-mobile-toc-toggle-bg: rgba(255, 255, 255, 0.94);
+  --af-mobile-toc-toggle-fg: #26221d;
+  --af-mobile-toc-toggle-border: rgba(38, 34, 29, 0.2);
+  --af-mobile-toc-toggle-hover-bg: #f4efe7;
+  --af-mobile-toc-backdrop: rgba(38, 34, 29, 0.3);
+}
+
+html.af-theme-clean body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14.5px;
+  line-height: 1.6;
+  background: #faf9f7;
+  color: #1f1d1a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html.af-theme-clean .layout {
+  display: flex;
+  align-items: flex-start;
+}
+
+html.af-theme-clean aside.toc {
+  width: 270px;
+  min-width: 270px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: #26221d;
+  color: #d8d2c5;
+  padding: 1.75em 1.25em;
+  overflow-y: auto;
+  border-right: 1px solid #3a342c;
+}
+
+html.af-theme-clean aside.toc h2 {
+  color: #f7f3ec;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  margin: 0 0 0.4em;
+  padding-bottom: 0.75em;
+  border-bottom: 1px solid #3a342c;
+}
+
+html.af-theme-clean aside.toc .subtitle {
+  color: #8c8478;
+  font-size: 12px;
+  margin: 0 0 1.5em;
+  font-weight: 400;
+  font-style: normal;
+}
+
+html.af-theme-clean aside.toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+html.af-theme-clean aside.toc li {
+  margin: 0;
+}
+
+html.af-theme-clean aside.toc a {
+  color: #b8b1a6;
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 400;
+  display: block;
+  padding: 0.5em 0.75em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+html.af-theme-clean aside.toc a:hover,
+html.af-theme-clean aside.toc a.active {
+  background: #3a342c;
+  color: #f7f3ec;
+}
+
+html.af-theme-clean aside.toc a.active {
+  border-left-color: #f5efe2;
+  font-weight: 500;
+}
+
+html.af-theme-clean main {
+  flex: 1;
+  max-width: 980px;
+  padding: 2.5em 3.5em 6em;
+  margin: 0 auto;
+}
+
+html.af-theme-clean h1 {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: 0;
+  border-bottom: 1px solid #e8e3da;
+  padding-bottom: 0.5em;
+  margin-top: 0;
+  margin-bottom: 0.4em;
+  color: #1a1814;
+}
+
+html.af-theme-clean h2 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0;
+  border-bottom: 1px solid #e8e3da;
+  padding-bottom: 0.35em;
+  margin-top: 2.75em;
+  margin-bottom: 0.75em;
+  color: #1a1814;
+}
+
+html.af-theme-clean h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 1.6em;
+  margin-bottom: 0.4em;
+  color: #26221d;
+  letter-spacing: 0;
+}
+
+html.af-theme-clean h3 + p,
+html.af-theme-clean h3 + table,
+html.af-theme-clean h3 + ul,
+html.af-theme-clean h3 + ol,
+html.af-theme-clean h3 + pre {
+  margin-top: 0.3em;
+}
+
+html.af-theme-clean p.lede {
+  font-size: 16.5px;
+  color: #5c554a;
+  font-weight: 400;
+  margin: 0.4em 0 2em;
+  line-height: 1.55;
+  font-style: normal;
+}
+
+html.af-theme-clean p {
+  margin: 0.6em 0;
+}
+
+html.af-theme-clean table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.85em 0;
+  font-size: 14px;
+}
+
+html.af-theme-clean th,
+html.af-theme-clean td {
+  border: 1px solid #e8e3da;
+  padding: 0.6em 0.85em;
+  text-align: left;
+  vertical-align: top;
+}
+
+html.af-theme-clean th {
+  background: #efeae0;
+  font-weight: 600;
+  color: #26221d;
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+html.af-theme-clean tr:nth-child(even) td {
+  background: #f5f2ec;
+}
+
+html.af-theme-clean code {
+  font-family: "SF Mono", "JetBrains Mono", "Fira Code", Consolas, "Liberation Mono", Menlo, monospace;
+  background: #efeae0;
+  color: #26221d;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  border: 1px solid #e8e3da;
+}
+
+html.af-theme-clean pre {
+  background: #26221d;
+  color: #e8e1d2;
+  border: 1px solid #3a342c;
+  border-radius: 6px;
+  padding: 1em 1.2em;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 0.85em 0;
+}
+
+html.af-theme-clean pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  font-size: 13px;
+}
+
+html.af-theme-clean ul,
+html.af-theme-clean ol {
+  padding-left: 1.5em;
+}
+
+html.af-theme-clean li {
+  margin: 0.25em 0;
+}
+
+html.af-theme-clean .cue {
+  background: #eef2f8;
+  border-left: 3px solid #3a5b86;
+  padding: 0.75em 1em;
+  margin: 1em 0;
+  border-radius: 0 4px 4px 0;
+}
+
+html.af-theme-clean .cue strong {
+  color: #23436a;
+}
+
+html.af-theme-clean .note {
+  background: #eef5ef;
+  border-left: 3px solid #4a7a5a;
+  padding: 0.75em 1em;
+  margin: 1em 0;
+  border-radius: 0 4px 4px 0;
+}
+
+html.af-theme-clean .note strong {
+  color: #2e5840;
+}
+
+html.af-theme-clean .warning {
+  --af-alert-icon-color: #b8862e;
+  background: #f8efd9;
+  border-left: 3px solid #b8862e;
+  padding: 0.75em 1em;
+  margin: 1em 0;
+  border-radius: 0 4px 4px 0;
+}
+
+html.af-theme-clean .warning strong {
+  color: #7a5717;
+}
+
+html.af-theme-clean .danger {
+  --af-alert-icon-color: #b04a3e;
+  background: #f7ece9;
+  border: 1px solid #b04a3e;
+  border-left: 3px solid #b04a3e;
+  padding: 0.85em 1em;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+html.af-theme-clean .danger strong {
+  color: #7e2c22;
+}
+
+html.af-theme-clean .beat {
+  background: #26221d;
+  color: #f7f3ec;
+  padding: 0.65em 1em;
+  border-radius: 4px;
+  margin: 2.25em 0 0.75em;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0;
+  border-bottom: none;
+}
+
+html.af-theme-clean .tag {
+  display: inline-block;
+  background: #efeae0;
+  color: #4d463b;
+  border: 1px solid #e8e3da;
+  border-radius: 4px;
+  padding: 0.15em 0.55em;
+  margin: 0.2em 0.2em 0.2em 0;
+  font-size: 12.5px;
+  font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+  white-space: nowrap;
+}
+
+html.af-theme-clean .entry {
+  background: #fdfcf9;
+  border: 1px solid #e8e3da;
+  border-radius: 6px;
+  padding: 0.85em 1.25em 1em;
+  margin: 1em 0;
+}
+
+html.af-theme-clean .entry h3 {
+  margin-top: 0.3em;
+  color: #1a1814;
+}
+
+html.af-theme-clean .entry .meta {
+  color: #847b6c;
+  font-size: 13px;
+  margin: -0.1em 0 0.7em;
+  font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+  font-style: normal;
+}
+
+@media (max-width: 1100px) {
+  html.af-theme-clean main {
+    padding: 2.5em 2em 6em;
+  }
+}
+
+@media (max-width: 900px) {
+  html.af-theme-clean .layout {
+    flex-direction: column;
+  }
+
+  html.af-theme-clean aside.toc {
+    width: 100%;
+    height: auto;
+    position: sticky;
+    top: 0;
+    max-height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid #3a342c;
+    z-index: 10;
+  }
+
+  html.af-theme-clean main {
+    padding: 1.75em;
+  }
+}

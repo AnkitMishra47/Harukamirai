@@ -1,0 +1,310 @@
+html.af-has-toolbar {
+  scroll-padding-top: 72px;
+}
+
+.af-toolbar,
+.af-toolbar-launcher {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 1000;
+  padding: 8px 10px;
+  border: 1px solid rgba(38, 34, 29, 0.18);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #26221d;
+  box-shadow: 0 8px 28px rgba(38, 34, 29, 0.14);
+  backdrop-filter: blur(10px);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.af-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.af-toolbar[hidden],
+.af-toolbar-launcher[hidden] {
+  display: none !important;
+}
+
+.af-toolbar-launcher {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 999px;
+  color: #26221d;
+  cursor: pointer;
+}
+
+.af-toolbar-launcher svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.af-toolbar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.af-toolbar select {
+  min-width: 92px;
+  height: 28px;
+  border: 1px solid rgba(38, 34, 29, 0.22);
+  border-radius: 4px;
+  background: #fff;
+  color: #26221d;
+  font: inherit;
+}
+
+.af-toolbar input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+}
+
+.af-toolbar-close {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid rgba(38, 34, 29, 0.2);
+  border-radius: 999px;
+  background: rgba(250, 249, 247, 0.95);
+  color: #26221d;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.af-toolbar-close:hover,
+.af-toolbar-launcher:hover {
+  background: #f4efe7;
+}
+
+.af-toc-toggle,
+.af-toc-backdrop {
+  display: none;
+}
+
+html.af-full-width main {
+  max-width: none !important;
+  width: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: clamp(32px, 4vw, 96px) !important;
+  padding-right: clamp(32px, 4vw, 96px) !important;
+}
+
+html.af-full-width .layout main {
+  flex: 1 1 auto !important;
+}
+
+.warning::before,
+.danger::before {
+  float: left;
+  width: 1.15em;
+  margin: 0.18em 0.7em 0 0;
+  color: var(--af-alert-icon-color, currentColor);
+  font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome";
+  font-size: 1.15em;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+.warning::before {
+  content: "\f071";
+}
+
+.danger::before {
+  content: "\f057";
+}
+
+.warning::after,
+.danger::after {
+  clear: both;
+  content: "";
+  display: block;
+}
+
+.af-collapsible,
+[data-af-collapsible] {
+  border: 1px solid rgba(38, 34, 29, 0.16);
+  border-radius: 6px;
+  margin: 1em 0;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.af-collapse-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0.65em 0.85em;
+  border: none;
+  border-bottom: 1px solid rgba(38, 34, 29, 0.14);
+  background: rgba(239, 234, 224, 0.78);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+}
+
+.af-collapse-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  text-align: left;
+}
+
+.af-collapse-icon {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(38, 34, 29, 0.22);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.55);
+  color: inherit;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.af-collapse-icon::before {
+  content: "-";
+}
+
+.is-collapsed > .af-collapse-toggle .af-collapse-icon::before {
+  content: "+";
+}
+
+.af-collapse-content {
+  padding: 0.85em 1em;
+}
+
+.is-collapsed > .af-collapse-content {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  html.af-has-toolbar {
+    scroll-padding-top: 120px;
+  }
+
+  .af-toolbar,
+  .af-toolbar-launcher {
+    top: auto;
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .af-toolbar {
+    left: 12px;
+    justify-content: space-between;
+  }
+
+  html.af-full-width main {
+    padding-left: 1.5em !important;
+    padding-right: 1.5em !important;
+  }
+
+  html.af-has-mobile-toc {
+    scroll-padding-top: 78px;
+  }
+
+  html.af-has-mobile-toc .layout {
+    display: block !important;
+  }
+
+  html.af-has-mobile-toc aside.toc {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 1002 !important;
+    width: min(320px, 86vw) !important;
+    min-width: 0 !important;
+    height: 100vh !important;
+    max-height: none !important;
+    padding-top: 72px !important;
+    overflow-y: auto !important;
+    border-right: 1px solid var(--af-mobile-toc-border, rgba(38, 34, 29, 0.22)) !important;
+    border-bottom: none !important;
+    box-shadow: 16px 0 32px var(--af-mobile-toc-shadow, rgba(38, 34, 29, 0.18));
+    transform: translateX(-105%);
+    transition: transform 180ms ease;
+  }
+
+  html.af-toc-open aside.toc {
+    transform: translateX(0);
+  }
+
+  .af-toc-toggle {
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 1004;
+    display: inline-grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 1px solid var(--af-mobile-toc-toggle-border, rgba(38, 34, 29, 0.2));
+    border-radius: 6px;
+    background: var(--af-mobile-toc-toggle-bg, rgba(255, 255, 255, 0.94));
+    color: var(--af-mobile-toc-toggle-fg, #26221d);
+    box-shadow: 0 8px 24px var(--af-mobile-toc-shadow, rgba(38, 34, 29, 0.16));
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    font: inherit;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .af-toc-toggle:hover {
+    background: var(--af-mobile-toc-toggle-hover-bg, #f4efe7);
+  }
+
+  .af-toc-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1001;
+    display: block;
+    border: 0;
+    padding: 0;
+    background: var(--af-mobile-toc-backdrop, rgba(0, 0, 0, 0.28));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  html.af-toc-open .af-toc-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  html.af-toc-open {
+    overflow: hidden;
+  }
+}

@@ -1,0 +1,4 @@
+# This directory is TRACKED on purpose - see README.md. For this personal repo
+# there is no Artefact Server task to publish to, so the stored artefact is the
+# deliverable. Only the generator's bytecode is ignored.
+__pycache__/

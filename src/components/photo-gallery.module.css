@@ -1,0 +1,192 @@
+/*
+ * Off-the-clock gallery.
+ *
+ * The board (`.mount`) is a fixed shape; the print is laid on it at its own
+ * aspect ratio and centred, and whatever board is left over is the margin. That
+ * is the whole trick: a mixed set of landscape and portrait photographs cannot
+ * share a frame without one of them being cropped, so they share a *mount*
+ * instead. `.printImg` is sized `max-width/max-height: 100%` with auto width and
+ * height, which lets the browser fit the image inside the board from its own
+ * intrinsic size - the element box then is the photograph, nothing more, so a
+ * click beside the print lands on the board and not on the image.
+ *
+ * THE 700px CAP IS LOAD-BEARING. At the cap the board is 700x525, and inside
+ * its border and 1.35rem margin the print gets at most 655x480, so the largest
+ * render is a 4:3 photo at 640x480 CSS px - 1280x960 on a 2x screen. The
+ * smallest file in the off-the-clock set is 1448x1086, so nothing is ever
+ * upscaled. Widen the cap and that stops being true.
+ */
+
+.gallery {
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  position: relative;
+}
+
+.stage {
+  position: relative;
+}
+
+/* ---- the mount board ---- */
+
+.mount {
+  position: relative;
+  width: min(100%, 700px);
+  margin-inline: auto;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-inset);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.14),
+    0 26px 46px -30px rgba(0, 0, 0, 0.6);
+}
+
+@media (min-width: 640px) {
+  .mount {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* Gilt brackets at the four corners, as on a mounted plate. */
+.corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--gold);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.tl { top: 0.45rem; left: 0.45rem; border-right: 0; border-bottom: 0; }
+.tr { top: 0.45rem; right: 0.45rem; border-left: 0; border-bottom: 0; }
+.bl { bottom: 0.45rem; left: 0.45rem; border-right: 0; border-top: 0; }
+.br { bottom: 0.45rem; right: 0.45rem; border-left: 0; border-top: 0; }
+
+/* ---- the print ---- */
+
+/*
+ * Absolutely positioned, NOT a grid or flow child. That is deliberate: the
+ * print's `max-height: 100%` has to resolve against a definite height, and a
+ * stretched grid row is not definite enough - Chrome let a 903x1600 portrait
+ * run to 561px inside a 452px board, clipped by `overflow: hidden`. Pinning the
+ * button to the mount's padding box makes its content height definite, so the
+ * browser fits the image properly instead.
+ */
+.print {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Wider mount margin once there is room. Must come after the base `.print`
+   rule: same specificity, so source order decides. */
+@media (min-width: 640px) {
+  .print {
+    padding: 1.35rem;
+  }
+}
+
+/* Inset, because the button fills the board and the board clips its overflow:
+   a positive offset would draw the ring where nothing can show it. */
+.print:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -4px;
+}
+
+.printImg {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 2px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.22),
+    0 12px 28px -16px rgba(0, 0, 0, 0.65);
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.print:hover .printImg,
+.print:focus-visible .printImg {
+  transform: scale(1.015);
+}
+
+/* ---- arrows ---- */
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    color 200ms ease,
+    border-color 200ms ease,
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arrow:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.arrow:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.prev { left: 0.5rem; }
+.next { right: 0.5rem; }
+.prev:hover { transform: translateX(-2px); }
+.next:hover { transform: translateX(2px); }
+
+/* Once there is room, the arrows step off the board and sit in the margin. */
+@media (min-width: 900px) {
+  .prev { left: calc(50% - 350px - 3.25rem); }
+  .next { right: calc(50% - 350px - 3.25rem); }
+}
+
+/* ---- plate line ---- */
+
+.plateLine {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 1.3rem;
+  margin-top: 0.95rem;
+}
+
+.plateNo {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.plateName {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.plateName::before {
+  content: "·";
+  margin-right: 0.55rem;
+  color: var(--text-subtle);
+}

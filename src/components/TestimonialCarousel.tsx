@@ -49,20 +49,31 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
         </AnimatePresence>
       </div>
 
-      <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2">
+      {/* The dot stays 6px tall; the button around it is 28x28 so the touch
+          target clears the 24px minimum without changing how the row reads. */}
+      <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-0.5">
         {testimonials.map((_, idx) => (
           <button
             key={idx}
+            type="button"
             onClick={() => setCurrentIndex(idx)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              idx === currentIndex ? "w-6 bg-[var(--accent)]" : "w-1.5 bg-[var(--border-strong)] hover:bg-[var(--text-subtle)]"
-            }`}
+            className="group grid size-7 place-items-center rounded-full"
             aria-label={`Go to testimonial ${idx + 1}`}
-          />
+            aria-current={idx === currentIndex ? "true" : undefined}
+          >
+            <span
+              className={`block h-1.5 rounded-full transition-all duration-300 ${
+                idx === currentIndex
+                  ? "w-6 bg-[var(--accent)]"
+                  : "w-1.5 bg-[var(--border-strong)] group-hover:bg-[var(--text-subtle)]"
+              }`}
+            />
+          </button>
         ))}
       </div>
 
       <button
+        type="button"
         onClick={() => setCurrentIndex((prev) => (prev > 0 ? prev - 1 : testimonials.length - 1))}
         className="absolute left-3 top-1/2 -translate-y-1/2 p-2 text-[var(--text-subtle)] hover:text-[var(--accent)] transition-colors hidden md:block"
         aria-label="Previous testimonial"
@@ -70,6 +81,7 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
         ←
       </button>
       <button
+        type="button"
         onClick={() => setCurrentIndex((prev) => (prev + 1) % testimonials.length)}
         className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-[var(--text-subtle)] hover:text-[var(--accent)] transition-colors hidden md:block"
         aria-label="Next testimonial"

@@ -143,13 +143,15 @@ describe("photo dimensions", () => {
   });
 
   it("never asks a frame for more pixels than the file has", () => {
-    // The Off-the-clock strip renders every print at the same height with its
-    // natural width, inside a 1024px container. Worst case is 2x DPR desktop.
-    const STRIP_HEIGHT_CSS = 357;
+    // The Off-the-clock gallery lays each print on a mount board at its own
+    // aspect ratio, capped at 700x525 CSS px. Inside the board's 1px border and
+    // 1.35rem margin the print gets at most 655x480, so 480 CSS px is the
+    // tallest a photo is ever asked to render. Worst case is 2x DPR desktop.
+    const PRINT_HEIGHT_CSS = 480;
     const DPR = 2;
     for (const p of photos.offTheClock) {
-      const neededHeight = STRIP_HEIGHT_CSS * DPR;
-      expect(p.height, `${p.src} would be upscaled in the strip`).toBeGreaterThanOrEqual(
+      const neededHeight = PRINT_HEIGHT_CSS * DPR;
+      expect(p.height, `${p.src} would be upscaled in the gallery`).toBeGreaterThanOrEqual(
         neededHeight,
       );
     }

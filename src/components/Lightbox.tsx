@@ -1,13 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import styles from "./lightbox.module.css";
 
 export interface LightboxImage {
   src: string;
   alt: string;
   caption?: string;
+  /**
+   * Intrinsic pixel size of the file, when the caller knows it. With it the
+   * frame is the photograph's own shape, so the print is never letterboxed
+   * inside a box that swallows backdrop clicks; without it the image falls back
+   * to being contained in a 92vw x 76vh box.
+   */
+  width?: number;
+  height?: number;
 }
 
 interface LightboxProps {
@@ -18,83 +27,193 @@ interface LightboxProps {
   onNavigate: (index: number) => void;
 }
 
+/**
+ * A single plate lifted out of the book and held against the dark.
+ *
+ * The backdrop is a plain radial gradient rather than a backdrop-filter: a
+ * full-viewport blur is the single most expensive thing this site could paint,
+ * and an ink vignette separates the print from the page just as well.
+ *
+ * Chrome here is drawn from the fixed grimoire materials (--gilt, --parchment)
+ * rather than the theme tokens, because the backdrop is ink in both themes and
+ * leaf-4's --gold is far too dark to sit on it.
+ */
 export function Lightbox({ images, currentIndex, isOpen, onClose, onNavigate }: LightboxProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const restoreTo = useRef<HTMLElement | null>(null);
+  const reduce = useReducedMotion();
+  const many = images.length > 1;
+
+  // Scroll lock, focus capture and focus restore.
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") onClose();
-        if (e.key === "ArrowLeft") onNavigate(currentIndex > 0 ? currentIndex - 1 : images.length - 1);
-        if (e.key === "ArrowRight") onNavigate(currentIndex < images.length - 1 ? currentIndex + 1 : 0);
-      };
-      window.addEventListener("keydown", handleKeyDown);
-      return () => {
-        document.body.style.overflow = "";
-        window.removeEventListener("keydown", handleKeyDown);
-      };
-    }
-  }, [isOpen, currentIndex, images.length, onClose, onNavigate]);
+    if (!isOpen) return;
+    restoreTo.current = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    dialogRef.current?.focus();
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      restoreTo.current?.focus?.();
+    };
+  }, [isOpen]);
+
+  // Escape, arrow keys, and a Tab trap so focus cannot wander back to the page
+  // underneath while the dialog is up.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key === "ArrowLeft" && many) {
+        e.preventDefault();
+        onNavigate((currentIndex - 1 + images.length) % images.length);
+        return;
+      }
+      if (e.key === "ArrowRight" && many) {
+        e.preventDefault();
+        onNavigate((currentIndex + 1) % images.length);
+        return;
+      }
+      if (e.key !== "Tab") return;
+
+      const root = dialogRef.current;
+      if (!root) return;
+      const stops = Array.from(root.querySelectorAll<HTMLElement>("button:not([disabled])"));
+      if (stops.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = stops[0];
+      const last = stops[stops.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === root)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, currentIndex, images.length, many, onClose, onNavigate]);
+
+  const image = images[currentIndex];
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isOpen && image && (
         <motion.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={image.caption ? `Photo: ${image.caption}` : "Photo"}
+          tabIndex={-1}
+          className={styles.backdrop}
+          onClick={onClose}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
-          onClick={onClose}
+          transition={{ duration: reduce ? 0 : 0.2 }}
         >
-          {images.length > 1 && (
+          <button
+            type="button"
+            className={`${styles.chip} ${styles.close}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            aria-label="Close photo"
+          >
+            <Glyph kind="close" />
+          </button>
+
+          {many && (
             <>
               <button
-                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 md:p-4 text-white hover:bg-white/20 transition-colors z-[60]"
+                type="button"
+                className={`${styles.chip} ${styles.navPrev}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onNavigate(currentIndex > 0 ? currentIndex - 1 : images.length - 1);
+                  onNavigate((currentIndex - 1 + images.length) % images.length);
                 }}
+                aria-label="Previous photo"
               >
-                ←
+                <Glyph kind="left" />
               </button>
               <button
-                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 md:p-4 text-white hover:bg-white/20 transition-colors z-[60]"
+                type="button"
+                className={`${styles.chip} ${styles.navNext}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onNavigate(currentIndex < images.length - 1 ? currentIndex + 1 : 0);
+                  onNavigate((currentIndex + 1) % images.length);
                 }}
+                aria-label="Next photo"
               >
-                →
+                <Glyph kind="right" />
               </button>
             </>
           )}
 
-          <button
-            className="absolute top-4 right-4 md:top-6 md:right-6 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition-colors z-[60]"
-            onClick={onClose}
-          >
-            ✕
-          </button>
-
-          <div 
-            className="relative h-full w-full max-h-[90vh] max-w-[90vw]"
+          <motion.figure
+            key={image.src}
+            className={styles.figure}
             onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: reduce ? 0 : 0.24 }}
           >
-            <Image
-              src={images[currentIndex].src}
-              alt={images[currentIndex].alt}
-              fill
-              unoptimized
-              className="object-contain"
-            />
-            {images[currentIndex].caption && (
-              <p className="absolute bottom-4 left-0 right-0 text-center text-white/90 bg-black/50 p-2 md:p-3 text-sm md:text-base max-w-2xl mx-auto rounded-lg">
-                {images[currentIndex].caption}
-              </p>
+            {image.width && image.height ? (
+              <Image
+                src={image.src}
+                alt={image.alt}
+                width={image.width}
+                height={image.height}
+                unoptimized
+                className={styles.photo}
+              />
+            ) : (
+              <span className={styles.photoBox}>
+                <Image src={image.src} alt={image.alt} fill unoptimized className={styles.contain} />
+              </span>
             )}
-          </div>
+
+            {(image.caption || many) && (
+              <figcaption className={styles.caption}>
+                {many && (
+                  <span className={styles.counter}>
+                    {currentIndex + 1} / {images.length}
+                  </span>
+                )}
+                {image.caption && <span>{image.caption}</span>}
+              </figcaption>
+            )}
+          </motion.figure>
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+function Glyph({ kind }: { kind: "close" | "left" | "right" }) {
+  const d =
+    kind === "close"
+      ? "M6 6 L18 18 M18 6 L6 18"
+      : kind === "left"
+        ? "M15 4 L7 12 L15 20"
+        : "M9 4 L17 12 L9 20";
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden focusable="false">
+      <path
+        d={d}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

@@ -1,66 +1,85 @@
 /*
- * Off-the-clock photo strip.
+ * Off-the-clock contact sheet: the thumbnail rail under the gallery stage.
  *
  * Every print keeps its own aspect ratio and they all share one height, the way
- * photographs land on a contact sheet. The trick is that each figure's
- * flex-grow IS its aspect ratio, with a zero basis: widths then distribute as
- * w(i) = H * aspect(i), which is exactly the width each photo needs at the
- * common height H. Nothing is cropped, so no photo is ever upscaled to cover a
- * frame it does not fit.
+ * photographs land on a contact sheet. One variable does it: `--h` is the shared
+ * height and each print is `width = --h * aspect`. Nothing is cropped, so no
+ * photo is ever upscaled to cover a frame it does not fit.
  *
- * `--ar` (e.g. `1448 / 1086`) and `--ar-num` (e.g. `1.3333`) come from the
- * photo's real pixel size in src/content/photos.ts.
+ * `--ar-num` (e.g. `1.3333`) comes from the photo's real pixel size in
+ * src/content/photos.ts.
+ *
+ * The narrowest print in the set (903x1600, ratio 0.564) is 29px wide at the
+ * phone height of 52px, so every button clears the 24px minimum touch target on
+ * its short side while the rail still fits inside 390px.
  */
 
 .strip {
+  --h: 52px;
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
 }
 
-.frame {
-  margin: 0;
-  width: 100%;
+@media (min-width: 640px) {
+  .strip {
+    --h: 64px;
+    gap: 0.625rem;
+    margin-top: 1.5rem;
+  }
 }
 
-.plate {
+@media (min-width: 1024px) {
+  .strip {
+    --h: 74px;
+  }
+}
+
+.thumb {
   position: relative;
-  width: 100%;
-  aspect-ratio: var(--ar);
-  overflow: hidden;
+  display: block;
+  height: var(--h);
+  width: calc(var(--h) * var(--ar-num));
+  padding: 0;
+  border: 0;
   border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
   background: var(--bg-inset);
+  opacity: 0.62;
   /* A print resting on the page, not a UI card. */
   box-shadow:
     0 1px 1px rgba(0, 0, 0, 0.16),
-    0 8px 22px -12px rgba(0, 0, 0, 0.5);
+    0 6px 14px -10px rgba(0, 0, 0, 0.5);
+  transition:
+    opacity 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.plate img {
+.thumb img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.caption {
-  margin-top: 0.7rem;
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
-  color: var(--text-muted);
+.thumb:hover,
+.thumb:focus-visible {
+  opacity: 1;
+  transform: translateY(-2px);
 }
 
-@media (min-width: 640px) {
-  .strip {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 1rem;
-  }
+.thumb:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
 
-  .frame {
-    /* grow in proportion to aspect ratio, from a zero basis */
-    width: auto;
-    flex: var(--ar-num) 1 0%;
-  }
+/* The print currently on the stage: gilded at the edge, like a marked page. */
+.isActive {
+  opacity: 1;
+  outline: 1px solid var(--gold);
+  outline-offset: 2px;
 }

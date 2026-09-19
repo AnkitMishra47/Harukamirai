@@ -1,0 +1,96 @@
+/*
+ * About page: the illuminated-manuscript furniture.
+ *
+ * Three devices, and deliberately only three, because the page's first job is
+ * to be read by a recruiter:
+ *
+ *   1. `.rule`     - the thick-thin double rule that opens and closes a folio.
+ *   2. `.dropCap`  - the illuminated initial on the opening paragraph. It uses
+ *                    Fraunces, which layout.tsx already loads and nothing else
+ *                    on the site was using.
+ *   3. `.chapter`  - seal, numeral and a thread of rule, marking each section
+ *                    the way chapters are marked in the grimoire on the home
+ *                    page.
+ *
+ * Gilt here is --gold (the page token, dark enough to sit on vellum), not
+ * --foil or --gilt: those are the book's own materials and only ever appear on
+ * leather or against ink.
+ */
+
+/* ---- double rule ---- */
+
+.rule {
+  height: 4px;
+  position: relative;
+  border-top: 1px solid var(--border-strong);
+}
+
+.rule::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.38;
+}
+
+/* ---- illuminated initial ---- */
+
+.dropCap::first-letter {
+  float: left;
+  font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  font-size: 3.4em;
+  line-height: 0.86;
+  margin: 0.04em 0.1em 0 0;
+  color: var(--gold);
+}
+
+/* ---- chapter mark ---- */
+
+.chapter {
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.chapterCentered {
+  justify-content: center;
+}
+
+.seal {
+  flex: none;
+  width: 11px;
+  height: 11px;
+}
+
+.numeral {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--gold);
+}
+
+.thread {
+  height: 1px;
+}
+
+/* Left-aligned marks open with a short stub, then run out to the right margin. */
+.threadStub {
+  flex: none;
+  width: 1.75rem;
+  background: var(--border-strong);
+  opacity: 0.75;
+}
+
+.threadFadeLeft {
+  flex: 1 1 0;
+  background: linear-gradient(to left, var(--border-strong), transparent);
+}
+
+.threadFadeRight {
+  flex: 1 1 0;
+  background: linear-gradient(to right, var(--border-strong), transparent);
+}

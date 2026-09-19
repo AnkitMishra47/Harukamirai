@@ -1,8 +1,9 @@
 "use client";
 
-import { timeline } from "@/content";
+import { awards, caseStudies, profile, timeline } from "@/content";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import styles from "./grimoire.module.css";
 
 /**
  * The grimoire: Ankit's career as a book you can leaf through.
@@ -20,19 +21,37 @@ import { useEffect, useState } from "react";
  *
  * SIZE. One number drives the whole object: --grimoire-w. Height, and the type
  * inside, are derived from it in `em`, so the book scales down to a phone
- * without anything being re-tuned by hand.
+ * without anything being re-tuned by hand. That also means the book cannot be
+ * made to look fuller by making it bigger - the type grows by exactly the same
+ * factor. A page is filled by giving it more to hold, not more room.
+ *
+ * TRUTH. Every word that reaches a page is lifted out of src/content. Nothing
+ * on these leaves is written here. `MATTER` below is the only place an
+ * association is made (which entry, award or case study belongs to which
+ * chapter) and each one carries the field it came from in a comment.
+ *
+ * MOVEMENT. The book turns its own pages on a timer so it is never found
+ * parked mid-chapter, and it gives that up the moment a visitor touches a
+ * ribbon. See AUTO-TURN below.
  */
+
+type AsideLine = { lead?: string; text: string };
 
 type Chapter = {
   id: string;
   year: string;
   date: string;
+  kind: string;
   silk: string;
   romaji: string;
   kanji: string;
   title: string;
   body: string;
   sigil: "asta" | "spade" | "trophy" | "crown" | "dawn";
+  /** Short verbatim terms, set as tags under the account on the recto. */
+  marks: string[];
+  /** The supporting record under the name plate on the verso. */
+  aside: { caption: string; lines: AsideLine[] };
 };
 
 /**
@@ -48,6 +67,77 @@ const DECOR: Record<string, Pick<Chapter, "silk" | "romaji" | "kanji" | "sigil">
   now: { silk: "#33306b", romaji: "Ima", kanji: "現在", sigil: "spade" },
 };
 
+const KIND_LABEL: Record<string, string> = {
+  education: "Education",
+  role: "Role",
+  award: "Award",
+  milestone: "Milestone",
+};
+
+/* Lookups into src/content. Nothing is authored here: every string that ends
+   up on a page is copied out of one of these. */
+const entry = (id: string) => timeline.find((t) => t.id === id);
+const awardBody = (year: string) => awards.find((a) => a.year === year)?.body ?? "";
+const study = (slug: string) => caseStudies.find((c) => c.slug === slug);
+
+/** One aside line lifted whole from a timeline entry: its date and its title. */
+function fromTimeline(id: string): AsideLine[] {
+  const t = entry(id);
+  return t ? [{ lead: t.date, text: t.title }] : [];
+}
+
+/**
+ * The extra matter each chapter carries, and where every piece of it comes
+ * from. This table makes associations, never facts: each `marks` term and each
+ * `aside` line is a verbatim fragment of the cited src/content field.
+ */
+const MATTER: Record<string, Pick<Chapter, "marks" | "aside"> & { body?: string }> = {
+  bca: {
+    // timeline.bca.title "BCA, GGSIPU (USMS)" and .note "Graduated with 86%.
+    // First portfolio shipped in 2022."
+    marks: ["BCA", "86%", "Portfolio, 2022"],
+    // The other two education entries in timeline.ts, which the book never
+    // showed: timeline.mca-start and timeline.mca-done, dates and titles whole.
+    aside: { caption: "Studies", lines: [...fromTimeline("mca-start"), ...fromTimeline("mca-done")] },
+  },
+  "oneit-intern": {
+    // timeline.oneit-intern.note "Java and Angular on the Cougar platform."
+    marks: ["Java", "Angular", "Cougar platform"],
+    // timeline.oneit-junior (whose own note reads "First promotion.") and
+    // timeline.oneit-se - the two role entries the book never showed.
+    aside: { caption: "Promotions", lines: [...fromTimeline("oneit-junior"), ...fromTimeline("oneit-se")] },
+  },
+  "award-2024": {
+    // timeline.award-2024.note "Stack expanded into Python, Flask, Twilio and Ionic."
+    marks: ["Python", "Flask", "Twilio", "Ionic"],
+    // awards[year "2024"].body
+    aside: { caption: "Citation", lines: [{ text: awardBody("2024") }] },
+  },
+  "award-2025": {
+    // case-studies "rag-platform" metric values. timeline.award-2025.note says
+    // this chapter owns the AI/RAG platform work ("ingestion, pgvector search,
+    // LLM orchestration, developer tooling"); the case study is that platform.
+    marks: study("rag-platform")?.metrics.map((m) => m.value) ?? [],
+    // awards[year "2025"].body
+    aside: { caption: "Citation", lines: [{ text: awardBody("2025") }] },
+    // The note's first sentence is the citation almost word for word, and the
+    // citation is already on the facing page. Only the second sentence is set
+    // as the account; nothing is added, only left out.
+    body: "Owns AI/RAG platform work end-to-end: ingestion, pgvector search, LLM orchestration, developer tooling.",
+  },
+  now: {
+    // timeline.now.note "Java, Angular, Python, and whatever the next ticket needs."
+    marks: ["Java", "Angular", "Python"],
+    aside: {
+      caption: "At present",
+      lines: [
+        { lead: "Role", text: profile.title }, // profile.title
+        { lead: "Base", text: profile.location }, // profile.location
+      ],
+    },
+  },
+};
+
 const CHAPTERS: Chapter[] = timeline
   .filter((t) => t.id in DECOR)
   .map((t) => ({
@@ -56,20 +146,35 @@ const CHAPTERS: Chapter[] = timeline
     // with "Jul 2022" on the ribbon labels.
     year: t.id === "now" ? "今" : (t.date.match(/\d{4}/)?.[0] ?? t.date),
     date: t.date,
+    kind: KIND_LABEL[t.kind] ?? t.kind,
     title: t.title,
-    body: t.note,
+    body: MATTER[t.id]?.body ?? t.note,
+    marks: MATTER[t.id]?.marks ?? [],
+    aside: MATTER[t.id]?.aside ?? { caption: "", lines: [] },
     ...DECOR[t.id],
   }));
 
 type Stage = "closed" | "opening" | "open";
 
+/** Dwell on a chapter before the book turns itself. */
+const TURN_MS = 6000;
+
 export function Grimoire() {
   const [stage, setStage] = useState<Stage>("closed");
   const [chapter, setChapter] = useState(0);
-  const [flipping, setFlipping] = useState(false);
 
-  // Auto-open after mount
+  // AUTO-TURN gates. Each is a plain boolean; none of them ticks per frame.
+  const [onScreen, setOnScreen] = useState(false);
+  const [held, setHeld] = useState(false); // pointer over the book, or focus inside it
+  const [userLed, setUserLed] = useState(false); // a ribbon was clicked
+  const [reduced, setReduced] = useState(true); // assume reduce until asked
+
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Auto-open after mount, always from the first chapter. Arriving at the home
+  // page a second time should not drop you wherever you left the book.
   useEffect(() => {
+    setChapter(0);
     const t1 = setTimeout(() => setStage("opening"), 600);
     const t2 = setTimeout(() => setStage("open"), 1900);
     return () => {
@@ -78,20 +183,70 @@ export function Grimoire() {
     };
   }, []);
 
+  // prefers-reduced-motion. Starts pessimistic so nothing can turn before the
+  // first effect runs, and follows the setting if it changes mid-visit.
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const read = () => setReduced(mq.matches);
+    read();
+    mq.addEventListener("change", read);
+    return () => mq.removeEventListener("change", read);
+  }, []);
+
+  // Off-screen is off. The hero is the top of the home page, so the book spends
+  // most of a visit out of view; neither the timer nor the looping CSS
+  // keyframes (see .dormant in grimoire.module.css) should run while it is.
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setOnScreen(true);
+      return;
+    }
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting), { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const turning = stage === "open" && !reduced && onScreen && !held && !userLed;
+
+  /*
+   * One timer. Re-running on `chapter` is the point: each turn restarts the
+   * dwell, so the book is never mid-flight when the next one is due, and the
+   * cleanup means at most one timeout exists at a time - including after
+   * unmount, or the moment any gate above closes.
+   */
+  useEffect(() => {
+    if (!turning) return;
+    const id = window.setTimeout(() => setChapter((c) => (c + 1) % CHAPTERS.length), TURN_MS);
+    return () => window.clearTimeout(id);
+  }, [turning, chapter]);
+
+  /**
+   * A ribbon click. The visitor has said which chapter they want, so the book
+   * stops cycling for the rest of the visit rather than resuming after a pause
+   * - resuming would eventually pull them off the chapter they asked for,
+   * which is the exact thing the auto-turn is supposed to avoid.
+   */
   function jumpTo(i: number) {
-    if (i === chapter || flipping) return;
-    setFlipping(true);
-    setTimeout(() => {
-      setChapter(i);
-      setTimeout(() => setFlipping(false), 350);
-    }, 350);
+    setUserLed(true);
+    if (i !== chapter) setChapter(i);
   }
 
   const c = CHAPTERS[chapter];
 
   return (
     <div
-      className="relative select-none"
+      ref={rootRef}
+      className={`relative select-none ${onScreen ? "" : styles.dormant}`}
+      // Hover and focus hold the book still so a chapter can be read. Only a
+      // real mouse counts: a touch fires pointerenter with no matching
+      // pointerleave, which would park the book for good on a phone.
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") setHeld(true);
+      }}
+      onPointerLeave={() => setHeld(false)}
+      onFocus={() => setHeld(true)}
+      onBlur={() => setHeld(false)}
       style={{
         width: "var(--grimoire-w)",
         height: "calc(var(--grimoire-w) * 1.15)",
@@ -109,7 +264,7 @@ export function Grimoire() {
         }}
       />
 
-      {/* Floor shadow — box-shadow instead of filter:blur to stay on compositor */}
+      {/* Floor shadow - box-shadow instead of filter:blur to stay on compositor */}
       <div
         aria-hidden
         className="pointer-events-none absolute bottom-0 left-1/2 h-0 w-3/5 -translate-x-1/2 rounded-full"
@@ -155,9 +310,15 @@ export function Grimoire() {
                * gilt fore-edge shows as a bright line around them. Without this
                * the pages covered the binding completely and the open book was
                * just two parchment rectangles.
+               *
+               * aria-live="off" is explicit rather than incidental: the spread
+               * rewrites itself every few seconds and a screen reader must not
+               * read the new chapter out over whatever the visitor is doing.
+               * The ribbons remain the way to move through the book on purpose.
                */
               className="absolute flex"
               style={{ inset: "0.82em" }}
+              aria-live="off"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.4 }}
@@ -427,6 +588,14 @@ function PageBackground({ side }: { side: "left" | "right" }) {
         className="absolute inset-0 opacity-[0.10] mix-blend-multiply"
         style={{ backgroundImage: "url(/textures/grain-128.png)", backgroundSize: "128px 128px" }}
       />
+      {/* Laid ruling and the ledger margin rule, so the leaf reads as paper that
+          has been written on rather than a blank slab. Static backgrounds on a
+          static element: painted once, never animated. */}
+      <div
+        aria-hidden
+        className={`absolute ${styles.leaf} ${side === "left" ? styles.leafLeft : styles.leafRight}`}
+        style={{ inset: "1.35em 0.6em 1.1em" }}
+      />
       {/* The theme's light spilling onto the page from the spine */}
       <div
         aria-hidden
@@ -440,70 +609,253 @@ function PageBackground({ side }: { side: "left" | "right" }) {
   );
 }
 
-/** Left page: the chapter's name plate. */
+/** A hairline across the measure, in gilt or in ink. */
+function Rule({ strong = false, top = "0.34em" }: { strong?: boolean; top?: string }) {
+  return (
+    <div
+      aria-hidden
+      style={{
+        height: 1,
+        width: "100%",
+        marginTop: top,
+        background: "var(--gilt-ink)",
+        opacity: strong ? 0.45 : 0.22,
+      }}
+    />
+  );
+}
+
+/** Small letterspaced heading over a block of matter. */
+function Caption({ children, center = false }: { children: React.ReactNode; center?: boolean }) {
+  return (
+    <p
+      className="font-mono"
+      style={{
+        color: "var(--gilt-ink)",
+        fontSize: "0.54em",
+        letterSpacing: "0.22em",
+        textTransform: "uppercase",
+        textAlign: center ? "center" : "left",
+      }}
+    >
+      {children}
+    </p>
+  );
+}
+
+/** The flourish a printed chapter ends on, so the foot of the page is set. */
+function Tailpiece() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 120 10"
+      width="100%"
+      height="0.5em"
+      preserveAspectRatio="xMidYMid meet"
+      style={{ opacity: 0.5, display: "block" }}
+    >
+      <g stroke="var(--gilt-ink)" strokeWidth="0.8" fill="none" strokeLinecap="round">
+        <path d="M 6 5 L 46 5" />
+        <path d="M 74 5 L 114 5" />
+        <path d="M 52 5 L 60 1 L 68 5 L 60 9 Z" fill="var(--gilt-ink)" stroke="none" />
+        <circle cx="48" cy="5" r="1.1" fill="var(--gilt-ink)" stroke="none" />
+        <circle cx="72" cy="5" r="1.1" fill="var(--gilt-ink)" stroke="none" />
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * Left page (verso): the chapter's name plate, then the record that supports
+ * it - the entries, citation or standing that belong with this chapter.
+ */
 function LeftPage({ chapter, index }: { chapter: Chapter; index: number }) {
   return (
-    <div className="flex h-full flex-col" style={{ padding: "1.5em 1.4em" }}>
-      <div>
-        <p
+    <div className="flex h-full flex-col" style={{ padding: "1.05em 1.15em 0.85em" }}>
+      {/* Running head */}
+      <div className="flex items-baseline justify-between" style={{ gap: "0.4em" }}>
+        <span
           className="font-mono"
-          style={{ color: "var(--gilt-ink)", fontSize: "0.58em", letterSpacing: "0.25em", textTransform: "uppercase" }}
+          style={{ color: "var(--gilt-ink)", fontSize: "0.54em", letterSpacing: "0.22em" }}
         >
-          Chapter {index + 1}
-        </p>
-        <p className="font-jp" style={{ color: "var(--page-ink)", fontSize: "2.2em", marginTop: "0.25em", lineHeight: 1.1 }}>
+          CHAPTER {String(index + 1).padStart(2, "0")}
+        </span>
+        <span
+          className="font-mono"
+          style={{
+            color: "var(--page-ink-soft)",
+            fontSize: "0.54em",
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {chapter.kind}
+        </span>
+      </div>
+      <Rule top="0.3em" />
+
+      {/* Name plate */}
+      <div style={{ marginTop: "0.95em" }}>
+        <p className="font-jp" style={{ color: "var(--page-ink)", fontSize: "2.35em", lineHeight: 1.1 }}>
           {chapter.kanji}
         </p>
         <p
           className="font-display italic"
-          style={{ color: "var(--page-ink-soft)", fontSize: "0.72em", letterSpacing: "0.04em", marginTop: "0.2em" }}
+          style={{
+            color: "var(--page-ink-soft)",
+            fontSize: "0.72em",
+            letterSpacing: "0.04em",
+            marginTop: "0.22em",
+          }}
         >
           {chapter.romaji}
         </p>
       </div>
 
-      <div style={{ marginTop: "1.5em" }}>
-        <div style={{ height: 1, width: "100%", background: "var(--gilt-ink)", opacity: 0.45 }} />
+      {/* Title and date */}
+      <div style={{ marginTop: "1em" }}>
+        <Rule strong top="0" />
         <p
           className="font-display"
-          style={{ color: "var(--page-ink)", fontSize: "1.05em", lineHeight: 1.22, marginTop: "0.55em" }}
+          style={{ color: "var(--page-ink)", fontSize: "1.04em", lineHeight: 1.24, marginTop: "0.55em" }}
         >
           {chapter.title}
         </p>
         <p
           className="font-mono"
-          style={{ color: "var(--page-ink-soft)", fontSize: "0.56em", letterSpacing: "0.14em", marginTop: "0.5em" }}
+          style={{
+            color: "var(--page-ink-soft)",
+            fontSize: "0.56em",
+            letterSpacing: "0.14em",
+            marginTop: "0.55em",
+          }}
         >
           {chapter.date}
         </p>
       </div>
 
-      <div className="mt-auto">
-        <Folio n={index * 2 + 1} align="left" />
+      {/* The record */}
+      {chapter.aside.lines.length > 0 && (
+        <div style={{ marginTop: "1.05em" }}>
+          <Caption>{chapter.aside.caption}</Caption>
+          <ul style={{ marginTop: "0.5em", display: "flex", flexDirection: "column", gap: "0.55em" }}>
+            {chapter.aside.lines.map((line) => (
+              <li key={line.text}>
+                {line.lead && (
+                  <span
+                    className="font-mono block"
+                    style={{
+                      color: "var(--gilt-ink)",
+                      fontSize: "0.54em",
+                      letterSpacing: "0.12em",
+                    }}
+                  >
+                    {line.lead}
+                  </span>
+                )}
+                <span
+                  className="block"
+                  style={{
+                    color: line.lead ? "var(--page-ink)" : "var(--page-ink-soft)",
+                    fontSize: "0.68em",
+                    lineHeight: 1.5,
+                    marginTop: line.lead ? "0.1em" : 0,
+                  }}
+                >
+                  {line.text}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="mt-auto" style={{ paddingTop: "0.7em" }}>
+        <Tailpiece />
+        <div style={{ marginTop: "0.45em" }}>
+          <Folio n={index * 2 + 1} align="left" />
+        </div>
       </div>
     </div>
   );
 }
 
-/** Right page: the sigil and the account. */
+/** Right page (recto): the sigil, the account, and the terms it turns on. */
 function RightPage({ chapter, index }: { chapter: Chapter; index: number }) {
   return (
-    <div className="flex h-full flex-col items-center justify-between" style={{ padding: "1.5em 1.2em" }}>
-      <div className="flex flex-1 flex-col items-center justify-center text-center">
-        <Sigil kind={chapter.sigil} />
+    <div className="flex h-full flex-col" style={{ padding: "1.05em 1.1em 0.85em" }}>
+      {/* Running head - the book's own name, the way a recto carries it */}
+      <p
+        className="font-mono"
+        style={{
+          color: "var(--page-ink-soft)",
+          fontSize: "0.54em",
+          letterSpacing: "0.2em",
+          textAlign: "right",
+        }}
+      >
+        HARUKA · MIRAI
+      </p>
+      <Rule top="0.3em" />
+
+      {/* The sigil and the account ride the middle of the leaf, so the slack
+          splits above and below them instead of collecting in one hole. */}
+      <div className="flex flex-1 flex-col items-center justify-center" style={{ paddingTop: "0.7em" }}>
+        <Sigil kind={chapter.sigil} size="5.8em" />
         <p
           style={{
             color: "var(--page-ink)",
-            fontSize: "0.7em",
-            lineHeight: 1.6,
-            marginTop: "1.1em",
-            maxWidth: "20ch",
+            fontSize: "0.76em",
+            lineHeight: 1.65,
+            marginTop: "1.2em",
+            textAlign: "center",
           }}
         >
           {chapter.body}
         </p>
       </div>
-      <Folio n={index * 2 + 2} align="right" />
+
+      <div style={{ paddingTop: "0.8em" }}>
+        {chapter.marks.length > 0 && (
+          <>
+            <Rule strong top="0" />
+            <div style={{ marginTop: "0.5em" }}>
+              <Caption center>Marks</Caption>
+            </div>
+            <ul
+              style={{
+                marginTop: "0.5em",
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                gap: "0.34em",
+              }}
+            >
+              {chapter.marks.map((m) => (
+                <li
+                  key={m}
+                  style={{
+                    color: "var(--page-ink-soft)",
+                    fontSize: "0.58em",
+                    letterSpacing: "0.03em",
+                    lineHeight: 1.3,
+                    padding: "0.3em 0.55em",
+                    border: "1px solid color-mix(in oklab, var(--gilt-ink) 42%, transparent)",
+                    borderRadius: "0.25em",
+                    maxWidth: "100%",
+                  }}
+                >
+                  {m}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+        <div style={{ marginTop: "0.6em" }}>
+          <Folio n={index * 2 + 2} align="right" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -515,7 +867,7 @@ function Folio({ n, align }: { n: number; align: "left" | "right" }) {
       className="font-display w-full"
       style={{
         color: "var(--page-ink-soft)",
-        fontSize: "0.55em",
+        fontSize: "0.58em",
         opacity: 0.7,
         textAlign: align === "left" ? "left" : "right",
       }}
@@ -556,12 +908,12 @@ function Ribbon({ active, silk, year }: { active: boolean; silk: string; year: s
   );
 }
 
-function Sigil({ kind }: { kind: Chapter["sigil"] }) {
+function Sigil({ kind, size = "5.6em" }: { kind: Chapter["sigil"]; size?: string }) {
   const ink = "var(--gilt-ink)";
   return (
     <svg
-      width="5.6em"
-      height="5.6em"
+      width={size}
+      height={size}
       viewBox="0 0 100 100"
       className="spin-cw"
       style={{ "--spin": "38s", transformOrigin: "50% 50%" } as React.CSSProperties}

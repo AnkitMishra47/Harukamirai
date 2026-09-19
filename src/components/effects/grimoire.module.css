@@ -1,0 +1,52 @@
+/* ============================================================
+   GRIMOIRE - the few things the book needs from a stylesheet.
+
+   Everything else the book is made of lives as inline style in
+   Grimoire.tsx, because it is all derived in `em` from one number
+   (--grimoire-w) and reads better next to the markup it sizes.
+
+   Nothing here starts an animation. The one rule that touches animation
+   stops animations rather than starting them.
+   ============================================================ */
+
+/*
+ * Off-screen. Grimoire.tsx toggles this on the root when an
+ * IntersectionObserver says the book has left the viewport.
+ *
+ * `animation-play-state` is not an inherited property, so the descendant
+ * selector is doing real work: it reaches the sparks, the aura and the
+ * spinning sigil - all of which are `infinite` CSS keyframes declared in
+ * globals.css - and parks every one of them without unmounting anything.
+ * Paused keyframes cost the compositor nothing, and because the DOM is
+ * untouched there is no churn when the hero scrolls back into view.
+ */
+.dormant,
+.dormant * {
+  animation-play-state: paused !important;
+}
+
+/*
+ * Laid paper. A hairline every 1.12em, so a page reads as something written
+ * on rather than a blank slab. It is a static background image on an element
+ * that never moves, so it is painted once into the page layer and never again.
+ *
+ * Contrast is deliberately far below anything set on top of it (gilt-ink at
+ * 12%): this is texture, not lines to write between, so the type above it
+ * does not have to sit on the baseline grid.
+ */
+.leaf {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--gilt-ink) 12%, transparent) 0 1px,
+    transparent 1px 1.12em
+  );
+}
+
+/* The ledger margin rule, on the fore-edge side the way a ledger's is. */
+.leafLeft {
+  border-left: 1px solid color-mix(in oklab, var(--gilt-ink) 28%, transparent);
+}
+
+.leafRight {
+  border-right: 1px solid color-mix(in oklab, var(--gilt-ink) 28%, transparent);
+}

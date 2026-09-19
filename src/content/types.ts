@@ -74,6 +74,18 @@ export type Photo = {
   alt: string;
   caption?: string;
   /**
+   * Where the interesting band of a tall photograph sits, 0-100, as the
+   * `object-position` Y percentage. Only consulted where a layout has to crop -
+   * the story scene caps a portrait at 4:5 - and ignored everywhere a photo is
+   * shown at its own shape, which is everywhere else.
+   *
+   * 0 keeps the top of the file, 100 keeps the bottom, 50 (the default) takes
+   * the surplus evenly off both ends. Set it when a photograph has something
+   * that must survive at BOTH ends, which is the only case the default gets
+   * wrong.
+   */
+  cropAnchor?: number;
+  /**
    * Where the photograph was taken, in the wording Ankit confirmed. Optional,
    * and deliberately so: most of the set has no confirmed location, and a
    * location is never inferred from what the picture looks like.

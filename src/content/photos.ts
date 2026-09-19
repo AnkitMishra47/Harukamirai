@@ -27,6 +27,17 @@ export const photos = {
   awardTrophy: {
     src: "/photos/award-trophy.jpeg",
     alt: "Ankit Mishra holding the OneIT Runner-up Employee of the Year 2025 trophy",
+    /*
+     * Measured off the file, not guessed: the top of the hair is at y=198 and
+     * the trophy's engraved nameplate runs from y=1440 to the bottom edge at
+     * y=1599. Cropped to 4:5 the frame is 1332px of the 1599, so 267px has to
+     * go. At 71% the window sits at y=190-1522: it takes 190 of those 267 off
+     * the top, where there is nothing but projector screen, and leaves the face
+     * and the trophy in frame with only the lower half of the nameplate lost.
+     * Centring instead (the default 50%) would cut 133px off the top - into the
+     * hair - AND 133px off the bottom, losing the plate entirely.
+     */
+    cropAnchor: 71,
     width: 1066,
     height: 1599,
     blurDataURL: "data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAPAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABwQG/8QAJxAAAgAEAwgDAAAAAAAAAAAAAQIAAwQFBxEiBhIUFSEjMTNhsfD/xAAVAQEBAAAAAAAAAAAAAAAAAAACBP/EABgRAAMBAQAAAAAAAAAAAAAAAAABAgMx/9oADAMBAAIRAxEAPwBgr3vQ24pJchyLUU7i5dCf2cZOtdBWT9Q9jfcSWXEur5C9yucpSCm+ipBDU4opMqJr8O+pyfPzFMaKeicM/9k=",

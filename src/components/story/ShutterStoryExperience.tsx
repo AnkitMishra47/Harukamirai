@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "motion/react";
 import { profile, photos, type Photo } from "@/content";
@@ -210,7 +210,15 @@ const SCENES: StoryScene[] = [
   },
 ];
 
-const SCENE_DURATION_MS = 8500;
+/**
+ * How long a scene holds before the story walks itself on.
+ *
+ * Six seconds, down from 8.5. A scene in its headline state is an eyebrow, a
+ * title and one line - it is read well before 8.5s is up, and the wait after
+ * reading it is the part that felt slow. Anyone who wants longer has the pause
+ * control, and opening a scene's detail suspends this timer outright.
+ */
+const SCENE_DURATION_MS = 6000;
 
 /**
  * Swipe navigation tuning.
@@ -242,6 +250,107 @@ const SCENE_EXIT_OFFSET_PX = 110;
  * mutually exclusive.
  */
 const TAP_SLOP_PX = 10;
+
+/*
+ * Scene change: the two halves arrive from opposite edges.
+ *
+ * Measured off the title card Ankit asked this to feel like, frame by frame at
+ * 24fps. Three of its properties are the ones that matter, and all three are the
+ * opposite of what a tasteful default would have picked:
+ *
+ * 1. The travel is LINEAR and stops dead. Fitting the measured curve: linear
+ *    scored an RMSE of 0.004, `cubic.out` 0.267, `expo.out` 0.389. The leading
+ *    edge advances 175, 176, 176, 175, 176, 176, 175px on seven consecutive
+ *    frames and then simply stops inside one frame. There is no overshoot and no
+ *    settle, and an eased version does not read as the same animation.
+ * 2. Nothing fades. The words are fully opaque for the whole slide. Opacity is
+ *    what a UI reaches for to soften an entrance; this entrance is not softened.
+ * 3. The elements start fully outside their own edge, not nudged in from 40px.
+ *    Measured travel was 85-88% of the viewport for the left-movers.
+ *
+ * What is deliberately NOT reproduced is the directional motion blur, which on
+ * film is a 126-degree shutter and in a browser is a filter re-rasterised every
+ * frame - the exact cost this pass took out of the photo glow.
+ */
+const SCENE_SLIDE_EASE = [0, 0, 1, 1] as const;
+const SCENE_SLIDE_IN_S = 0.45;
+const SCENE_SLIDE_OUT_S = 0.3;
+/** Its own width plus a hair, so a half-width column still clears the stage edge. */
+const SCENE_SLIDE_OFFSET_PCT = 105;
+
+/*
+ * How long the first scene waits before it walks on, so that it is walking on
+ * where somebody can see it.
+ *
+ * The theater renders UNDER the gate, mounted from the first paint. Act 01's
+ * entrance therefore used to run behind a closed shutter and be over before the
+ * gate had finished moving: lift it and the act was already sitting there,
+ * settled, having performed to nobody.
+ *
+ * 300ms is read off the gate's own transition - 550ms on
+ * `cubic-bezier(0.16, 1, 0.3, 1)`, an ease-out that spends its distance early.
+ * At 300ms it is 55% through its duration and about 95% through its travel, so
+ * only a sliver at the top of the screen is still covered. Starting here means
+ * the act is arriving as the last of the gate leaves, which reads as one motion,
+ * where waiting for the full 550ms reads as two.
+ */
+const STAGE_REVEAL_DELAY_MS = 300;
+/**
+ * Reopening from the hero has no gate to wait for - it renders already lifted.
+ * One tick, purely so the scene reset lands before the entrance is asked for.
+ */
+const STAGE_REOPEN_DELAY_MS = 60;
+
+/*
+ * The tallest shape a scene will show a photograph at, as width/height. 0.8 is 4:5.
+ *
+ * Everywhere else in this codebase a photograph is drawn at its own shape and is
+ * never cropped, and the comment block in story-scene.module.css says at length
+ * why. This is the one deliberate exception: a portrait taller than 4:5 left the
+ * scene so tall on a phone that the copy above it was pushed off the screen.
+ *
+ * WHICH END the surplus comes off is the photograph's own business, declared as
+ * `cropAnchor` on the `Photo` type and defaulting to centred. That indirection
+ * is not ceremony - it is the whole difference between a crop and a loss. The
+ * trophy photograph has the face near its top and the award's engraved nameplate
+ * running to its very bottom edge, so neither "crop the top" nor "crop the
+ * bottom" is a rule that survives contact with it, and centring cuts into both.
+ */
+const SCENE_MIN_ASPECT = 0.8;
+/** Centred, which is right for any photograph that has not said otherwise. */
+const DEFAULT_CROP_ANCHOR = 50;
+
+/*
+ * Shutter gate tuning.
+ *
+ * Same principle as the swipe above: a gate commits when EITHER it was pulled
+ * far enough OR it was flicked, so a slow deliberate haul and a quick snap both
+ * open it, and a small nudge settles back. The distance is a share of the
+ * gate's own height with a ceiling, so a tall phone does not ask for a longer
+ * pull than a short one.
+ */
+const SHUTTER_LIFT_RATIO = 0.25; // share of the gate height that commits it
+const SHUTTER_LIFT_MIN_PX = 90; // ceiling, so a tall screen is no harder to open
+/**
+ * Upward speed that commits the gate on its own, in px/s so it reads against
+ * `SWIPE_VELOCITY_PX_PER_S` above. It is the same number deliberately: a flick
+ * is a flick, and one hand should not have to learn two speeds to drive one
+ * component.
+ */
+const SHUTTER_FLICK_VELOCITY_PX_PER_S = SWIPE_VELOCITY_PX_PER_S;
+const SHUTTER_FLICK_MIN_PX = 28; // a flick still has to actually travel
+const SHUTTER_DRAG_SLOP_PX = 6; // travel before a press stops being a possible tap
+/**
+ * Velocity is measured over a window, not between two consecutive moves.
+ *
+ * Pointer moves arrive coalesced and irregularly spaced, so a single-sample
+ * `dy/dt` can read a 5px nudge delivered 1ms after the last one as 5 px/ms -
+ * ten times the flick threshold. Sampling across at least this long makes the
+ * number mean what it says.
+ */
+const SHUTTER_VELOCITY_WINDOW_MS = 50;
+/** Past this, the last sample is too old to describe the hand that is releasing. */
+const SHUTTER_VELOCITY_STALE_MS = 120;
 
 /** Live clock for IST and AWST timezones */
 function useLiveTimezones() {
@@ -280,7 +389,7 @@ function CompactFigure({ rows }: { rows: readonly FigureRow[] }) {
 
   return (
     <div
-      className={`max-w-md mx-auto rounded-2xl border border-white/12 bg-white/[0.03] font-mono backdrop-blur-md ${styles.compactFigure}`}
+      className={`max-w-md mx-auto rounded-2xl border border-white/12 bg-white/[0.03] font-mono backdrop-blur-md ${styles.compactFigure} ${styles.touchFlat}`}
     >
       {rows.map((row, i) => {
         const displayValue =
@@ -328,21 +437,91 @@ export function ShutterStoryExperience() {
    * behind this, and the story clock waits with it.
    */
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  /**
+   * Whether the stage has been handed over to the visitor yet.
+   *
+   * The scene stays in the DOM the whole time - it is only held at its entry
+   * position - so the act copy is still in the server-rendered HTML for anything
+   * that reads the page without running it.
+   */
+  const [isStageRevealed, setIsStageRevealed] = useState(false);
+  const revealTimerRef = useRef<number | null>(null);
+
+  /*
+   * Parks the scene at its entry position and releases it after `delayMs`.
+   *
+   * Always false first, even when it is already false: that is what makes a
+   * reopen replay the entrance. Reopening resets the scene index to 0, and if it
+   * was already 0 the key does not change, so `AnimatePresence` has no reason to
+   * remount anything - this toggle is the only thing that asks for the animation
+   * again.
+   */
+  const scheduleStageReveal = useCallback((delayMs: number) => {
+    if (revealTimerRef.current) window.clearTimeout(revealTimerRef.current);
+    setIsStageRevealed(false);
+    revealTimerRef.current = window.setTimeout(() => {
+      revealTimerRef.current = null;
+      setIsStageRevealed(true);
+    }, delayMs);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (revealTimerRef.current) window.clearTimeout(revealTimerRef.current);
+    };
+  }, []);
   const progressTimerRef = useRef<number | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   /** Press position of the live pointer gesture, for telling a tap from a swipe. */
   const pointerDownRef = useRef<{ x: number; y: number } | null>(null);
   const shouldReduceMotion = useReducedMotion();
 
+  /*
+   * One variant set per half, mirrored by the direction of travel: going
+   * forward the headline comes from the left and the figure from the right,
+   * going back they swap, so the two halves always part and meet along the axis
+   * the story is moving on.
+   *
+   * Under reduced motion neither half travels and the scene simply cuts.
+   */
+  const [headlineVariants, figureVariants] = useMemo(() => {
+    const half = (side: 1 | -1) => {
+      const off = (dir: number) =>
+        shouldReduceMotion ? 0 : `${side * (dir > 0 ? 1 : -1) * SCENE_SLIDE_OFFSET_PCT}%`;
+      return {
+        enter: (dir: number) => ({ x: off(dir), opacity: shouldReduceMotion ? 0 : 1 }),
+        center: {
+          x: 0,
+          opacity: 1,
+          transition: {
+            duration: shouldReduceMotion ? 0.2 : SCENE_SLIDE_IN_S,
+            ease: SCENE_SLIDE_EASE,
+          },
+        },
+        exit: (dir: number) => ({
+          x: off(dir),
+          opacity: shouldReduceMotion ? 0 : 1,
+          transition: {
+            duration: shouldReduceMotion ? 0.15 : SCENE_SLIDE_OUT_S,
+            ease: SCENE_SLIDE_EASE,
+          },
+        }),
+      };
+    };
+    return [half(-1), half(1)];
+  }, [shouldReduceMotion]);
+
   useEffect(() => {
     const handleReopen = () => {
       setIsDismissed(false);
       setIsExitingTheater(false);
+      setIsShutterArming(false);
       setIsShutterLifted(true);
       setCurrentSceneIdx(0);
       setDirection(1);
       setProgress(0);
       setIsPaused(false);
+      scheduleStageReveal(STAGE_REOPEN_DELAY_MS);
       successionEngine.play();
     };
 
@@ -351,18 +530,36 @@ export function ShutterStoryExperience() {
       window.removeEventListener("open-shutter-story", handleReopen);
       successionEngine.stop();
     };
-  }, []);
+  }, [scheduleStageReveal]);
 
   // The gate is shown on every visit by design - Ankit's call. There is
   // deliberately no seen-flag: a returning visitor gets the story again.
   const liftShutter = () => {
-    setIsShutterLifted(true);
+    scheduleStageReveal(STAGE_REVEAL_DELAY_MS);
     setCurrentSceneIdx(0);
     setDirection(1);
     setProgress(0);
     setIsPaused(false);
     successionEngine.play();
+
+    // Park the teaser this frame so the gate has somewhere to move FROM, and
+    // lift on the next. Two frames rather than one: the first commits the class
+    // removal, the second is the one the transition can start on.
+    setIsShutterArming(true);
+    cancelAnimationFrame(armRafRef.current);
+    armRafRef.current = requestAnimationFrame(() => {
+      armRafRef.current = requestAnimationFrame(() => {
+        armRafRef.current = 0;
+        setIsShutterLifted(true);
+      });
+    });
   };
+
+  useEffect(() => {
+    return () => {
+      if (armRafRef.current) cancelAnimationFrame(armRafRef.current);
+    };
+  }, []);
 
   const toggleSoundtrack = () => {
     const next = !isMusicMuted;
@@ -372,6 +569,9 @@ export function ShutterStoryExperience() {
 
   const exitToPortfolio = () => {
     successionEngine.stop();
+    if (revealTimerRef.current) window.clearTimeout(revealTimerRef.current);
+    revealTimerRef.current = null;
+    setIsStageRevealed(false);
     setIsShutterLifted(true);
     setIsExitingTheater(true);
     window.dispatchEvent(new CustomEvent("portfolio-revealed"));
@@ -380,20 +580,213 @@ export function ShutterStoryExperience() {
     }, 550);
   };
 
-  const shutterPointerDownY = useRef<number | null>(null);
+  /*
+   * The shutter is dragged, not clicked at.
+   *
+   * It used to sample Y at press and Y at release and lift if the difference
+   * was upward enough. Nothing moved in between, so the gate could only ever
+   * behave like a button that happened to need a swipe - you pushed, nothing
+   * answered, and then it was simply gone. A shutter you are pulling up should
+   * be under your thumb the whole way.
+   *
+   * The live offset is written straight to the element's `transform`, not held
+   * in React state: a gesture is sixty writes a second and not one of them
+   * needs a re-render. The two things that DO need React are the class swap
+   * that parks the idle teaser animation (a running animation outranks an
+   * inline style, so the teaser has to stand down or it fights the finger) and
+   * nothing else.
+   *
+   * Listeners go on `window` rather than through `setPointerCapture`, because
+   * capturing on the gate retargets the click the browser synthesises at
+   * release, and the buttons inside the gate need that click intact.
+   */
+  const shutterRef = useRef<HTMLDivElement>(null);
+  const shutterDragRef = useRef<{
+    startY: number;
+    startT: number;
+    currentY: number;
+    sampleY: number;
+    sampleT: number;
+    velocity: number;
+    active: boolean;
+  } | null>(null);
+  /** Set by a gesture that actually travelled, read by the click it drags behind it. */
+  const shutterDraggedRef = useRef(false);
+  const [isShutterDragging, setIsShutterDragging] = useState(false);
+  /**
+   * One frame with the teaser animation gone and the lift not yet applied.
+   *
+   * A running animation on `transform` suppresses a transition of the same
+   * property, so swapping the teaser class straight for the lifted one gave the
+   * transition no before-change value to start from and the gate teleported.
+   * Traced per frame: teaser -> lifted in one frame reads -748, -748, -748...;
+   * dropping the teaser a frame earlier reads -133, -248, -344, -423, -486...,
+   * which is the 0.55s ease-out the stylesheet has always asked for.
+   *
+   * This state IS that frame. It renders neither class.
+   */
+  const [isShutterArming, setIsShutterArming] = useState(false);
+  const armRafRef = useRef(0);
 
-  const handleShutterPointerDown = (e: React.PointerEvent) => {
-    shutterPointerDownY.current = e.clientY;
+  /*
+   * Hands the transform back to the stylesheet on the frame AFTER the dragging
+   * class is gone. Clearing it in the same tick would clear it while
+   * `transition: none` still applied, and the gate would jump rather than
+   * settle.
+   */
+  const releaseShutterTransform = () => {
+    requestAnimationFrame(() => {
+      const el = shutterRef.current;
+      if (el) el.style.transform = "";
+    });
   };
 
-  const handleShutterPointerUp = (e: React.PointerEvent) => {
-    if (shutterPointerDownY.current !== null) {
-      const deltaY = e.clientY - shutterPointerDownY.current;
-      if (deltaY < -35) {
-        liftShutter();
+  const handleShutterPointerDown = (e: React.PointerEvent) => {
+    if (isShutterLifted) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    const el = shutterRef.current;
+    if (!el) return;
+
+    shutterDraggedRef.current = false;
+    /*
+     * Every time below is `performance.now()`, read at the moment the handler
+     * runs. Not `e.timeStamp`: this one is React's synthetic event and the ones
+     * in the listeners below are native, and the two are not guaranteed to be
+     * ticking from the same origin. Mixing them makes `elapsed` meaningless, and
+     * a meaningless `elapsed` silently reports every flick as motionless.
+     */
+    const now = performance.now();
+    const drag = {
+      startY: e.clientY,
+      startT: now,
+      currentY: e.clientY,
+      sampleY: e.clientY,
+      sampleT: now,
+      velocity: 0,
+      active: false,
+    };
+    shutterDragRef.current = drag;
+
+    const onMove = (ev: PointerEvent) => {
+      const d = shutterDragRef.current;
+      if (!d) return;
+
+      const t = performance.now();
+      const dt = t - d.sampleT;
+      if (dt >= SHUTTER_VELOCITY_WINDOW_MS) {
+        d.velocity = (ev.clientY - d.sampleY) / dt;
+        d.sampleY = ev.clientY;
+        d.sampleT = t;
       }
-      shutterPointerDownY.current = null;
-    }
+
+      d.currentY = ev.clientY;
+      const dy = ev.clientY - d.startY;
+      // Inside the slop the gesture is still allowed to turn out to be a tap.
+      if (!d.active) {
+        if (dy > -SHUTTER_DRAG_SLOP_PX) return;
+        d.active = true;
+        shutterDraggedRef.current = true;
+        setIsShutterDragging(true);
+      }
+      // Up moves the gate; down is a wall, because there is nothing below it.
+      const offset = Math.max(-el.offsetHeight, Math.min(0, dy));
+      el.style.transform = `translate3d(0, ${offset}px, 0)`;
+    };
+
+    const detach = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onCancel);
+    };
+
+    const onUp = () => {
+      detach();
+      const releasedAt = performance.now();
+      const d = shutterDragRef.current;
+      shutterDragRef.current = null;
+      if (!d || !d.active) {
+        setIsShutterDragging(false);
+        return;
+      }
+
+      // `d.currentY`, not `ev.clientY`: the tracked position is the one the gate
+      // is actually sitting at, and it cannot be contradicted by whatever
+      // coordinates the release event happens to carry.
+      const travelled = d.startY - d.currentY;
+      const threshold = Math.min(
+        SHUTTER_LIFT_MIN_PX,
+        el.offsetHeight * SHUTTER_LIFT_RATIO,
+      );
+      /*
+       * Two readings of the same hand, and the faster one wins.
+       *
+       * The windowed sample describes a gesture long enough to have been
+       * sampled, and is thrown away if the hand came to rest before letting go -
+       * a hold-then-release is not a flick whatever the last sample said. But a
+       * genuinely fast flick can be over in less than one window, and would
+       * leave that sample at zero, so the whole-gesture average stands behind
+       * it. The average cannot be fooled by a pause, because a pause is in the
+       * elapsed time it divides by.
+       */
+      const windowed =
+        releasedAt - d.sampleT <= SHUTTER_VELOCITY_STALE_MS ? d.velocity : 0;
+      const elapsed = releasedAt - d.startT;
+      const overall = elapsed > 0 ? (d.currentY - d.startY) / elapsed : 0;
+      // Both readings are px/ms, so the threshold comes down to the same units.
+      const flicked =
+        travelled >= SHUTTER_FLICK_MIN_PX &&
+        Math.min(windowed, overall) <= -SHUTTER_FLICK_VELOCITY_PX_PER_S / 1000;
+
+      setIsShutterDragging(false);
+      if (travelled >= threshold || flicked) {
+        /*
+         * The inline transform STAYS on a commit. It is where the thumb left
+         * the gate, and it is the value the lift transition has to travel from
+         * - clearing it here would snap the gate back to shut for the two
+         * frames before `.shutterLifted` lands. `.shutterLifted` carries
+         * `!important`, so it overrides the inline value the moment it applies
+         * and the leftover declaration is inert from then on.
+         */
+        liftShutter();
+      } else {
+        // A refusal has nowhere to be but home, so the gate's own transition
+        // settles it back down.
+        releaseShutterTransform();
+      }
+    };
+
+    /*
+     * A cancelled pointer is not a released one, and it must never open the gate.
+     *
+     * The browser cancels when it takes the gesture over - a scroll handoff, the
+     * touch leaving the surface, an interruption - and the event it sends has no
+     * meaningful coordinates: Chrome reports `clientY: 0`. Routed through the
+     * release path, that reads as a pull the full height of the screen and the
+     * shutter flies open on a gesture the visitor never finished. Cancelling
+     * puts it back where it started, every time.
+     */
+    const onCancel = () => {
+      detach();
+      shutterDragRef.current = null;
+      setIsShutterDragging(false);
+      releaseShutterTransform();
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onCancel);
+  };
+
+  /*
+   * A gesture that travelled is not a tap, whatever click the browser sends
+   * after it. Without this, letting go halfway down over the grip lip would
+   * spring the gate back and then immediately open it anyway.
+   */
+  const handleShutterClickCapture = (e: React.MouseEvent) => {
+    if (!shutterDraggedRef.current) return;
+    shutterDraggedRef.current = false;
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   const handleShutterWheel = (e: React.WheelEvent) => {
@@ -544,6 +937,7 @@ export function ShutterStoryExperience() {
     // not the clock. Neither flips the visible Play/Pause control.
     if (
       !isShutterLifted ||
+      !isStageRevealed ||
       isExitingTheater ||
       isDismissed ||
       isPaused ||
@@ -557,15 +951,22 @@ export function ShutterStoryExperience() {
     const interval = 40;
     const step = (interval / SCENE_DURATION_MS) * 100;
 
+    /*
+     * This updater reports the new progress and does nothing else.
+     *
+     * It used to advance the scene from in here, calling `setCurrentSceneIdx`
+     * inside the `setProgress` updater. A state updater has to be a pure
+     * function of the previous state, and React proves it is not by running it
+     * twice under StrictMode - so the nested advance ran twice and the story
+     * moved two acts at a time. Measured: the clock walked Scene 1 -> 3 -> 5 ->
+     * 1, while the same `goNext` driven by the arrows was correct, because that
+     * path never went through an updater.
+     *
+     * Reaching the end is a fact about progress; acting on it is a separate
+     * effect, below.
+     */
     progressTimerRef.current = window.setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          setDirection(1);
-          setCurrentSceneIdx((curr) => (curr + 1) % SCENES.length);
-          return 0;
-        }
-        return prev + step;
-      });
+      setProgress((prev) => Math.min(100, prev + step));
     }, interval);
 
     return () => {
@@ -573,9 +974,45 @@ export function ShutterStoryExperience() {
     };
   }, [
     isShutterLifted,
+    isStageRevealed,
     isExitingTheater,
     isDismissed,
     currentSceneIdx,
+    isPaused,
+    isDragging,
+    isDetailOpen,
+  ]);
+
+  /*
+   * The auto-advance itself: one scene per time the clock reaches the end.
+   *
+   * It repeats the timer's own guards rather than trusting them. Progress can
+   * sit at 100 while the visitor has the story paused, is mid-drag, or has a
+   * detail open - the timer stops in all three cases but does not rewind - and
+   * the story must not jump the moment any of them clears.
+   */
+  useEffect(() => {
+    if (progress < 100) return;
+    if (
+      !isShutterLifted ||
+      !isStageRevealed ||
+      isExitingTheater ||
+      isDismissed ||
+      isPaused ||
+      isDragging ||
+      isDetailOpen
+    ) {
+      return;
+    }
+    setDirection(1);
+    setCurrentSceneIdx((curr) => (curr + 1) % SCENES.length);
+    setProgress(0);
+  }, [
+    progress,
+    isShutterLifted,
+    isStageRevealed,
+    isExitingTheater,
+    isDismissed,
     isPaused,
     isDragging,
     isDetailOpen,
@@ -587,6 +1024,15 @@ export function ShutterStoryExperience() {
 
   const activeScene = SCENES[currentSceneIdx];
   const activePhoto = activeScene.imageSrc ? PHOTO_INDEX[activeScene.imageSrc] : undefined;
+  /*
+   * The file's own shape, unless it is taller than the story shows a photograph,
+   * in which case it is drawn at that limit and `object-top` takes the surplus
+   * off the bottom. Everything else keeps its exact shape and stays centred.
+   */
+  const activePhotoNaturalAspect = activePhoto ? activePhoto.width / activePhoto.height : 1;
+  const activePhotoAspect = Math.max(activePhotoNaturalAspect, SCENE_MIN_ASPECT);
+  const isActivePhotoCropped = activePhotoAspect > activePhotoNaturalAspect;
+  const activePhotoAnchor = activePhoto?.cropAnchor ?? DEFAULT_CROP_ANCHOR;
   const detailTextId = `scene-${activeScene.id}-detail`;
   /**
    * The right-hand column only earns its place when it has something in it. A
@@ -766,7 +1212,19 @@ export function ShutterStoryExperience() {
         <main
           className={`relative z-30 mx-auto max-w-5xl xl:max-w-6xl w-full py-3 sm:py-6 flex-1 min-h-0 ${styles.gutter} ${styles.stageScroller}`}
         >
-          <AnimatePresence mode="wait" custom={direction}>
+          {/*
+            `popLayout`, not `wait`.
+
+            `wait` holds the incoming scene until the outgoing one has finished
+            leaving. That was invisible while a scene change was a 40px nudge,
+            and became a hole the moment the halves started travelling their own
+            full width: measured at 412x748, the stage was completely empty of
+            copy and photograph for about 90ms in the middle of every swap.
+            `popLayout` takes the leaving scene out of layout flow so the
+            arriving one can occupy the same space at the same time, which is
+            what makes the two read as one exchange rather than a gap.
+          */}
+          <AnimatePresence mode="popLayout" custom={direction}>
             <motion.div
               key={currentSceneIdx}
               ref={stageRef}
@@ -799,35 +1257,24 @@ export function ShutterStoryExperience() {
               // survives a refactor. The browser keeps vertical gestures, so the
               // stage can still be scrolled when it overflows a short screen.
               style={{ touchAction: "pan-y" }}
-              variants={{
-                enter: (dir: number) => ({
-                  x: shouldReduceMotion ? 0 : dir > 0 ? 40 : -40,
-                  opacity: 0,
-                }),
-                center: {
-                  x: 0,
-                  opacity: 1,
-                  transition: {
-                    duration: shouldReduceMotion ? 0.2 : 0.5,
-                    ease: [0.16, 1, 0.3, 1],
-                  },
-                },
-                exit: (dir: number) => ({
-                  x: shouldReduceMotion ? 0 : dir > 0 ? -40 : 40,
-                  opacity: 0,
-                  transition: {
-                    duration: shouldReduceMotion ? 0.2 : 0.4,
-                    ease: [0.4, 0, 0.2, 1],
-                  },
-                }),
-              }}
+              /*
+                The stage itself no longer moves on a scene change. It is the
+                drag surface - `x` here belongs to the visitor's thumb - so the
+                scene change was handed down to the two halves, which have their
+                own axis to travel on and do not fight it.
+              */
+              variants={{ enter: {}, center: {}, exit: {} }}
               initial="enter"
-              animate="center"
+              animate={isStageRevealed ? "center" : "enter"}
               exit="exit"
               className={`w-full grid grid-cols-1 items-center lg:grid-cols-12 ${styles.stageItem} ${styles.split}`}
             >
-              {/* LEFT COLUMN: Narrative & Headline */}
-              <div className={`text-left lg:col-span-6 ${styles.headlineStack}`}>
+              {/* LEFT COLUMN: Narrative & Headline - arrives from the left */}
+              <motion.div
+                variants={headlineVariants}
+                custom={direction}
+                className={`text-left lg:col-span-6 ${styles.headlineStack}`}
+              >
                 <p
                   className={`font-mono uppercase tracking-[0.2em] font-semibold ${styles.sceneEyebrow}`}
                   style={{ color: activeScene.accentColor }}
@@ -917,10 +1364,14 @@ export function ShutterStoryExperience() {
                     </div>
                   )}
                 </div>
-              </div>
+              </motion.div>
 
-              {/* RIGHT COLUMN: The Figure (Photo, Vector, Dossier, Terminal) */}
-              <div className={`flex items-center justify-center w-full lg:col-span-6 ${styles.figureCol}`}>
+              {/* RIGHT COLUMN: The Figure - arrives from the right, against it */}
+              <motion.div
+                variants={figureVariants}
+                custom={direction}
+                className={`flex items-center justify-center w-full lg:col-span-6 ${styles.figureCol}`}
+              >
                 {/*
                   1. Act 01. The headline shows the two clocks alone, large: the
                   scene's idea is two timezones, and that is a figure rather than
@@ -932,7 +1383,7 @@ export function ShutterStoryExperience() {
                       <CompactFigure rows={activeScene.figureRows} />
                     )}
                     {isDetailOpen && (
-                      <div className={`w-full max-w-md mx-auto rounded-2xl border border-white/15 bg-[#0b0f17]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md ${styles.detail}`}>
+                      <div className={`w-full max-w-md mx-auto rounded-2xl border border-white/15 bg-[#0b0f17]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md ${styles.touchFlat} ${styles.detail}`}>
                         <div className="flex items-center justify-between border-b border-white/10 pb-2.5 mb-3 text-white/50">
                           <div className="flex items-center gap-2">
                             <span className="size-2 rounded-full bg-red-500/80" />
@@ -978,15 +1429,29 @@ export function ShutterStoryExperience() {
                     className={`relative group ${styles.photoFigure}`}
                     style={
                       {
-                        "--ar": `${activePhoto.width} / ${activePhoto.height}`,
+                        // The shape the frame is drawn at: the file's own, or the
+                        // cap if the file is taller than the cap.
+                        "--ar": activePhotoAspect.toFixed(6),
                       } as React.CSSProperties
                     }
                   >
-                    {/* Backlit Diffused Ambient Glow */}
+                    {/*
+                      Backlit diffused ambient glow.
+
+                      The diffusion is in the gradient's own stops, not in a
+                      `blur-xl` filter over the top of it. A filter has to be
+                      re-rasterised every frame the element moves, and this
+                      element moves on every scene change and under every finger
+                      that swipes the stage - which is exactly where the stutter
+                      on a phone was coming from. It is the same trade already
+                      made for the hero letters in b0f3207. A radial gradient
+                      with soft stops is drawn by the compositor for free and,
+                      at 70% opacity behind a photograph, looks the same.
+                    */}
                     <div
-                      className="absolute -inset-2 rounded-2xl opacity-70 blur-xl transition-all duration-700 group-hover:opacity-95"
+                      className="absolute -inset-3 rounded-[1.75rem] opacity-70 transition-opacity duration-700 group-hover:opacity-95"
                       style={{
-                        background: `radial-gradient(circle, ${activeScene.ambientGlow} 0%, transparent 70%)`,
+                        background: `radial-gradient(circle at 50% 50%, ${activeScene.ambientGlow} 0%, color-mix(in oklab, ${activeScene.ambientGlow} 45%, transparent) 38%, transparent 72%)`,
                       }}
                       aria-hidden
                     />
@@ -1006,7 +1471,12 @@ export function ShutterStoryExperience() {
                         unoptimized
                         priority
                         sizes="(min-width: 1024px) 460px, (min-width: 640px) 460px, 90vw"
-                        className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.02]"
+                        className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                        style={
+                          isActivePhotoCropped
+                            ? { objectPosition: `50% ${activePhotoAnchor}%` }
+                            : undefined
+                        }
                         {...(activePhoto.blurDataURL
                           ? { placeholder: "blur" as const, blurDataURL: activePhoto.blurDataURL }
                           : {})}
@@ -1043,7 +1513,7 @@ export function ShutterStoryExperience() {
                       <CompactFigure rows={activeScene.figureRows} />
                     )}
                     {isDetailOpen && (
-                      <div className={`w-full max-w-md mx-auto rounded-2xl border border-sky-500/30 bg-[#070e1c]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md space-y-3 ${styles.detail}`}>
+                      <div className={`w-full max-w-md mx-auto rounded-2xl border border-sky-500/30 bg-[#070e1c]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md space-y-3 ${styles.touchFlat} ${styles.detail}`}>
                         <div className="flex items-center justify-between border-b border-white/10 pb-2.5 text-white/50">
                           <span className="text-sky-400 font-semibold text-xs">pgvector · HNSW Telemetry</span>
                           <span className="text-emerald-400 text-[11px]">Sub-15ms Latency</span>
@@ -1094,7 +1564,7 @@ export function ShutterStoryExperience() {
                 */}
                 {activeScene.type === "dossier" && (
                   <div
-                    className={`w-full max-w-md mx-auto rounded-2xl border border-rose-500/30 bg-[#140a0e]/95 shadow-2xl backdrop-blur-md ${styles.dossierCard}`}
+                    className={`w-full max-w-md mx-auto rounded-2xl border border-rose-500/30 bg-[#140a0e]/95 shadow-2xl backdrop-blur-md ${styles.touchFlat} ${styles.dossierCard}`}
                   >
                     <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                       <span className="font-mono text-xs text-rose-400 uppercase tracking-wider font-semibold">
@@ -1178,10 +1648,41 @@ export function ShutterStoryExperience() {
                     </div>
                   </div>
                 )}
-              </div>
+              </motion.div>
             </motion.div>
           </AnimatePresence>
         </main>
+
+        {/*
+          DESKTOP EDGE NAVIGATION
+
+          From `lg` up the arrows leave the footer and sit against the left and
+          right edges at the vertical centre, where the gesture they stand in for
+          actually points. They are not duplicated controls: below `lg` these are
+          gone and the footer's pair is the only one, because on a phone an edge
+          arrow would sit on top of the scene it is meant to move.
+        */}
+        <button
+          type="button"
+          onClick={goPrev}
+          disabled={currentSceneIdx === 0}
+          aria-label="Previous scene"
+          className="absolute left-5 top-1/2 z-40 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white/70 backdrop-blur-sm transition-all hover:border-white/40 hover:bg-black/60 hover:text-white disabled:pointer-events-none disabled:opacity-0 lg:flex cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={goNext}
+          aria-label="Next scene"
+          className="absolute right-5 top-1/2 z-40 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white/70 backdrop-blur-sm transition-all hover:border-white/40 hover:bg-black/60 hover:text-white lg:flex cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
 
         {/* BOTTOM FOOTER NAVIGATION */}
         <footer
@@ -1192,7 +1693,7 @@ export function ShutterStoryExperience() {
               type="button"
               onClick={goPrev}
               disabled={currentSceneIdx === 0}
-              className="rounded-lg border border-white/20 p-2 text-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              className="rounded-lg border border-white/20 p-2 text-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer lg:hidden"
               aria-label="Previous scene"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1202,14 +1703,14 @@ export function ShutterStoryExperience() {
             <button
               type="button"
               onClick={goNext}
-              className="rounded-lg border border-white/20 p-2 text-white/70 hover:text-white transition-colors cursor-pointer"
+              className="rounded-lg border border-white/20 p-2 text-white/70 hover:text-white transition-colors cursor-pointer lg:hidden"
               aria-label="Next scene"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </button>
-            <span className="font-mono text-xs text-white/50 pl-1.5">
+            <span className="font-mono text-xs text-white/50 pl-1.5 lg:pl-0">
               Scene {currentSceneIdx + 1} of {SCENES.length}
             </span>
           </div>
@@ -1243,17 +1744,29 @@ export function ShutterStoryExperience() {
         ========================================================================
       */}
       <div
+        ref={shutterRef}
         onPointerDown={handleShutterPointerDown}
-        onPointerUp={handleShutterPointerUp}
+        onClickCapture={handleShutterClickCapture}
         onWheel={handleShutterWheel}
         className={`fixed inset-0 z-50 flex flex-col justify-between bg-[#08090c] text-[var(--text)] select-none pointer-events-auto h-[100dvh] border-b-2 border-amber-400/30 shadow-[0_25px_60px_rgba(0,0,0,0.95)] ${
           styles.shutterGate
-        } ${isShutterLifted ? styles.shutterLifted : styles.shutterTeaser}`}
+        } ${
+          isShutterLifted
+            ? styles.shutterLifted
+            : isShutterDragging
+              ? styles.shutterDragging
+              : isShutterArming
+                ? "" // the frame that gives the transition a starting value
+                : styles.shutterTeaser
+        }`}
         style={{
           backgroundImage:
             "linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px)",
           backgroundSize: "100% 32px",
-          touchAction: "pan-x",
+          // `none`, not `pan-x`: the gesture this surface exists for is vertical,
+          // and the browser must not claim it for a scroll or a pull-to-refresh.
+          // Vertical panning was already off here, so nothing scrollable is lost.
+          touchAction: "none",
         }}
       >
         {/* Subtle Ambient Radial Backlight */}

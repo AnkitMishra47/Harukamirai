@@ -156,37 +156,60 @@
 /* ---- the figure column ---- */
 
 /*
- * One height budget for whatever the scene's right-hand column holds, so a
+ * TWO budgets for whatever the scene's right-hand column holds, so a
  * photograph, a clock and a pair of numbers all occupy a comparable envelope
  * and the six scenes do not lurch between full and bare as they advance.
  *
- * The budget stays below the source resolution at 2x on every step, so no
- * photograph is ever upscaled: the smallest file in play is 899x682.
+ * `--frame-h` is the height budget. `--frame-w` is a width FLOOR, and it exists
+ * because a height budget alone is not fair to every shape. The budget reaches
+ * the frame through the aspect ratio, so at one height budget a 4:3 landscape
+ * is 1.32x the budget wide and a 2:3 portrait is 0.67x - half the presence, for
+ * no reason a visitor can see. Measured at 412x915, the trophy portrait took 44%
+ * of the screen's width where the workstation landscape took 88%.
+ *
+ * Whichever budget asks for more wins, capped at the column. A photograph is
+ * therefore never narrower than `--frame-w`, whatever its shape, and never wider
+ * than its height budget allows unless that floor is what is carrying it.
+ * `aspect-ratio` is satisfied either way, so nothing is ever cropped.
+ *
+ * Above 1024px the floor stands down (`0px`): the split layout gives the figure
+ * its own column and the height budget is the honest constraint there.
  */
 .figureCol {
-  --frame-h: min(340px, 30dvh);
+  --frame-h: min(340px, 34dvh);
+  --frame-w: 74%;
 }
 
 @media (min-width: 640px) {
   .figureCol {
-    --frame-h: min(360px, 34dvh);
+    --frame-h: min(360px, 38dvh);
+    --frame-w: 62%;
   }
 }
 
 @media (min-width: 1024px) {
   .figureCol {
     --frame-h: min(440px, 52dvh);
+    --frame-w: 0px;
   }
 }
 
 /*
- * Stacked layout on a short screen: the figure shares the height with the
- * headline above it rather than pushing it off the end. Not applied from 1024px
- * up, where the two sit side by side and do not compete for the same pixels.
+ * Stacked layout on a short screen. This used to collapse the budget to
+ * `min(200px, 20dvh)`, which is a cliff every phone falls off the moment its
+ * URL bar is showing - 664px of viewport on an iPhone 13, and the photograph
+ * went to 133px tall (a 23%-of-screen portrait). The scene fitted, and there was
+ * nothing in it worth seeing.
+ *
+ * The budget is now shaved rather than collapsed, and the width floor above is
+ * left standing, so a short screen gets a photograph at a size worth looking at
+ * and scrolls the last of the scene into view. `.stageScroller` was built for
+ * exactly that: it centres when the content fits and scrolls from the top when
+ * it does not.
  */
 @media (max-height: 720px) and (max-width: 1023px) {
   .figureCol {
-    --frame-h: min(200px, 20dvh);
+    --frame-h: min(300px, 32dvh);
   }
 }
 
@@ -205,8 +228,15 @@
   .stageItem.split > * {
     grid-column: span 6 / span 6;
   }
+  /*
+   * The width floor stands down here for the same reason it exists elsewhere:
+   * it answers a shortage of width, and a phone held sideways has the opposite
+   * problem. Leaving it on would hand a portrait photograph 180px of width and
+   * 270px of height inside a 360px-tall screen.
+   */
   .figureCol {
     --frame-h: min(200px, 26dvh);
+    --frame-w: 0px;
   }
   /*
    * A phone held sideways has 231px of stage. Act 06's four tiles need 120 of
@@ -228,15 +258,20 @@
 }
 
 /*
- * `--ar` is substituted as raw tokens, so the max-width reads
+ * `--ar` is substituted as raw tokens, so the height term reads
  * `calc(<height budget> * 899 / 682)` at used-value time. Because the box then
  * matches the file exactly, `cover` and `contain` agree and there is nothing
  * left to crop or letterbox on any viewport.
+ *
+ * `max()` takes whichever of the two budgets asks for more, and `min(100%, ...)`
+ * stops either of them from overflowing the column. The order matters: the cap
+ * has to be outermost, or the width floor could push a frame past its own
+ * gutter on a narrow phone.
  */
 .photoFrame {
   position: relative;
   width: 100%;
-  max-width: calc(var(--frame-h) * var(--ar));
+  max-width: min(100%, max(calc(var(--frame-h) * var(--ar)), var(--frame-w, 0px)));
   margin-inline: auto;
   aspect-ratio: var(--ar);
 }
@@ -329,6 +364,26 @@
   }
 }
 
+/*
+ * `backdrop-filter` off on a touch screen.
+ *
+ * These cards ride inside the stage, and the stage is dragged under the
+ * visitor's thumb. A backdrop filter has to resample everything behind the
+ * element on every frame it moves, which is what made the swipe feel like it
+ * was catching. Three of the four cards sit on a 95%-opaque background and were
+ * getting almost nothing from the blur anyway; the instrument panel, which was,
+ * gets a slightly heavier tint here to stand in for it.
+ */
+@media (hover: none) and (pointer: coarse) {
+  .touchFlat {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .compactFigure.touchFlat {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
 /* ---- detail disclosure ---- */
 
 .detail {
@@ -400,4 +455,15 @@
   transform: translate3d(0, -100%, 0) !important;
   animation: none !important;
   pointer-events: none !important;
+}
+
+/*
+ * While a thumb is on the gate, nothing else is allowed to move it. The teaser
+ * animation has to stand down because a running animation outranks the inline
+ * transform the drag is writing, and the transition has to stand down because
+ * easing towards the finger is what lag feels like.
+ */
+.shutterDragging {
+  transition: none !important;
+  animation: none !important;
 }

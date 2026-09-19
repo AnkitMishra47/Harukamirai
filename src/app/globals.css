@@ -15,7 +15,7 @@
   /* Text */
   --text:            #171310;
   --text-muted:      #5d5445;
-  --text-subtle:     #8b8170;
+  --text-subtle:     #6b6350;   /* 4.67:1 on vellum */
 
   /* Accent - Magic Knight jade */
   --accent:          #14634a;
@@ -47,7 +47,7 @@
 
   --text:            #f2ecdd;
   --text-muted:      #9a9083;
-  --text-subtle:     #635b50;
+  --text-subtle:     #807768;   /* 4.59:1 on ink */
 
   /* Anti-magic crimson, hot enough to clear 4.5:1 on the ink ground */
   --accent:          #f02040;

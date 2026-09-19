@@ -93,8 +93,8 @@ export function MagicCircle({ size = 720, className = "", intensity = "full" }: 
           <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
         </radialGradient>
         <radialGradient id="mc-core" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.5" />
-          <stop offset="55%" stopColor="var(--accent)" stopOpacity="0.18" />
+          <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.14" />
+          <stop offset="60%" stopColor="var(--accent)" stopOpacity="0.05" />
           <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
         </radialGradient>
       </defs>

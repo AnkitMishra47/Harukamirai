@@ -150,7 +150,14 @@ export function Grimoire() {
         <AnimatePresence>
           {stage !== "closed" && (
             <motion.div
-              className="absolute inset-0 flex"
+              /*
+               * Inset from the board so the leather frames the leaves and the
+               * gilt fore-edge shows as a bright line around them. Without this
+               * the pages covered the binding completely and the open book was
+               * just two parchment rectangles.
+               */
+              className="absolute flex"
+              style={{ inset: "0.82em" }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.4 }}
@@ -203,6 +210,9 @@ export function Grimoire() {
           <FrontCover />
         </motion.div>
 
+        {/* Leather spine over the gutter, with raised bands like a bound book */}
+        {stage !== "closed" && <Spine />}
+
         {/*
          * Light rising off the spine. The softness is in the gradient's own
          * stops rather than a blur filter, so this composites without a
@@ -213,14 +223,14 @@ export function Grimoire() {
             aria-hidden
             className="pointer-events-none absolute left-1/2 top-0 h-full -translate-x-1/2"
             style={{
-              width: "3em",
-              zIndex: 25,
+              width: "2.6em",
+              zIndex: 14,
               background:
                 "radial-gradient(ellipse 50% 45% at 50% 50%, var(--accent) 0%, color-mix(in oklab, var(--accent) 45%, transparent) 38%, transparent 72%)",
               mixBlendMode: "screen",
             }}
             initial={{ opacity: 0, scaleY: 0 }}
-            animate={{ opacity: [0, 0.95, 0.6], scaleY: [0, 1.1, 1] }}
+            animate={{ opacity: [0, 0.85, 0.45], scaleY: [0, 1.1, 1] }}
             transition={{ duration: 1.4, ease: "easeOut", delay: 0.2 }}
           />
         )}
@@ -262,16 +272,49 @@ function BookShell() {
           "inset 0 0 0 2px var(--foil), inset 0 0 0 5px var(--leather-edge), 0 30px 60px rgba(0,0,0,0.55)",
       }}
     >
-      {/* Gilded fore-edge: the stacked leaves catch light */}
+      {/* Gilded fore-edge: the stacked leaves catch light. Sits 0.55em inside
+          the board and 0.27em outside the pages, so it reads as a thin bright
+          rule of paper edges all the way round. */}
       <div
         className="absolute"
         style={{
-          inset: "10px",
+          inset: "0.55em",
           background:
             "repeating-linear-gradient(0deg, var(--parchment-edge) 0px, var(--parchment-edge) 2px, var(--gilt) 2px, var(--gilt) 3px)",
-          opacity: 0.9,
+          boxShadow: "0 0 6px rgba(212,175,55,0.5)",
         }}
       />
+    </div>
+  );
+}
+
+/** The bound spine, seen edge-on down the gutter of the open book. */
+function Spine() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute top-0 left-1/2 h-full -translate-x-1/2"
+      style={{
+        width: "1.15em",
+        zIndex: 15,
+        background:
+          "linear-gradient(to right, var(--leather-edge) 0%, var(--leather-b) 38%, var(--leather-a) 62%, var(--leather-edge) 100%)",
+        boxShadow: "0 0 10px 2px rgba(0,0,0,0.5)",
+      }}
+    >
+      {/* raised bands */}
+      {[18, 38, 62, 82].map((top) => (
+        <div
+          key={top}
+          className="absolute inset-x-0"
+          style={{
+            top: `${top}%`,
+            height: "0.32em",
+            background: "linear-gradient(to right, transparent, var(--foil) 35%, var(--foil-hi) 50%, var(--foil) 65%, transparent)",
+            opacity: 0.55,
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -389,8 +432,8 @@ function PageBackground({ side }: { side: "left" | "right" }) {
         aria-hidden
         className="absolute inset-0"
         style={{
-          background: `linear-gradient(${toGutter}, transparent 60%, var(--accent-glow) 100%)`,
-          opacity: 0.5,
+          background: `linear-gradient(${toGutter}, transparent 58%, var(--accent-glow) 100%)`,
+          opacity: 0.3,
         }}
       />
     </div>
@@ -400,7 +443,7 @@ function PageBackground({ side }: { side: "left" | "right" }) {
 /** Left page: the chapter's name plate. */
 function LeftPage({ chapter, index }: { chapter: Chapter; index: number }) {
   return (
-    <div className="flex h-full flex-col justify-between" style={{ padding: "1.5em 1.4em" }}>
+    <div className="flex h-full flex-col" style={{ padding: "1.5em 1.4em" }}>
       <div>
         <p
           className="font-mono"
@@ -419,7 +462,7 @@ function LeftPage({ chapter, index }: { chapter: Chapter; index: number }) {
         </p>
       </div>
 
-      <div>
+      <div style={{ marginTop: "1.5em" }}>
         <div style={{ height: 1, width: "100%", background: "var(--gilt-ink)", opacity: 0.45 }} />
         <p
           className="font-display"
@@ -435,7 +478,9 @@ function LeftPage({ chapter, index }: { chapter: Chapter; index: number }) {
         </p>
       </div>
 
-      <Folio n={index * 2 + 1} align="left" />
+      <div className="mt-auto">
+        <Folio n={index * 2 + 1} align="left" />
+      </div>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { CloverToggle } from "./CloverToggle";
 
 // Writing / Now / Lab stay routable but leave the nav until they have content.
 const links = [
+  { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/work", label: "Work" },
   { href: "/resume", label: "Resume" },
@@ -114,14 +115,17 @@ export function Nav() {
               </button>
             </li>
             {links.map((l) => {
-              const isActive = pathname === l.href || pathname.startsWith(l.href + "/");
+              const isActive =
+                l.href === "/"
+                  ? pathname === "/"
+                  : pathname === l.href || pathname.startsWith(l.href + "/");
               return (
                 <li key={l.href}>
                   <Link
                     href={l.href}
                     className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
                       isActive
-                        ? "text-[var(--accent)] bg-[var(--accent)]/10"
+                        ? "text-[var(--accent)] bg-[var(--accent)]/10 font-semibold"
                         : "text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-elevated)]"
                     }`}
                   >
@@ -205,7 +209,10 @@ export function Nav() {
                 </button>
               </li>
               {links.map((l, i) => {
-                const isActive = pathname === l.href || pathname.startsWith(l.href + "/");
+                const isActive =
+                  l.href === "/"
+                    ? pathname === "/"
+                    : pathname === l.href || pathname.startsWith(l.href + "/");
                 return (
                   <li
                     key={l.href}
@@ -217,7 +224,7 @@ export function Nav() {
                       onClick={() => setOpen(false)}
                       className={`block rounded-md px-3 py-3 font-display text-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
                         isActive
-                          ? "text-[var(--accent)] bg-[var(--accent)]/10"
+                          ? "text-[var(--accent)] bg-[var(--accent)]/10 font-semibold"
                           : "text-[var(--text)] hover:text-[var(--accent)]"
                       }`}
                     >

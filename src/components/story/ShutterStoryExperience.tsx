@@ -798,23 +798,23 @@ export function ShutterStoryExperience() {
               // stage can still be scrolled when it overflows a short screen.
               style={{ touchAction: "pan-y" }}
               variants={{
-                enter: () => ({
+                enter: (dir: number) => ({
+                  x: shouldReduceMotion ? 0 : dir > 0 ? 40 : -40,
                   opacity: 0,
-                  scale: 0.98,
                 }),
                 center: {
+                  x: 0,
                   opacity: 1,
-                  scale: 1,
                   transition: {
-                    duration: shouldReduceMotion ? 0.3 : 0.85,
+                    duration: shouldReduceMotion ? 0.2 : 0.5,
                     ease: [0.16, 1, 0.3, 1],
                   },
                 },
-                exit: () => ({
+                exit: (dir: number) => ({
+                  x: shouldReduceMotion ? 0 : dir > 0 ? -40 : 40,
                   opacity: 0,
-                  scale: 0.96,
                   transition: {
-                    duration: shouldReduceMotion ? 0.25 : 0.75,
+                    duration: shouldReduceMotion ? 0.2 : 0.4,
                     ease: [0.4, 0, 0.2, 1],
                   },
                 }),
@@ -824,122 +824,24 @@ export function ShutterStoryExperience() {
               exit="exit"
               className={`w-full grid grid-cols-1 items-center lg:grid-cols-12 ${styles.stageItem} ${styles.split}`}
             >
-              {/* LEFT COLUMN: HEADLINE GLIDES IN SLOWLY FROM THE LEFT, SETTLES, AND CONVERGES SLOWLY ON EXIT */}
-              <motion.div
-                variants={{
-                  enter: () => ({
-                    x: shouldReduceMotion ? 0 : -95,
-                    opacity: 0,
-                    scale: 0.98,
-                  }),
-                  center: {
-                    x: 0,
-                    opacity: 1,
-                    scale: 1,
-                    transition: {
-                      duration: shouldReduceMotion ? 0.3 : 0.85,
-                      ease: [0.16, 1, 0.3, 1],
-                      delay: shouldReduceMotion ? 0 : 0.04,
-                    },
-                  },
-                  exit: () => ({
-                    x: shouldReduceMotion ? 0 : 80,
-                    opacity: 0,
-                    scale: 0.95,
-                    transition: {
-                      duration: shouldReduceMotion ? 0.25 : 0.75,
-                      ease: [0.4, 0, 0.2, 1],
-                    },
-                  }),
-                }}
-                className={`text-left lg:col-span-6 ${styles.headlineStack}`}
-              >
-                <motion.p
-                  variants={{
-                    enter: () => ({ x: shouldReduceMotion ? 0 : -70, opacity: 0 }),
-                    center: {
-                      x: 0,
-                      opacity: 1,
-                      transition: { duration: shouldReduceMotion ? 0.3 : 0.75, ease: [0.16, 1, 0.3, 1] },
-                    },
-                    exit: () => ({
-                      x: shouldReduceMotion ? 0 : 60,
-                      opacity: 0,
-                      transition: { duration: shouldReduceMotion ? 0.25 : 0.65, ease: [0.4, 0, 0.2, 1] },
-                    }),
-                  }}
+              {/* LEFT COLUMN: Narrative & Headline */}
+              <div className={`text-left lg:col-span-6 ${styles.headlineStack}`}>
+                <p
                   className={`font-mono uppercase tracking-[0.2em] font-semibold ${styles.sceneEyebrow}`}
                   style={{ color: activeScene.accentColor }}
                 >
                   {activeScene.subtitle}
-                </motion.p>
+                </p>
 
-                {/* Title sweeps in slowly from the left, settles, and glides rightward to converge on exit */}
-                <motion.h2
-                  variants={{
-                    enter: () => ({ x: shouldReduceMotion ? 0 : -85, opacity: 0 }),
-                    center: {
-                      x: 0,
-                      opacity: 1,
-                      transition: {
-                        duration: shouldReduceMotion ? 0.3 : 0.85,
-                        ease: [0.16, 1, 0.3, 1],
-                        delay: shouldReduceMotion ? 0 : 0.08,
-                      },
-                    },
-                    exit: () => ({
-                      x: shouldReduceMotion ? 0 : 75,
-                      opacity: 0,
-                      transition: { duration: shouldReduceMotion ? 0.25 : 0.7, ease: [0.4, 0, 0.2, 1] },
-                    }),
-                  }}
-                  className={`font-display font-semibold text-white ${styles.sceneTitle}`}
-                >
+                <h2 className={`font-display font-semibold text-white ${styles.sceneTitle}`}>
                   {activeScene.title}
-                </motion.h2>
+                </h2>
 
-                {/* Narrative lead sweeps in slowly from the left, settles, and glides rightward to converge on exit */}
-                <motion.p
-                  variants={{
-                    enter: () => ({ x: shouldReduceMotion ? 0 : -70, opacity: 0 }),
-                    center: {
-                      x: 0,
-                      opacity: 1,
-                      transition: {
-                        duration: shouldReduceMotion ? 0.3 : 0.85,
-                        ease: [0.16, 1, 0.3, 1],
-                        delay: shouldReduceMotion ? 0 : 0.16,
-                      },
-                    },
-                    exit: () => ({
-                      x: shouldReduceMotion ? 0 : 60,
-                      opacity: 0,
-                      transition: { duration: shouldReduceMotion ? 0.25 : 0.7, ease: [0.4, 0, 0.2, 1] },
-                    }),
-                  }}
-                  className={`font-sans text-white/95 font-medium ${styles.sceneLead}`}
-                >
+                <p className={`font-sans text-white/95 font-medium ${styles.sceneLead}`}>
                   {activeScene.narrativeLead}
-                </motion.p>
+                </p>
 
-                <motion.button
-                  variants={{
-                    enter: () => ({ x: shouldReduceMotion ? 0 : -45, opacity: 0 }),
-                    center: {
-                      x: 0,
-                      opacity: 1,
-                      transition: {
-                        duration: shouldReduceMotion ? 0.3 : 0.8,
-                        ease: [0.16, 1, 0.3, 1],
-                        delay: shouldReduceMotion ? 0 : 0.24,
-                      },
-                    },
-                    exit: () => ({
-                      x: shouldReduceMotion ? 0 : 40,
-                      opacity: 0,
-                      transition: { duration: shouldReduceMotion ? 0.25 : 0.65, ease: [0.4, 0, 0.2, 1] },
-                    }),
-                  }}
+                <button
                   type="button"
                   data-detail-toggle
                   aria-expanded={isDetailOpen}
@@ -959,7 +861,7 @@ export function ShutterStoryExperience() {
                   >
                     <polyline points={isDetailOpen ? "18 15 12 9 6 15" : "6 9 12 15 18 9"} />
                   </svg>
-                </motion.button>
+                </button>
 
                 <div id={detailTextId} hidden={!isDetailOpen}>
                   {isDetailOpen && (
@@ -1013,38 +915,10 @@ export function ShutterStoryExperience() {
                     </div>
                   )}
                 </div>
-              </motion.div>
+              </div>
 
-              {/* RIGHT COLUMN: THE FIGURE GLIDES IN SLOWLY FROM THE RIGHT, SETTLES, AND CONVERGES ON EXIT */}
-              <motion.div
-                variants={{
-                  enter: () => ({
-                    x: shouldReduceMotion ? 0 : 95,
-                    opacity: 0,
-                    scale: 0.98,
-                  }),
-                  center: {
-                    x: 0,
-                    opacity: 1,
-                    scale: 1,
-                    transition: {
-                      duration: shouldReduceMotion ? 0.3 : 0.85,
-                      ease: [0.16, 1, 0.3, 1],
-                      delay: shouldReduceMotion ? 0 : 0.06,
-                    },
-                  },
-                  exit: () => ({
-                    x: shouldReduceMotion ? 0 : -80,
-                    opacity: 0,
-                    scale: 0.95,
-                    transition: {
-                      duration: shouldReduceMotion ? 0.25 : 0.75,
-                      ease: [0.4, 0, 0.2, 1],
-                    },
-                  }),
-                }}
-                className={`flex items-center justify-center w-full lg:col-span-6 ${styles.figureCol}`}
-              >
+              {/* RIGHT COLUMN: The Figure (Photo, Vector, Dossier, Terminal) */}
+              <div className={`flex items-center justify-center w-full lg:col-span-6 ${styles.figureCol}`}>
                 {/*
                   1. Act 01. The headline shows the two clocks alone, large: the
                   scene's idea is two timezones, and that is a figure rather than
@@ -1302,7 +1176,7 @@ export function ShutterStoryExperience() {
                     </div>
                   </div>
                 )}
-              </motion.div>
+              </div>
             </motion.div>
           </AnimatePresence>
         </main>

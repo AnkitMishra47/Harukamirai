@@ -27,17 +27,10 @@
  * off outright, so a seal you cannot see costs nothing per frame.
  */
 
-/* On mobile, completely hide floating center runes to avoid obstructing the text column */
-@media (max-width: 768px) {
-  .dock {
-    display: none !important;
-  }
-}
-
-/* On desktop, dock the ancient scroll rune cleanly to the bottom right corner */
+/* Dock the ancient scroll rune cleanly to the bottom right corner */
 .dock {
   position: fixed;
-  right: 2rem;
+  right: 1rem;
   left: auto;
   z-index: 30;
   translate: none;
@@ -46,29 +39,21 @@
   transition: opacity 280ms ease;
 }
 
+@media (min-width: 640px) {
+  .dock {
+    right: 1.75rem;
+  }
+}
+
 /*
- * Appearing is an animation rather than the transition, because a transition
- * does not run on the frame an element is inserted - the first seal you ever
- * see would pop. The keyframes carry no fill, so once they finish the base
- * `opacity: 1` below takes over and the transition handles the fade out.
+ * Appearing animation and baseline visibility
  */
 .dock[data-show="true"] {
-  opacity: 1;
+  opacity: 0.85;
   pointer-events: auto;
   animation: sr-in 320ms ease;
 }
 
-/*
- * WITHDRAWN. If ink is detected or during quiet periods, adjust visibility gracefully.
- */
-.dock[data-show="true"][data-veiled="true"] {
-  opacity: 0;
-  pointer-events: none;
-}
-.dock[data-show="true"][data-veiled="true"] .seal {
-  scale: 0.82;
-  animation: none;
-}
 .dock[data-show="true"]:hover,
 .dock[data-show="true"]:focus-within {
   opacity: 1;
@@ -76,14 +61,14 @@
 }
 .dock[data-show="true"]:hover .seal,
 .dock[data-show="true"]:focus-within .seal {
-  scale: 1;
+  scale: 1.05;
 }
 
 /*
  * Docked cleanly to bottom-right corner out of the reading lane
  */
 .top {
-  bottom: 5.5rem;
+  bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
   top: auto;
 }
 
@@ -91,7 +76,7 @@
  * Off the bottom-right corner, clear of the iOS home indicator.
  */
 .bottom {
-  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
 }
 
 /* The plate the ring is seated in. */

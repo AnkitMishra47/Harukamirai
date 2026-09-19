@@ -66,10 +66,10 @@ here and contain no copy of their own beyond labels.
 | `index.ts` | re-exports | |
 
 Rules:
-- One source per fact. The Grimoire chapters derive from `timeline.ts`
-  (filtered to `kind !== "education"` plus the "Now" entry) rather than keeping
-  their own copy; the romaji/kanji/sigil decoration lives in a small map keyed
-  by entry id.
+- One source per fact. The Grimoire chapters derive from `timeline.ts`: a
+  small decoration map keyed by entry id (romaji, kanji, ribbon, sigil) decides
+  which entries become chapters, so the book never keeps its own copy of dates
+  or titles.
 - No fabricated facts. Every entry traces to the September 2026 resume, the
   content brief, or a prior user statement. Metrics stay NDA-safe.
 - "Runner-up, Employee of the Year" is never shortened to "Employee of the Year".

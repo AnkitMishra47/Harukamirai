@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { awards, caseStudies, profile, skills, testimonials, timeline } from "@/content";
+import { caseStudies, profile, skills, timeline } from "@/content";
 import { DownloadResumeButton } from "@/components/DownloadResumeButton";
 import { RevealScope } from "@/components/resume/RevealScope";
 import styles from "@/components/resume.module.css";
@@ -7,82 +7,39 @@ import styles from "@/components/resume.module.css";
 /**
  * The record of service.
  *
- * This used to be a flat sheet: eight stacked sections, one type size, every
- * fact weighted the same, and nothing on it that a sheet of A4 could not do.
- * It is now shaped as an argument a recruiter can scan in ten seconds and then
- * drill into:
+ * A resume legitimately repeats /about and /work: work history, education,
+ * skills and awards are what the format is. What it must not do is repeat
+ * *itself*. The previous version did, three ways at once - a proof-seal band
+ * that restated the summary paragraph directly above it, a rank ladder that
+ * indexed a chronology sitting immediately below it, and an education block
+ * that re-filtered the same timeline the chronology had already printed. The
+ * timeline rendered three times on one page.
  *
- *   masthead -> four proof seals -> the ascent (rank ladder) -> the chronology
- *   in two lanes -> systems -> craft -> recognition -> education -> the PDF
+ * It is now four sections, and every fact appears exactly once:
  *
- * Three things here need the web rather than paper:
+ *   masthead + summary -> the chronology -> systems -> craft -> the PDF
  *
- *   1. The rank ladder is a linked index. Each rank is an anchor into the
- *      chronology entry it came from, so `:target` does "click a rank, land on
- *      the moment" with no JavaScript.
- *   2. The chronology runs two lanes at >=1024px, study left of the rail and
- *      career right of it, so the Master's is visibly running *through* the
- *      promotions instead of being filed in a separate box at the bottom.
- *   3. The rails draw themselves, segment by segment, as each entry arrives.
+ * The chronology is the single presentation of the career arc. Roles, awards
+ * and education all run through it, which is why there is no separate
+ * education block and no separate recognition block: at >=1024px study runs
+ * left of the rail and career right of it, so the Master's is visibly running
+ * *through* the promotions, and the two award entries sit on the rail at the
+ * promotion they came with. That two-lane reading is the one thing here that a
+ * sheet of A4 cannot do, and it is the reason this page earns being a page.
+ *
+ * Systems names the seven case studies and links out. The write-ups are
+ * /work's job; a resume lists what was built and where to read about it.
+ *
+ * Craft is the only place on the site that renders `skills`, so it stays.
  *
  * Every fact traces to src/content. Nothing here is composed, counted or
- * rounded in this file except where the arithmetic is on values that are
- * present there (the case study count, the award count).
+ * rounded in this file except the case study count, which is `.length`.
  */
 
-const ROMAN = ["I", "II", "III", "IV"] as const;
-
 export function ResumeSheet() {
-  const roles = timeline.filter((t) => t.kind === "role" || t.kind === "award");
-  const education = timeline.filter((t) => t.kind === "education");
-  const firstRole = roles[0];
-  const latestRole = roles[roles.length - 1];
-  const mcaStart = timeline.find((t) => t.id === "mca-start");
-  const mcaDone = timeline.find((t) => t.id === "mca-done");
-  const rag = caseStudies.find((c) => c.slug === "rag-platform");
-
   const email = profile.links.find((l) => l.label === "Email");
   const linkedin = profile.links.find((l) => l.label === "LinkedIn");
   const github = profile.links.find((l) => l.label === "GitHub");
-
-  /* Ranks, taken off the timeline titles. "Associate Senior SWE · Mid Developer
-     of the Year 2024" is a rank and an award in one entry; the rank is the part
-     before the middot, and the award is restated in full under Recognition. */
-  const ranks = roles.map((r) => ({
-    id: r.id,
-    date: r.date,
-    rank: r.title.split(" · ")[0].split(", ")[0],
-  }));
-
-  const ragScale = rag?.metrics.find((m) => m.label === "Scale")?.value ?? "";
-
-  /* The four proof marks. "3" is the only literal figure here, and it is not a
-     new claim: profile.heroLine already says "in three years", and the span it
-     names (firstRole.date -> latestRole.date, Jul 2022 -> 2025) is printed
-     beside it so the reader can check the arithmetic. Everything else is read
-     straight off src/content. */
-  const seals = [
-    {
-      figure: "3",
-      unit: "years",
-      note: `Intern to ${profile.title.split(" · ")[0]} at ${profile.employer.name}, ${firstRole.date} to ${latestRole.date}.`,
-    },
-    {
-      figure: String(awards.length),
-      unit: "years named",
-      note: `Recognised at ${profile.employer.name} in ${awards[awards.length - 1].year}, and again in ${awards[0].year}.`,
-    },
-    {
-      figure: ragScale.split(" ")[0] || "25M+",
-      unit: "rows",
-      note: "Embedding rows in a production RAG store on PostgreSQL and pgvector.",
-    },
-    {
-      figure: "MCA",
-      unit: "in parallel",
-      note: `Master's at Chandigarh University, ${mcaStart?.date} to ${mcaDone?.date}, while working full-time.`,
-    },
-  ];
 
   return (
     <RevealScope className={styles.sheet}>
@@ -141,69 +98,12 @@ export function ResumeSheet() {
           <p className="mt-6 max-w-3xl leading-relaxed text-[var(--text-muted)]">{profile.summary}</p>
         </div>
 
-        {/* ---------------------------------------------- PROOF SEALS */}
-        <section className="mt-stack" aria-labelledby="r-proof">
-          <h2 id="r-proof" className={`${styles.kicker} mb-4`}>
-            At a glance
-          </h2>
-          <ul className={styles.seals}>
-            {seals.map((s, i) => (
-              <li
-                key={s.unit}
-                className={styles.seal}
-                data-reveal
-                style={{ "--i": i } as React.CSSProperties}
-              >
-                <span className={styles.sealDisc} aria-hidden>
-                  {ROMAN[i]}
-                </span>
-                <span>
-                  <span className={`font-display ${styles.sealFigure}`}>{s.figure}</span>
-                  <span className={styles.sealUnit}>{s.unit}</span>
-                  <span className={styles.sealNote}>{s.note}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        {/* ---------------------------------------------- CHRONOLOGY
 
-        {/* ---------------------------------------------- THE ASCENT */}
-        <section className="mt-stack" aria-labelledby="r-ascent">
-          <div className={`${styles.sectionHead} mb-2`}>
-            <h2 id="r-ascent" className={styles.kicker}>
-              The ascent
-            </h2>
-            <span className={styles.thread} aria-hidden />
-          </div>
-          <p className="max-w-2xl text-sm text-[var(--text-muted)]">
-            Every title held at {profile.employer.name}, in order. Pick one to jump to the entry it
-            came from.
-          </p>
-
-          <ol className={`${styles.ladder} mt-6`}>
-            {ranks.map((r, i) => {
-              const current = i === ranks.length - 1;
-              return (
-                <li
-                  key={r.id}
-                  className={styles.rung}
-                  data-reveal
-                  data-current={current ? "" : undefined}
-                  style={{ "--i": i } as React.CSSProperties}
-                >
-                  <a className={styles.rungLink} href={`#tl-${r.id}`}>
-                    <span className={styles.node} aria-hidden />
-                    <span className={styles.rungDate}>{r.date}</span>
-                    <span className={`font-display ${styles.rungTitle}`}>{r.rank}</span>
-                    {current && <span className={styles.rungNow}>Now</span>}
-                  </a>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-
-        {/* ---------------------------------------------- CHRONOLOGY */}
+            The one rendering of the career arc. Roles, awards, education and
+            the current milestone, in order, each entry printed once. The
+            `tl-` ids stay so an entry remains deep-linkable and `:target`
+            still marks it; nothing on this page links to them any more. */}
         <section className="mt-stack" aria-labelledby="r-chron">
           <div className={`${styles.sectionHead} mb-2`}>
             <h2 id="r-chron" className={styles.kicker}>
@@ -248,7 +148,11 @@ export function ResumeSheet() {
           </ol>
         </section>
 
-        {/* ---------------------------------------------- SYSTEMS */}
+        {/* ---------------------------------------------- SYSTEMS
+
+            Named and linked, not written up. The problem/approach/result and
+            the metrics live on /work; repeating them here made this page a
+            second copy of that one. */}
         <section className="mt-stack" aria-labelledby="r-systems">
           <div className={`${styles.sectionHead} mb-2`}>
             <h2 id="r-systems" className={styles.kicker}>
@@ -279,15 +183,6 @@ export function ResumeSheet() {
                     </span>
                   </Link>
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{c.result}</p>
-                <ul className={styles.metrics}>
-                  {c.metrics.map((m) => (
-                    <li key={m.label} className={styles.metric}>
-                      <span className={styles.metricLabel}>{m.label}</span>
-                      {m.value}
-                    </li>
-                  ))}
-                </ul>
                 <p className={`${styles.stackLine} mt-auto`}>{c.stack.join(" · ")}</p>
               </li>
             ))}
@@ -319,79 +214,6 @@ export function ResumeSheet() {
                     </li>
                   ))}
                 </ul>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* ---------------------------------------------- RECOGNITION */}
-        <section className="mt-stack" aria-labelledby="r-awards">
-          <div className={`${styles.sectionHead} mb-2`}>
-            <h2 id="r-awards" className={styles.kicker}>
-              Recognition
-            </h2>
-            <span className={styles.thread} aria-hidden />
-          </div>
-
-          <ul className={`${styles.cards} mt-6`}>
-            {awards.map((a, i) => (
-              <li
-                key={a.title}
-                className={styles.awardCard}
-                data-reveal
-                style={{ "--i": i } as React.CSSProperties}
-              >
-                <span className={styles.awardDisc} aria-hidden>
-                  {a.year}
-                </span>
-                <span>
-                  <h3 className="font-display text-[1.05rem] leading-snug text-[var(--text)]">
-                    {a.title}
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-muted)]">{a.body}</p>
-                </span>
-              </li>
-            ))}
-          </ul>
-
-          <h3 className={`${styles.kicker} mt-8 mb-3`}>What colleagues wrote</h3>
-          <ul className={`${styles.cards} ${styles.cards3} mt-0`}>
-            {testimonials.map((t, i) => (
-              <li
-                key={t.attribution + i}
-                className={styles.quote}
-                data-reveal
-                style={{ "--i": i } as React.CSSProperties}
-              >
-                <p className={styles.quoteText}>&ldquo;{t.quote}&rdquo;</p>
-                <p className={styles.quoteBy}>{t.attribution}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* ---------------------------------------------- EDUCATION */}
-        <section className="mt-stack" aria-labelledby="r-edu">
-          <div className={`${styles.sectionHead} mb-2`}>
-            <h2 id="r-edu" className={styles.kicker}>
-              Education
-            </h2>
-            <span className={styles.thread} aria-hidden />
-          </div>
-
-          <ul className={`${styles.cards} ${styles.cards3} mt-6`}>
-            {education.map((e, i) => (
-              <li
-                key={e.id}
-                className={styles.card}
-                data-reveal
-                style={{ "--i": i } as React.CSSProperties}
-              >
-                <p className={styles.chronDate}>{e.date}</p>
-                <h3 className="font-display mt-1 text-[1.05rem] leading-snug text-[var(--text)]">
-                  {e.title}
-                </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-muted)]">{e.note}</p>
               </li>
             ))}
           </ul>

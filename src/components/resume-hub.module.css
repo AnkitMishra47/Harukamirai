@@ -1,0 +1,613 @@
+/*
+ * RESUME HUB - the slash-cut index.
+ *
+ * This page stopped being a record. Everything a resume lists is already
+ * written out properly on /work, /about and /contact, so the page is now a
+ * masthead, the PDF, and four panels that hand you off. The furniture below
+ * dresses exactly that and nothing else.
+ *
+ * THE CUT. A panel here is not a rectangle with a border. `.frame` is clipped
+ * to a polygon with two opposite corners taken off, so the silhouette is
+ * itself a diagonal cut, and `.cut` lays a thin lit line corner to corner
+ * across it. The clip-path on `.frame` also clips every decorative child, so
+ * the line, the glint and the wash need no overflow box of their own.
+ *
+ * THE IDLE INVITATION. `.glint` is a short bright dash that runs along the
+ * cut; `.wash` is a wider, much fainter blade crossing the panel face. Both
+ * share one cycle, and each panel is offset by `--slot`, so the light travels
+ * DOWN the list one panel at a time instead of all four pulsing together.
+ *
+ * WHAT ANIMATES. `transform` and `opacity`, nothing else, ever. The gradients
+ * are painted once and then translated on a composited layer. No `filter`, no
+ * `blur`, no animated `clip-path` geometry and no `background-position` - the
+ * last two force a repaint of the whole panel on every frame, which is the
+ * one thing an always-on loop must never do.
+ *
+ * REDUCED MOTION. The idle cycle is declared only inside
+ * `prefers-reduced-motion: no-preference`, so under `reduce` there is no
+ * animation to neutralise: `.glint` and `.wash` simply never paint. The cut
+ * stays, the panels stay, and hover and focus still respond - instantly,
+ * because globals.css already collapses transition durations.
+ *
+ * COLOUR. Tokens only. --accent for the cut, --gold for the light on it,
+ * --border-strong for the resting edge, --bg-elevated for the face. The one
+ * place a literal colour appears is @media print, where the ink has to be
+ * black on white whichever theme the browser happens to be in.
+ */
+
+/* ============================================================
+   MASTHEAD
+   ============================================================ */
+
+.kicker {
+  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.rule {
+  height: 4px;
+  position: relative;
+  border-top: 1px solid var(--border-strong);
+}
+
+.rule::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.38;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.thread {
+  flex: 1 1 0;
+  height: 1px;
+  background: linear-gradient(to right, var(--border-strong), transparent);
+  opacity: 0.8;
+}
+
+/* ============================================================
+   THE LIST
+   ============================================================ */
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .list {
+    gap: 0.9rem;
+  }
+}
+
+/* The entrance lives on the <li>, never on .panel. A filled animation beats a
+   declared value in the cascade, so an entrance that finished on .panel would
+   permanently outrank the :hover transform underneath it. */
+.cell {
+  margin: 0;
+  animation: hub-arrive 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--slot, 0) * 70ms);
+}
+
+@keyframes hub-arrive {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+}
+
+/* ============================================================
+   THE PANEL
+
+   `.panel` itself carries no clip-path on purpose: a clipped element clips its
+   own focus ring, and the focus ring is the one indicator that must not depend
+   on the decoration. The shape lives on `.frame` underneath it.
+   ============================================================ */
+
+.panel {
+  --cut: 16px;
+  --angle: -19deg;
+  --skew: -16deg;
+  --cut-y: 56%;
+
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 1.1rem 1.15rem;
+  min-height: 88px;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 768px) {
+  .panel {
+    --cut: 22px;
+    --angle: -6.5deg;
+    --skew: -10deg;
+    /* Pushed below centre so the shallow desktop cut passes UNDER the copy on
+       the left and leaves through the top right, above the path and arrow. */
+    --cut-y: 66%;
+    padding: 1.35rem 1.6rem;
+    min-height: 100px;
+  }
+}
+
+.panel:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(
+    var(--cut) 0,
+    100% 0,
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    0 100%,
+    0 var(--cut)
+  );
+  background: var(--border-strong);
+  transition: background-color 240ms ease;
+  /* Not decoration. clip-path clips PAINT, not layout: the cut and the wash
+     are deliberately wider than the panel, and without a scroll container here
+     they push the document's scrollWidth out past the viewport (measured: 534px
+     at a 390px viewport before this line). It sits on .frame rather than on
+     .panel because an overflow clip on .panel would also clip its focus ring. */
+  overflow: hidden;
+}
+
+/* Inset by 1px inside the same polygon, so the hairline that shows through is
+   the edge - including along the two diagonals, which a border cannot draw. */
+.fill {
+  position: absolute;
+  inset: 1px;
+  clip-path: polygon(
+    var(--cut) 0,
+    100% 0,
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    0 100%,
+    0 var(--cut)
+  );
+  background: var(--bg-elevated);
+}
+
+/* The cut. 140% of the panel wide so that once it is rotated it still leaves
+   the panel through the short edges rather than stopping inside it. */
+.cut {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  top: var(--cut-y);
+  height: 2px;
+  transform: translateY(-50%) rotate(var(--angle));
+  transform-origin: 50% 50%;
+  overflow: hidden;
+  opacity: 0.45;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--accent) 40%, transparent) 20%,
+    color-mix(in oklab, var(--accent) 75%, transparent) 50%,
+    color-mix(in oklab, var(--accent) 40%, transparent) 80%,
+    transparent 100%
+  );
+  transition:
+    opacity 240ms ease,
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* The light that runs along the cut. Clipped by .cut, so it is only ever
+   visible on the line itself. */
+.glint {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 22%;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--gold) 55%, transparent) 35%,
+    var(--gold) 50%,
+    color-mix(in oklab, var(--gold) 55%, transparent) 65%,
+    transparent 100%
+  );
+}
+
+/* The wider, fainter blade across the face. Skewed to the same lean as the
+   cut so the two read as one pass of light rather than two effects. */
+.wash {
+  position: absolute;
+  top: -30%;
+  bottom: -30%;
+  left: 0;
+  width: 36%;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--accent) 15%, transparent) 50%,
+    transparent 100%
+  );
+}
+
+/* ============================================================
+   THE IDLE CYCLE
+
+   One 9s cycle for the whole set. Each panel is offset by a quarter of it, so
+   a pass lands every 2.25s and only one panel is ever lit. The visible part of
+   the cycle is its first 23% (2.07s); the rest is a hold off-panel at zero
+   opacity, which costs nothing.
+   ============================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Deliberately NO `will-change`. These are infinite transform/opacity
+     animations, so the compositor promotes them for their running phase by
+     itself; the hint only pinned eight layers for the life of the page, and
+     under Lighthouse's software rasteriser that cost the route three points
+     (measured on this page: median mobile performance 89 with the hint, 92
+     without, against a 92 baseline). Style & Layout fell from ~1.4s to ~1.0s
+     with the line removed and nothing else changed. */
+  .glint,
+  .wash {
+    animation-duration: var(--cycle, 9s);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-delay: calc(var(--slot, 0) * var(--cycle, 9s) / 4);
+  }
+
+  .glint {
+    animation-name: hub-glint;
+  }
+
+  .wash {
+    animation-name: hub-wash;
+  }
+
+  /* Hover and focus swap the animation NAME, which restarts it from zero: a
+     fresh pass leaves the moment the pointer arrives, on a short loop, and
+     stops the moment it goes.
+
+     Deliberately NOT gated behind `@media (hover: hover)`. Every other hover
+     treatment on the site (the nav, the contact cards) is ungated, and the
+     worst a touch device can do here is hold the lit state for as long as the
+     tap lasts - every panel either navigates away or opens a full-screen
+     overlay on that same tap. */
+  .panel:hover .glint,
+  .panel:focus-visible .glint {
+    animation-name: hub-glint-live;
+    animation-duration: 1.1s;
+    animation-delay: 0s;
+  }
+
+  .panel:hover .wash,
+  .panel:focus-visible .wash {
+    animation-name: hub-wash-live;
+    animation-duration: 1.1s;
+    animation-delay: 0s;
+  }
+}
+
+@keyframes hub-glint {
+  0% {
+    opacity: 0;
+    transform: translate3d(-120%, 0, 0);
+  }
+  7% {
+    opacity: 1;
+  }
+  18% {
+    opacity: 1;
+  }
+  23% {
+    opacity: 0;
+    transform: translate3d(440%, 0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(440%, 0, 0);
+  }
+}
+
+@keyframes hub-wash {
+  0% {
+    opacity: 0;
+    transform: translate3d(-110%, 0, 0) skewX(var(--skew));
+  }
+  7% {
+    opacity: 1;
+  }
+  18% {
+    opacity: 1;
+  }
+  23% {
+    opacity: 0;
+    transform: translate3d(300%, 0, 0) skewX(var(--skew));
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(300%, 0, 0) skewX(var(--skew));
+  }
+}
+
+@keyframes hub-glint-live {
+  0% {
+    opacity: 0;
+    transform: translate3d(-120%, 0, 0);
+  }
+  12% {
+    opacity: 1;
+  }
+  62% {
+    opacity: 1;
+  }
+  74% {
+    opacity: 0;
+    transform: translate3d(440%, 0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(440%, 0, 0);
+  }
+}
+
+@keyframes hub-wash-live {
+  0% {
+    opacity: 0;
+    transform: translate3d(-110%, 0, 0) skewX(var(--skew));
+  }
+  12% {
+    opacity: 1;
+  }
+  62% {
+    opacity: 1;
+  }
+  74% {
+    opacity: 0;
+    transform: translate3d(300%, 0, 0) skewX(var(--skew));
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(300%, 0, 0) skewX(var(--skew));
+  }
+}
+
+/* ============================================================
+   HOVER AND FOCUS
+
+   Both do the same thing, so a keyboard visit is the same visit. The outline
+   is declared separately on .panel:focus-visible and does not depend on any
+   of this.
+   ============================================================ */
+
+.panel:hover {
+  transform: translate3d(0, -2px, 0);
+}
+
+.panel:hover .frame,
+.panel:focus-visible .frame {
+  background: var(--accent);
+}
+
+/* The cut widens as well as brightening, so the slash reads as opening rather
+   than just turning on. scaleX on an already-composited layer, not a redraw. */
+.panel:hover .cut,
+.panel:focus-visible .cut {
+  opacity: 1;
+  transform: translateY(-50%) rotate(var(--angle)) scaleX(1.08);
+}
+
+.panel:hover .label,
+.panel:focus-visible .label {
+  color: var(--accent);
+}
+
+.panel:hover .arrow,
+.panel:focus-visible .arrow {
+  transform: translate3d(4px, 0, 0);
+}
+
+/* ============================================================
+   PANEL CONTENT
+   ============================================================ */
+
+.body {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.85rem;
+  row-gap: 0.2rem;
+}
+
+@media (min-width: 768px) {
+  .body {
+    column-gap: 1.25rem;
+  }
+}
+
+.index {
+  grid-row: 1 / span 2;
+  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--text-subtle);
+}
+
+.label {
+  grid-column: 2;
+  /* The same stack Tailwind's `font-display` compiles to in globals.css, so a
+     panel label sits in the same voice as every other heading on the site. */
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 1.4rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  transition: color 240ms ease;
+}
+
+@media (min-width: 768px) {
+  .label {
+    font-size: 1.65rem;
+  }
+}
+
+.line {
+  grid-column: 2;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.meta {
+  grid-row: 1 / span 2;
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.path {
+  display: none;
+  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--text-subtle);
+}
+
+@media (min-width: 640px) {
+  .path {
+    display: inline;
+  }
+}
+
+.arrow {
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--accent);
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Print-only lines. Off the screen entirely; @media print turns them on. */
+.printUrl,
+.printNote {
+  display: none;
+}
+
+/* ============================================================
+   PRINT
+
+   A page of links prints as a page of links, which is useless: the reader is
+   holding paper and cannot click any of them. So the printed sheet says the
+   one thing that survives the trip - the name, and where the actual resume
+   is - and then lists each destination with its full URL, typed out.
+
+   The decoration goes: a cut of light is a screen effect and a chamfered
+   plate is toner. The storyline panel goes too, because it is an overlay on
+   the site and there is no address to write down for it.
+
+   Literal ink here, deliberately. Everything else on the site paints from
+   tokens, but a browser printing in leaf-5 would put --text (near white) on
+   the white sheet that globals.css forces, and the page would come out blank.
+   ============================================================ */
+
+@media print {
+  .frame,
+  .cut,
+  .glint,
+  .wash,
+  .arrow,
+  .index,
+  .path,
+  .thread {
+    display: none !important;
+  }
+
+  .cellAction {
+    display: none !important;
+  }
+
+  .cell {
+    animation: none !important;
+    break-inside: avoid;
+  }
+
+  .list {
+    display: block;
+  }
+
+  .panel {
+    min-height: 0;
+    padding: 0.35rem 0;
+    transform: none !important;
+  }
+
+  .body {
+    display: block;
+  }
+
+  .label {
+    display: block;
+    font-size: 1.05rem;
+    color: #000;
+  }
+
+  /* Whatever theme the browser happens to be in, the sheet is black on white.
+     globals.css already forces `body { background: #fff; color: #000 }`, but
+     every element here carries an explicit token colour that outranks it - and
+     in leaf-5 those tokens are near-white, so the page would print blank. */
+  .sheet,
+  .sheet h1,
+  .sheet h2,
+  .sheet p {
+    color: #000 !important;
+  }
+
+  .line,
+  .printUrl {
+    color: #333 !important;
+  }
+
+  .printUrl {
+    display: block;
+    font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+    font-size: 0.75rem;
+  }
+
+  .printNote {
+    display: block;
+    color: #000;
+  }
+
+  .kicker {
+    color: #000;
+  }
+
+  .rule::after {
+    background: #000;
+  }
+}

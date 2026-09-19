@@ -1,25 +1,26 @@
 import type { Metadata } from "next";
-import { ResumeSheet } from "@/components/ResumeSheet";
+import { ResumeHub } from "@/components/ResumeHub";
 import { profile } from "@/content";
 
 export const metadata: Metadata = {
   title: `Resume - ${profile.name}`,
-  description: `${profile.title}. Career chronology, skills, projects and the PDF.`,
+  description: `${profile.title}. Download the resume as a PDF, or go straight to the work, the background or the contact details.`,
 };
 
 /**
- * The page is a thin frame: ResumeSheet owns the whole record, including its
- * own masthead, so there is no second title above a titled sheet and no
- * duplicate <h1>.
+ * A thin frame. ResumeHub owns the masthead, so there is no second title above
+ * a titled block and exactly one <h1> on the route.
  *
- * The blurred background magic circle that used to sit here has gone. It cost
- * a full-page `blur-sm` filter plus an 800x800 pulsing SVG on a page whose job
- * is to be read, and the layout already paints AmbientCircle behind every page.
+ * What used to be here - the chronology, the systems grid, the craft chips -
+ * was the site restated. Each of those has a page of its own that says it
+ * better, so the page now hands off instead. The PDF is the only copy of the
+ * record that leaves with the reader, which is why it sits directly under the
+ * name rather than at the bottom.
  */
 export default function ResumePage() {
   return (
     <div className="mx-auto max-w-7xl px-6 pt-page lg:px-12">
-      <ResumeSheet />
+      <ResumeHub />
     </div>
   );
 }

@@ -1,30 +1,28 @@
 /*
  * RESUME - the furniture for a record that is a page, not a sheet.
  *
- * The plain sheet wasted the medium: one column, one type size, everything
- * weighted the same. This module gives the record four devices, and only four,
- * because a recruiter's first job on this page is to scan it in ten seconds:
+ * The record says each thing once, so this module is deliberately short. It
+ * gives the page two devices, and only two:
  *
- *   1. `.seal*`   - four stamped proof marks. A leather-and-foil disc (the
- *                   book's own materials, as on the ScrollRunes clasp) with the
- *                   figure and its legend set on the page in page ink, so the
- *                   only thing on leather is the numeral.
- *   2. `.rung*`   - the rank ladder. Vertical below 768px, horizontal above,
- *                   with the rail between rungs drawing itself one segment at a
- *                   time as each rung enters. Every rung is a link into the
- *                   matching chronology entry, so `:target` does the "click a
- *                   rank, land on the moment" jump with no JavaScript at all.
- *   3. `.chron*`  - the chronology. One lane below 1024px; two lanes above,
- *                   study on the left of the rail and career on the right, so
- *                   the Master's is visibly running *through* the promotions.
- *                   Paper cannot show two tracks at once; this is the reason
- *                   the page earns being a page.
- *   4. `.system*` / `.craft*` / `.awardCard` - plain page cards. Hairline rule,
+ *   1. `.chron*`  - the chronology, and the only rendering of the career arc.
+ *                   One lane below 1024px; two lanes above, study on the left
+ *                   of the rail and career on the right, so the Master's is
+ *                   visibly running *through* the promotions. Paper cannot
+ *                   show two tracks at once; this is the reason the page earns
+ *                   being a page. Roles, awards and education all run on it,
+ *                   which is why there is no separate education or
+ *                   recognition block to style.
+ *   2. `.card` / `.craft*` - plain page cards and chip groups. Hairline rule,
  *                   gold kicker, no leather. Detail, not headline.
  *
+ * Gone with the sections they dressed: the proof seals (a summary of the
+ * summary), the rank ladder (a linked index into a list directly beneath it),
+ * the award cards and the peer quotes. `--foil` and `--leather-*` no longer
+ * appear on this page at all, because nothing on it is an object sitting on
+ * the page any more.
+ *
  * Materials rule, inherited from about.module.css: gilt ON THE PAGE is --gold
- * (dark enough for small text on vellum). --foil / --leather-* only ever appear
- * on the seal discs, which are objects sitting on the page, never page ground.
+ * (dark enough for small text on vellum).
  *
  * Motion rule: everything is opacity + transform, triggered once by a single
  * IntersectionObserver in RevealScope. No scroll listener, no per-frame state.
@@ -131,239 +129,7 @@
 }
 
 /* ============================================================
-   1. PROOF SEALS
-   ============================================================ */
-
-.seals {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.9rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-@media (min-width: 640px) {
-  .seals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media (min-width: 1024px) {
-  .seals { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-
-.seal {
-  display: grid;
-  grid-template-columns: 2.75rem minmax(0, 1fr);
-  align-items: start;
-  gap: 0.85rem;
-  padding: 0.95rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: 0.6rem;
-  background: var(--bg-elevated);
-}
-
-/* The only leather on the page. Foil on leather measures 7.0:1. */
-.sealDisc {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 999px;
-  color: var(--foil);
-  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  background: linear-gradient(160deg, var(--leather-b) 0%, var(--leather-a) 48%, var(--leather-edge) 100%);
-  box-shadow:
-    inset 0 0 0 1px color-mix(in oklab, var(--foil) 50%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    0 3px 10px rgba(0, 0, 0, 0.26);
-  transform: rotate(-6deg);
-  transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.seal[data-in] .sealDisc {
-  transform: rotate(0deg);
-}
-
-.sealFigure {
-  font-size: 1.6rem;
-  line-height: 1.05;
-  color: var(--text);
-  letter-spacing: -0.01em;
-}
-
-.sealUnit {
-  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-left: 0.4rem;
-  vertical-align: 0.35em;
-}
-
-.sealNote {
-  display: block;
-  margin-top: 0.3rem;
-  font-size: 0.8rem;
-  line-height: 1.45;
-  color: var(--text-muted);
-}
-
-/* ============================================================
-   2. RANK LADDER
-   ============================================================ */
-
-.ladder {
-  display: grid;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.rung {
-  position: relative;
-}
-
-/* The segment of rail that runs from this rung to the next one. It draws
-   itself when the rung enters, so the ladder builds downward (or rightward)
-   in reading order rather than appearing all at once. */
-.rung::before {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 1.1rem;
-  bottom: -0.1rem;
-  width: 2px;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in oklab, var(--gold) 70%, transparent),
-    color-mix(in oklab, var(--gold) 35%, transparent)
-  );
-  transform: scaleY(0);
-  transform-origin: top center;
-  transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1) 90ms;
-}
-
-.rung:last-child::before { content: none; }
-.rung[data-in]::before { transform: scaleY(1); }
-
-.rungLink {
-  display: block;
-  position: relative;
-  padding: 0.1rem 0 1.1rem 1.75rem;
-  min-height: 2.5rem;
-  border-radius: 0.35rem;
-  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.rungLink:hover { transform: translateX(2px); }
-.rungLink:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-.node {
-  position: absolute;
-  left: 0;
-  top: 0.3rem;
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  border: 2px solid var(--border-strong);
-  background: var(--bg);
-  transition: border-color 380ms ease, background-color 380ms ease, transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.rung[data-in] .node { border-color: var(--gold); }
-
-.rung[data-current] .node {
-  border-color: var(--accent);
-  background: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-glow);
-}
-
-.rungLink:hover .node { transform: scale(1.18); }
-
-.rungDate {
-  display: block;
-  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
-  font-size: 0.62rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-subtle);
-}
-
-.rungTitle {
-  display: block;
-  margin-top: 0.15rem;
-  font-size: 0.95rem;
-  line-height: 1.25;
-  color: var(--text-muted);
-  transition: color 220ms ease;
-}
-
-.rung[data-current] .rungTitle {
-  color: var(--text);
-}
-
-.rungLink:hover .rungTitle { color: var(--accent); }
-
-.rungNow {
-  display: inline-block;
-  margin-top: 0.3rem;
-  padding: 0.05rem 0.4rem;
-  border: 1px solid var(--accent);
-  border-radius: 999px;
-  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
-  font-size: 0.55rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-@media (min-width: 768px) {
-  .ladder {
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(0, 1fr);
-  }
-
-  .rung::before {
-    left: 50%;
-    right: -50%;
-    top: 5px;
-    bottom: auto;
-    width: auto;
-    height: 2px;
-    background: linear-gradient(
-      to right,
-      color-mix(in oklab, var(--gold) 70%, transparent),
-      color-mix(in oklab, var(--gold) 35%, transparent)
-    );
-    transform: scaleX(0);
-    transform-origin: left center;
-  }
-
-  .rung[data-in]::before { transform: scaleX(1); }
-
-  .rungLink {
-    padding: 1.7rem 0.6rem 0;
-    min-height: 0;
-    text-align: center;
-  }
-
-  .rungLink:hover { transform: translateY(-2px); }
-
-  .node {
-    left: 50%;
-    top: 0;
-    margin-left: -6px;
-  }
-}
-
-/* ============================================================
-   3. CHRONOLOGY
+   1. CHRONOLOGY
    ============================================================ */
 
 .chron {
@@ -454,7 +220,10 @@
   color: var(--text-muted);
 }
 
-/* Landing here from a rank on the ladder. No JavaScript involved. */
+/* Deep-linking straight to one entry, e.g. /resume#tl-award-2025. Nothing on
+   the page links to these any more - the rank ladder that did was an index
+   into a list sitting directly below it - but the ids are stable and the
+   highlight costs nothing. */
 .chronItem:target .chronTitle { color: var(--accent); }
 .chronItem:target::before {
   box-shadow: 0 0 0 4px var(--accent-glow);
@@ -521,7 +290,7 @@
 .laneSwatchCareer { border-color: var(--accent); background: var(--accent); }
 
 /* ============================================================
-   4. PAGE CARDS - systems, craft, recognition, education
+   2. PAGE CARDS - systems and craft
    ============================================================ */
 
 .cards {
@@ -535,7 +304,6 @@
 
 @media (min-width: 768px) {
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .cards3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 .card {
@@ -593,35 +361,6 @@
 
 .systemLink:hover .arrow { transform: translateX(3px); }
 
-.metrics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  list-style: none;
-  margin: 0.7rem 0 0;
-  padding: 0;
-}
-
-.metric {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.35rem;
-  padding: 0.18rem 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg);
-  font-size: 0.72rem;
-  color: var(--text);
-}
-
-.metricLabel {
-  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
-  font-size: 0.55rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--gold);
-}
-
 .stackLine {
   margin-top: 0.7rem;
   font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
@@ -675,59 +414,6 @@
   color: var(--text);
 }
 
-/* ---- recognition ---- */
-
-.awardCard {
-  display: grid;
-  grid-template-columns: 3.25rem minmax(0, 1fr);
-  gap: 1rem;
-  align-items: start;
-  padding: 1.1rem 1.15rem;
-  border: 1px solid var(--border);
-  border-radius: 0.6rem;
-  background: var(--bg-elevated);
-}
-
-.awardDisc {
-  display: grid;
-  place-items: center;
-  width: 3.25rem;
-  height: 3.25rem;
-  border-radius: 999px;
-  color: var(--foil);
-  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  background: linear-gradient(160deg, var(--leather-b) 0%, var(--leather-a) 48%, var(--leather-edge) 100%);
-  box-shadow:
-    inset 0 0 0 1px color-mix(in oklab, var(--foil) 50%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    0 3px 10px rgba(0, 0, 0, 0.26);
-}
-
-.quote {
-  padding: 1rem 1.1rem;
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--gold);
-  border-radius: 0 0.5rem 0.5rem 0;
-  background: var(--bg-elevated);
-}
-
-.quoteText {
-  font-size: 0.86rem;
-  line-height: 1.6;
-  color: var(--text-muted);
-}
-
-.quoteBy {
-  margin-top: 0.6rem;
-  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
-  font-size: 0.6rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-subtle);
-}
-
 /* ============================================================
    REDUCED MOTION
    The global rule in globals.css zeroes durations but not transition
@@ -743,23 +429,17 @@
     transition: none;
   }
 
-  .sealDisc,
-  .rung::before,
   .chronItem::after,
-  .node,
   .card,
-  .arrow,
-  .rungLink {
+  .arrow {
     transform: none !important;
     transition: none !important;
   }
 
-  .rung::before,
   .chronItem::after { transform: scale(1) !important; }
 
   .card:hover,
-  .card:focus-within,
-  .rungLink:hover { transform: none; }
+  .card:focus-within { transform: none; }
 }
 
 /* ============================================================
@@ -769,9 +449,9 @@
    marked .print:hidden, and releases .resume-sheet's max-width. What is
    left to do here is (a) force every reveal to its arrived state, since
    an IntersectionObserver that never fired would otherwise print blank
-   blocks, (b) flatten the leather and the card fills to ink on white,
-   and (c) put the chronology back into one lane, because two lanes on
-   A4 leaves a column of half-empty rows.
+   blocks, (b) flatten the card fills to ink on white, and (c) put the
+   chronology back into one lane, because two lanes on A4 leaves a column
+   of half-empty rows.
    ============================================================ */
 
 @media print {
@@ -789,66 +469,21 @@
     transition: none !important;
   }
 
-  .sealDisc,
-  .awardDisc {
-    border: 1px solid #999;
-    transform: none !important;
-  }
-
-  /* `.card` is deliberately absent from the break-inside list: the systems
-     grid has seven tall cards, and holding each row whole pushed two of them
-     to the next sheet and left half of page 3 blank. The shorter blocks below
-     still stay whole, because they fit in whatever is left of a page. */
-  .seal,
-  .awardCard,
-  .quote,
+  /* A system card is now three lines - kicker, title, stack - so holding each
+     one whole costs at most a few lines of slack, unlike the old cards that
+     carried a result paragraph and a metric row. */
+  .card,
   .craftGroup,
-  .chronItem,
-  .rung {
+  .chronItem {
     break-inside: avoid;
   }
 
-  .seal,
   .card,
-  .awardCard,
-  .quote,
   .craftGroup { border-color: #bbb !important; }
 
   .rule { border-top-color: #000; }
   .rule::after { background: #999; }
   .thread { background: #bbb; }
-
-  /* Ladder back to one column, rails solid. */
-  .ladder {
-    grid-auto-flow: row;
-    grid-auto-columns: auto;
-  }
-
-  .rung::before {
-    left: 5px;
-    right: auto;
-    top: 1.1rem;
-    bottom: -0.1rem;
-    width: 2px;
-    height: auto;
-    background: #999 !important;
-    transform: none !important;
-  }
-
-  .rungLink {
-    padding: 0.1rem 0 0.7rem 1.75rem;
-    text-align: left;
-    transform: none !important;
-  }
-
-  .node {
-    left: 0;
-    top: 0.3rem;
-    margin-left: 0;
-    border-color: #666 !important;
-  }
-
-  .rungNow { border-color: #666; }
 
   /* Chronology back to one lane. */
   .chron { grid-template-columns: minmax(0, 1fr) !important; }
@@ -882,16 +517,13 @@
 
   .laneKey { display: none !important; }
 
-  .chip,
-  .metric { border-color: #bbb !important; }
+  .chip { border-color: #bbb !important; }
 
   /* A4's content box is under the 768px breakpoint, so every grid on the page
-     would otherwise collapse to one column and the record would run to six
-     sheets. Paper is 7in wide; two and three columns fit it comfortably. */
-  .seals  { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-  .cards  { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-  .cards3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
-  .craft  { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+     would otherwise collapse to one column and the record would run long.
+     Paper is 7in wide; two and four columns fit it comfortably. */
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .craft { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 
   .contactList a { text-decoration: none; }
 }

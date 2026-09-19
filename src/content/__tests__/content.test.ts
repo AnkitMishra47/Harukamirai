@@ -10,6 +10,17 @@ describe("profile", () => {
 
 import { awards, testimonials } from "@/content";
 
+import * as allContent from "@/content";
+
+describe("working hours", () => {
+  it("is AWST at UTC+8, and no content string says AEDT", () => {
+    expect(profile.workingHours).toEqual({ zone: "AWST", offset: "UTC+8" });
+    for (const [name, value] of Object.entries(allContent)) {
+      expect(JSON.stringify(value), `${name} still says AEDT`).not.toMatch(/AEDT/);
+    }
+  });
+});
+
 describe("awards", () => {
   it("never claims Employee of the Year outright", () => {
     for (const a of awards) {

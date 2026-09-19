@@ -131,7 +131,9 @@ export default function AboutPage() {
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent p-4">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/85">Faridabad · IST</p>
-              <p className="font-display text-sm text-white/95 mt-0.5">Working AEDT hours.</p>
+              <p className="font-display text-sm text-white/95 mt-0.5">
+                Working {profile.workingHours.zone} hours.
+              </p>
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ export const profile: Profile = {
   nameLines: ["ANKIT", "MISHRA"],
   title: "Senior Software Engineer · AI & Automation",
   location: "Faridabad, Haryana, India",
+  workingHours: { zone: "AWST", offset: "UTC+8" },
   employer: { name: "OneIT", href: "https://oneit.com.au", country: "Australia" },
   summary:
     "Software engineer building enterprise-grade Java and Angular systems and AI-assisted engineering workflows for international clients at OneIT (Australia). Owns features end-to-end across REST APIs, PostgreSQL data modeling, PrimeNG front-ends and XML/EDI middleware, and has shipped production RAG pipelines on pgvector at multi-million-row scale. Promoted from Intern to Senior Software Engineer and named Developer of the Year for consistent technical impact, production ownership and cross-team delivery.",

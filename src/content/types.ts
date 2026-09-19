@@ -13,6 +13,11 @@ export type Profile = {
   nameLines: [string, string];
   title: string;
   location: string;
+  /**
+   * The timezone Ankit keeps working hours to, as the single source of truth
+   * for every page that mentions it. Label by zone only - no city.
+   */
+  workingHours: { zone: string; offset: string };
   employer: { name: string; href: string; country: string };
   summary: string;
   heroLine: string;

@@ -9,8 +9,10 @@ export function Footer() {
   const github = profile.links.find((l) => l.label === "GitHub")!;
   
   return (
-    <footer className="mt-32 border-t border-[var(--border)]">
-      <div className="mx-auto max-w-7xl px-6 lg:px-12 py-14 grid gap-12 md:grid-cols-2">
+    // The footer owns the gap above itself (mt-section), so no page adds bottom
+    // padding for it. py-band is interior padding, inside the bordered box.
+    <footer className="mt-section border-t border-[var(--border)]">
+      <div className="mx-auto max-w-7xl px-6 lg:px-12 py-band grid gap-12 md:grid-cols-2">
         <div className="flex flex-col">
           <div className="mb-6 inline-flex self-start items-center gap-2 rounded-full border border-[var(--accent)]/40 bg-[var(--accent-glow)] px-3 py-1.5">
             <span className="relative flex size-2">

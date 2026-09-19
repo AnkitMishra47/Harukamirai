@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ============================================================
-   THEME VARIABLES — leaf-4 (default) ↔ leaf-5 (anti-magic dark)
+   THEME VARIABLES - leaf-4 (default) ↔ leaf-5 (anti-magic dark)
    Spec: Documentation/clover-toggle-spec.md
    ============================================================ */
 
@@ -147,7 +147,7 @@ body {
   scrollbar-width: none;
 }
 
-/* Reduced motion — instant swap */
+/* Reduced motion - instant swap */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -183,7 +183,7 @@ body {
     transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Demon eye — visible only in leaf-5 (Asta) mode */
+/* Demon eye - visible only in leaf-5 (Asta) mode */
 .clover-icon .demon-eye {
   fill: var(--clover-fifth);
   opacity: var(--fifth-opacity);
@@ -245,7 +245,7 @@ body {
 .reveal-3 { animation-delay: 240ms; }
 .reveal-4 { animation-delay: 320ms; }
 
-/* Dotted divider — manga page break */
+/* Dotted divider - manga page break */
 .divider-dots {
   display: flex; gap: 6px; align-items: center; justify-content: center;
 }
@@ -401,3 +401,62 @@ body {
   50%      { opacity: .95; transform: scale(1.05); }
 }
 .aura { animation: aura 5s ease-in-out infinite; will-change: transform, opacity; contain: layout style; }
+
+/* ============================================================
+   VERTICAL RHYTHM SCALE
+
+   Why this exists: every top-level <section> used to carry full padding on
+   BOTH sides, so every boundary added two sections' padding together. On the
+   home page `py-14 md:py-36` sat directly above `py-14 md:py-36`, which is
+   288px of empty page at md+ with no border, no background change and nothing
+   to look at. That is the "weird, big spaces" bug.
+
+   The rule:
+
+     A boundary is owned by ONE side. The section BELOW carries the gap
+     (pt-section). Sections do not carry bottom padding, and pages do not
+     carry bottom padding - the footer owns the gap above itself.
+
+   The exception is a section that has its own background or border: the
+   credibility band on the home page, the footer. Its padding sits INSIDE a
+   visible box, so it legitimately takes both sides (py-band). The boundaries
+   above and below that box are still owned by the neighbour, so nothing
+   doubles.
+
+   Four steps. All multiples of 8px, all scaled down below the md breakpoint.
+   They are real Tailwind spacing keys, so pt-section, mt-stack, py-band,
+   space-y-stack, gap-stack and the rest all work - and the responsive step is
+   baked into the token, so there is no md: variant to forget at the call site.
+
+     section   64 / 112px   boundary between two top-level sections
+     band      56 /  72px   interior padding of a section that owns a
+                            background or a border (both sides)
+     page      48 /  80px   top of a page container, under the sticky nav
+     stack     40 /  56px   between blocks stacked inside one section
+                            (heading -> grid, grid -> call to action)
+
+   `stack` is not called `block`: a `--spacing-block` key would make Tailwind
+   read the core `inline-block` utility as `inline-` + `block` and compile it
+   to `inline-size`, silently breaking every use of it.
+
+   A gap larger than `section` needs a visible reason - a rule, a brush
+   divider, a change of background - not a bigger number. Where such an
+   element already carries its own margin (BrushDivider is my-16), the
+   neighbouring section carries nothing, or you are back to doubling.
+   ============================================================ */
+
+@theme {
+  --spacing-section: 4rem;
+  --spacing-band:    3.5rem;
+  --spacing-page:    3rem;
+  --spacing-stack:   2.5rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --spacing-section: 7rem;
+    --spacing-band:    4.5rem;
+    --spacing-page:    5rem;
+    --spacing-stack:   3.5rem;
+  }
+}

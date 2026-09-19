@@ -15,8 +15,8 @@ export default function WorkPage() {
   const career = timeline.filter((t) => t.kind === "role" || t.kind === "award");
 
   return (
-    <article className="mx-auto max-w-7xl px-6 lg:px-12 py-10 md:py-28">
-      <header className="mb-8 md:mb-14">
+    <article className="mx-auto max-w-7xl px-6 lg:px-12 pt-page">
+      <header className="mb-stack">
         <MagicReveal>
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">Work</p>
           <h1 className="font-display text-5xl md:text-6xl mt-3 text-[var(--text)] leading-[1.02]">
@@ -30,8 +30,10 @@ export default function WorkPage() {
         </MagicReveal>
       </header>
 
-      {/* ONEIT CASE STUDIES */}
-      <section className="mb-14 md:mb-28">
+      {/* ONEIT CASE STUDIES - no pt-section: the page header above owns this
+          boundary (mb-stack), because a header and its first section read as
+          one opening movement. Every section after this one owns its own. */}
+      <section>
         <MagicReveal>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
             Inside OneIT · Selected work
@@ -49,7 +51,7 @@ export default function WorkPage() {
 
       {/* INDEPENDENT CLIENT WORK */}
       {independent.length > 0 && (
-        <section className="mb-14 md:mb-28">
+        <section className="pt-section">
           <MagicReveal>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
               Featured · Independent client work
@@ -61,7 +63,7 @@ export default function WorkPage() {
       )}
 
       {/* ONEIT TIMELINE */}
-      <section className="mb-14 md:mb-24">
+      <section className="pt-section">
         <MagicReveal>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
             Day job · {career[0].date} - present
@@ -75,7 +77,7 @@ export default function WorkPage() {
           </p>
         </MagicReveal>
 
-        <ol className="mt-12 relative border-l border-[var(--border)] pl-8 space-y-12">
+        <ol className="mt-stack relative border-l border-[var(--border)] pl-8 space-y-12">
           {career.map((step, i) => (
             <MagicReveal key={step.id} delay={i * 0.1}>
               <li className="list-none relative">
@@ -92,7 +94,7 @@ export default function WorkPage() {
         </ol>
       </section>
 
-      <div className="mt-14 md:mt-24 text-center">
+      <div className="mt-section text-center">
         <MagicReveal delay={0.5}>
           <Link
             href="/contact"

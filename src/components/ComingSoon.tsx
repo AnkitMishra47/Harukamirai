@@ -10,7 +10,7 @@ export function ComingSoon({
   jp?: string;
 }) {
   return (
-    <article className="mx-auto max-w-2xl px-6 py-32 text-center">
+    <article className="mx-auto max-w-2xl px-6 pt-page text-center">
       <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">
         {eyebrow}
       </p>

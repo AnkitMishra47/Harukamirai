@@ -12,14 +12,14 @@ export const metadata: Metadata = {
 
 export default function ResumePage() {
   return (
-    <div className="relative min-h-[90vh] flex flex-col items-center px-6 py-10 md:py-20 overflow-hidden">
-      <MagicReveal delay={0.2} className="text-center mb-6 md:mb-12">
+    <div className="relative min-h-[90vh] flex flex-col items-center px-6 pt-page overflow-hidden">
+      <MagicReveal delay={0.2} className="text-center mb-stack">
         <p className="text-xs uppercase tracking-[0.3em] text-[var(--accent)] mb-4">Career Chronology</p>
         <h1 className="font-display text-4xl md:text-6xl text-[var(--text)]">
           Resume · {profile.name.split(" ")[0]}
         </h1>
         <p className="mt-4 text-[var(--text-muted)] max-w-xl mx-auto">
-          The full career arc — from the first line of code to leading
+          The full career arc - from the first line of code to leading
           engineering cycles at {profile.employer.name}.
         </p>
       </MagicReveal>
@@ -30,9 +30,9 @@ export default function ResumePage() {
         </a>
       </MagicReveal>
 
-      <div className="mt-8 md:mt-12 w-full max-w-3xl border-t border-[var(--border)] pt-8 md:pt-16">
+      <div className="mt-stack w-full max-w-3xl border-t border-[var(--border)] pt-stack">
         <ResumeSheet />
-        <div className="mt-12 flex flex-wrap items-center gap-6 print:hidden">
+        <div className="mt-stack flex flex-wrap items-center gap-6 print:hidden">
           <DownloadResumeButton />
           <Link href="/work" className="text-sm text-[var(--text-subtle)] hover:text-[var(--accent)] transition-colors">
             View detailed case studies →

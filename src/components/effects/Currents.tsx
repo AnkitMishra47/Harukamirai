@@ -4,12 +4,12 @@ import { HoverLift } from "./HoverLift";
 import { MagicReveal } from "./MagicReveal";
 
 /**
- * "Currents" — what I'm reading, drinking, listening to.
+ * "Currents" - what I'm reading, drinking, listening to.
  * Manga book with flipping pages + coffee cup with rising steam.
  */
 export function Currents() {
   return (
-    <section className="mx-auto max-w-7xl px-6 lg:px-12 py-14 md:py-36">
+    <section className="mx-auto max-w-7xl px-6 lg:px-12 pt-section">
       <MagicReveal>
         <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">
           Currents · 今
@@ -25,14 +25,14 @@ export function Currents() {
         </p>
       </MagicReveal>
 
-      <div className="mt-16 grid gap-8 md:grid-cols-3 auto-rows-fr">
+      <div className="mt-stack grid gap-8 md:grid-cols-3 auto-rows-fr">
         <MagicReveal delay={0.05} className="h-full">
           <Card label="Reading" jp="読書">
             <MangaBook />
             <CardMeta
               title="Black Clover"
               meta="Manga · Yūki Tabata"
-              line="Ch. 370-something. Asta&apos;s arc still unmatched in shonen pacing — say what you want about the anime."
+              line="Ch. 370-something. Asta&apos;s arc still unmatched in shonen pacing - say what you want about the anime."
             />
           </Card>
         </MagicReveal>
@@ -52,7 +52,7 @@ export function Currents() {
           <Card label="Playing" jp="将棋">
             <ChessBoard />
             <CardMeta
-              title="Chess — Sicilian, mostly"
+              title="Chess - Sicilian, mostly"
               meta="Lichess · 1500-ish"
               line="Analysis after losses is where the hobby actually lives."
             />
@@ -157,7 +157,7 @@ function MangaBook() {
           <path d="M 96 92 L 100 100 L 108 102 L 100 104 L 96 112 L 92 104 L 84 102 L 92 100 Z" fill="var(--accent)" opacity="0.9" />
         </g>
 
-        {/* Right page — flipping pages animation */}
+        {/* Right page - flipping pages animation */}
         <g className="manga-flip">
           <rect x="124" y="40" width="68" height="100" fill="url(#manga-page)" stroke="var(--border)" strokeWidth="0.5" />
           {/* Right page panel content */}
@@ -197,7 +197,7 @@ function CoffeeCup() {
           </radialGradient>
         </defs>
 
-        {/* Steam — three wavy paths rising and fading */}
+        {/* Steam - three wavy paths rising and fading */}
         {[
           { x: 78, delay: 0 },
           { x: 100, delay: 0.6 },

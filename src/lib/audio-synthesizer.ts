@@ -1,10 +1,30 @@
 /**
- * HARUKA MIRAI · STORYLINE SOUNDTRACK AUDIO ENGINE
+ * HARUKA MIRAI · STORYLINE SOUNDTRACK
  *
- * Plays the official soundtrack from `/photos/story_sound.mp3` when the
- * Storyline welcome shutter is lifted, looping continuously while the user
- * explores the story acts.
+ * Plays `/photos/story_sound.mp3` when the Storyline welcome shutter is lifted,
+ * looping while the visitor explores the acts.
+ *
+ * One `Audio` element, `loop = true`, and nothing else. No Web Audio graph, no
+ * gain automation, no seam handling - the browser plays the file and takes it
+ * back round on its own.
+ *
+ * That is deliberate and it is a reversal. A previous pass drove the loop by
+ * hand, taking the track back round at 37.0s through a gain dip to skip the
+ * outro fade. It worked on paper and ticked in the ear: the dip was stepped
+ * through `setValueAtTime` once per animation frame, and a gain that moves in
+ * ~60 discrete steps is a series of tiny discontinuities in the waveform, which
+ * is what a click is. Smoothing it properly would mean a `linearRampToValueAtTime`
+ * envelope, and at that point a player for one background track has grown an
+ * audio engine to solve a problem nobody asked it to solve.
+ *
+ * The cost of plain playback, stated so nobody rediscovers it as a bug: the file
+ * ends with its own two-second outro fade, so each loop has a short dip to
+ * silence before the track restarts at full level. That is the file's shape, not
+ * a defect in this code, and the honest fix is to trim the tail off the mp3
+ * rather than to process around it here.
  */
+
+const BASE_VOLUME = 0.7;
 
 class SuccessionThemeEngine {
   private audioEl: HTMLAudioElement | null = null;
@@ -16,7 +36,7 @@ class SuccessionThemeEngine {
     if (!this.audioEl) {
       this.audioEl = new Audio("/photos/story_sound.mp3");
       this.audioEl.loop = true;
-      this.audioEl.volume = 0.7;
+      this.audioEl.volume = BASE_VOLUME;
       this.audioEl.preload = "auto";
     }
     return this.audioEl;

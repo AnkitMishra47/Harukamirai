@@ -1358,16 +1358,16 @@ export function ShutterStoryExperience() {
           isShutterLifted
             ? { y: "-100%" }
             : {
-                y: shouldReduceMotion ? 0 : [0, -16, 0],
+                y: shouldReduceMotion ? 0 : [0, -24, 0],
               }
         }
         transition={
           isShutterLifted
             ? { duration: 0.9, ease: [0.16, 1, 0.3, 1] }
             : {
-                duration: 4.5,
+                duration: 4.2,
                 repeat: Infinity,
-                repeatDelay: 3.5,
+                repeatDelay: 3.2,
                 ease: "easeInOut",
               }
         }
@@ -1469,22 +1469,46 @@ export function ShutterStoryExperience() {
             </button>
           </div>
 
-          <p className="mt-4 font-mono text-[11px] text-white/35">
-            Slide up or press Space / Enter to lift
-          </p>
+          {/* Interactive Slide-Up Guidance Badge */}
+          <div className="mt-7 flex flex-col items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={liftShutter}
+              className="group inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 hover:bg-amber-400/20 px-4 py-2 font-mono text-xs font-semibold text-amber-300 shadow-[0_0_16px_rgba(245,158,11,0.15)] transition-all cursor-pointer hover:scale-105"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="animate-bounce"
+                aria-hidden
+              >
+                <polyline points="18 15 12 9 6 15" />
+              </svg>
+              <span>Slide / Drag Up to Lift Shutter</span>
+            </button>
+            <p className="font-mono text-[11px] text-white/40">
+              Drag anywhere with pointer · Swipe up on touch · Press Space or Enter
+            </p>
+          </div>
           </div>
         </main>
 
         {/* Shutter Bottom Architectural Grip Lip (Draggable & Clickable) */}
         <footer
           onClick={liftShutter}
-          className={`relative z-10 flex items-center justify-between gap-3 pt-3 sm:pt-4 border-t border-white/10 bg-black/50 hover:bg-white/[0.04] font-mono text-[11px] text-white/50 hover:text-white/80 transition-colors cursor-pointer ${styles.gutter} ${styles.bottomInset} group`}
+          className={`relative z-10 flex items-center justify-between gap-3 pt-3.5 sm:pt-4 border-t border-white/15 bg-black/60 hover:bg-white/[0.06] font-mono text-[11px] text-white/60 hover:text-white transition-colors cursor-pointer ${styles.gutter} ${styles.bottomInset} group`}
         >
           <span>Ankit Mishra · Senior SWE</span>
-          <span className="inline-flex items-center gap-1.5 font-semibold text-[var(--accent)] tracking-wider">
+          <span className="inline-flex items-center gap-1.5 font-semibold text-amber-300 tracking-wider">
             <svg
-              width="11"
-              height="11"
+              width="12"
+              height="12"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -1496,7 +1520,7 @@ export function ShutterStoryExperience() {
             >
               <polyline points="18 15 12 9 6 15" />
             </svg>
-            <span>SLIDE UP OR CLICK TO ENTER</span>
+            <span>PULL / SLIDE UP TO ENTER</span>
           </span>
           <span className="hidden sm:inline">OneIT Australia</span>
         </footer>

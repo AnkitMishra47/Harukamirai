@@ -30,12 +30,30 @@ export function HeroIntro() {
     return () => window.removeEventListener("portfolio-revealed", onReveal);
   }, []);
 
+  /*
+   * The parallax runs only where something reads it.
+   *
+   * `--hero-p` has exactly two consumers: `.hero-book`, inside an
+   * `@media (min-width: 1024px)` block in globals.css, and the desktop seal,
+   * which is `hidden lg:block`. Below 1024px nothing uses the value - and this
+   * listener was still, on every scroll frame, reading `getBoundingClientRect`
+   * (which forces layout) and then writing a custom property on the hero
+   * section (which invalidates style for its whole subtree). A phone was paying
+   * for a parallax it cannot see, on the one interaction where a dropped frame
+   * is most obvious.
+   *
+   * The media query is watched rather than sampled once, so a window dragged
+   * across the breakpoint still behaves.
+   */
   useEffect(() => {
     const el = heroRef.current;
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    const desktop = window.matchMedia("(min-width: 1024px)");
     let raf = 0;
+    let io: IntersectionObserver | null = null;
+
     const write = () => {
       raf = 0;
       const r = el.getBoundingClientRect();
@@ -46,20 +64,35 @@ export function HeroIntro() {
       if (!raf) raf = requestAnimationFrame(write);
     };
 
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        window.addEventListener("scroll", onScroll, { passive: true });
-        onScroll();
-      } else {
-        window.removeEventListener("scroll", onScroll);
-      }
-    });
-    io.observe(el);
-
-    return () => {
-      io.disconnect();
+    const detach = () => {
+      io?.disconnect();
+      io = null;
       window.removeEventListener("scroll", onScroll);
       if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      el.style.removeProperty("--hero-p");
+    };
+
+    const attach = () => {
+      if (io) return;
+      io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) {
+          window.addEventListener("scroll", onScroll, { passive: true });
+          onScroll();
+        } else {
+          window.removeEventListener("scroll", onScroll);
+        }
+      });
+      io.observe(el);
+    };
+
+    const sync = () => (desktop.matches ? attach() : detach());
+    sync();
+    desktop.addEventListener("change", sync);
+
+    return () => {
+      desktop.removeEventListener("change", sync);
+      detach();
     };
   }, []);
 

@@ -1,11 +1,28 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Dot = { x: number; y: number; life: number; size: number };
 
 export function CursorTrail() {
   const ref = useRef<HTMLCanvasElement>(null);
+  /*
+   * Whether to render the canvas at all.
+   *
+   * The loop below has always skipped touch, so nothing was ever drawn there -
+   * but the element was still rendered, and it is `fixed inset-0 z-[60]`: a
+   * full-viewport layer sitting on top of every scrolling thing on the page,
+   * for an effect that cannot happen. Not drawing into a compositing layer does
+   * not make it free.
+   *
+   * It starts rendered so the first client render matches the server's, and is
+   * removed once the pointer type is known.
+   */
+  const [isTouch, setIsTouch] = useState(false);
+
+  useEffect(() => {
+    setIsTouch(window.matchMedia("(pointer: coarse)").matches);
+  }, []);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -102,6 +119,8 @@ export function CursorTrail() {
       window.removeEventListener("mousemove", onMove);
     };
   }, []);
+
+  if (isTouch) return null;
 
   return (
     <canvas

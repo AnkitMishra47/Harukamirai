@@ -66,15 +66,13 @@ export function Lightbox({ images, currentIndex, isOpen, onClose, onNavigate }: 
   const reduce = useReducedMotion();
   const many = images.length > 1;
 
-  // Scroll lock, focus capture and focus restore.
+  // Focus capture and focus restore. The scroll lock is `data-scroll-lock`
+  // on the backdrop below, not an effect - see globals.css.
   useEffect(() => {
     if (!isOpen) return;
     restoreTo.current = document.activeElement as HTMLElement | null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     dialogRef.current?.focus();
     return () => {
-      document.body.style.overflow = previousOverflow;
       restoreTo.current?.focus?.();
     };
   }, [isOpen]);
@@ -134,6 +132,7 @@ export function Lightbox({ images, currentIndex, isOpen, onClose, onNavigate }: 
     <AnimatePresence>
       {isOpen && image && (
         <motion.div
+          data-scroll-lock
           ref={dialogRef}
           role="dialog"
           aria-modal="true"

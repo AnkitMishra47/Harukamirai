@@ -318,32 +318,34 @@ export function ScrollRunes() {
   }, [schedule]);
 
   /**
-   * Two signals, either of which means something else owns the screen:
+   * One signal: `data-scroll-lock` is in the document.
    *
-   *   1. #storyline-theater is in the document - ShutterStoryExperience is
-   *      mounted. It renders null once dismissed and remounts on the
-   *      `open-shutter-story` event, so its presence is the state.
-   *   2. body carries an inline overflow lock - the command palette, the
-   *      recruiter brief and the lightbox all set one while they are open,
-   *      and a page you cannot scroll has no use for a scroll control.
+   * That is the same mark the storyline theater, the command palette, the
+   * recruiter brief, the case study modal, the lightbox and the mobile nav
+   * panel each carry while they own the screen, and the one globals.css locks
+   * the root against. A page you cannot scroll has no use for a scroll
+   * control, so the mark answers this question too and there is no second
+   * signal to keep in step with the first.
    *
-   * Both are read from a MutationObserver watching only body's own children
-   * and its style attribute, so this costs nothing until one of those two
-   * things actually changes.
+   * It used to read body's inline overflow instead, which quietly stopped
+   * meaning anything once the lock moved to the root where it actually works.
+   *
+   * The observer has to reach the whole subtree because two of those six
+   * mount deep in the page rather than beside it, but it is filtered to the
+   * one attribute nothing else uses, and the callback it runs is a single
+   * selector match.
    */
   useEffect(() => {
     const check = () => {
-      setBlocked(
-        document.body.style.overflow === "hidden" ||
-          document.getElementById("storyline-theater") !== null,
-      );
+      setBlocked(document.querySelector("[data-scroll-lock]") !== null);
     };
     check();
     const mo = new MutationObserver(check);
     mo.observe(document.body, {
       childList: true,
+      subtree: true,
       attributes: true,
-      attributeFilter: ["style"],
+      attributeFilter: ["data-scroll-lock"],
     });
     return () => mo.disconnect();
   }, []);

@@ -79,17 +79,6 @@ export function CommandPalette() {
     return () => clearTimeout(t);
   }, [isOpen]);
 
-  // Lock body scroll when menu open
-  useEffect(() => {
-    if (isOpen) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = prev;
-      };
-    }
-  }, [isOpen]);
-
   // Keyboard navigation within list
   const handleInputKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
@@ -130,6 +119,7 @@ export function CommandPalette() {
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          data-scroll-lock
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

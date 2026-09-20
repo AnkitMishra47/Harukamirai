@@ -164,6 +164,48 @@ body {
     color           280ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ============================================================
+   SCROLL LOCK - one screen at a time
+   ============================================================
+
+   An overlay that owns the whole screen marks itself `data-scroll-lock` and
+   the page underneath stops scrolling. Two things about this are deliberate.
+
+   THE LOCK IS THE ROOT'S, NOT THE BODY'S. The viewport takes its overflow
+   from `html`, and only falls through to `body` when `html` is `visible` on
+   BOTH axes. The rule above puts `overflow-x: hidden` on `html, body`, so the
+   root here is never `visible` and the `document.body.style.overflow` lock
+   that overlays conventionally use cannot propagate to the viewport. Measured
+   on the running site: a body lock leaves the scrollbar showing and the
+   document still scrolls, which is to say it does nothing at all.
+
+   IT IS CSS, NOT AN EFFECT. The storyline theater is server-rendered, so it is
+   on screen from the first paint while a `useEffect` cannot run until React
+   has hydrated - seconds, on a cold load. A lock that arrives that late is a
+   scrollbar sitting next to a screen that has nothing to scroll until it
+   blinks out. A stylesheet has no such gap. It also costs nothing to unwind:
+   the lock is a fact about the DOM rather than state to restore, so it cannot
+   be left behind by an overlay that unmounts in an unexpected order, and an
+   overlay animating itself out keeps it until it is really gone.
+
+   NO GUTTER IS RESERVED WHILE THIS IS ON. `scrollbar-gutter: stable` looks like
+   the right partner for a scroll lock - hold the bar's width and the layout
+   cannot shift when the bar goes. It is the wrong one here. A reserved gutter
+   sits OUTSIDE the initial containing block, so a `position: fixed; inset: 0`
+   overlay stops 10px short of the window and cannot paint over it: measured
+   with the takeover up, the overlay's right edge lands at 1869 in a 1879px
+   window. Those ten pixels keep showing the document's own background, and the
+   document is on a light theme while the theater is near-black - a pale strip
+   down the side of a full-screen dark takeover.
+
+   Letting the bar go instead costs one reflow: the page underneath gets those
+   pixels back and centred content moves half of them. It is underneath an
+   opaque overlay while that happens, which is the whole reason the lock is
+   there. */
+html:has([data-scroll-lock]) {
+  overflow-y: hidden;
+}
+
 ::selection {
   background: var(--accent);
   color: var(--bg);

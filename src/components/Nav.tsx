@@ -73,17 +73,6 @@ export function Nav() {
     return () => mq.removeEventListener("change", onChange);
   }, [open]);
 
-  // Lock body scroll when menu open
-  useEffect(() => {
-    if (open) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = prev;
-      };
-    }
-  }, [open]);
-
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[color-mix(in_oklab,var(--bg)_92%,transparent)] backdrop-blur-md">
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 lg:px-12 py-4">
@@ -184,6 +173,7 @@ export function Nav() {
       {open && (
         <div
           id="mobile-nav-panel"
+          data-scroll-lock
           className="nav-panel md:hidden border-t border-[var(--border)] bg-[var(--bg)]"
         >
           <div className="mx-auto max-w-6xl px-6 py-3">

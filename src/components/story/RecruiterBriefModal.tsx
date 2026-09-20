@@ -24,17 +24,6 @@ export function RecruiterBriefModal() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen]);
 
-  // Lock body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = prev;
-      };
-    }
-  }, [isOpen]);
-
   const copyEmail = () => {
     const email = profile.links.find((l) => l.label === "Email")?.value || "ankitm17.2001@gmail.com";
     navigator.clipboard.writeText(email);
@@ -50,7 +39,10 @@ export function RecruiterBriefModal() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
+    <div
+      data-scroll-lock
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8"
+    >
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"

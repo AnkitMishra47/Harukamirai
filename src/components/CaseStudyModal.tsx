@@ -34,12 +34,9 @@ export function CaseStudyModal({ study, onClose }: CaseStudyModalProps) {
       }
     };
 
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
-      document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [study, onClose]);
@@ -48,6 +45,7 @@ export function CaseStudyModal({ study, onClose }: CaseStudyModalProps) {
     <AnimatePresence>
       {study && (
         <motion.div
+          data-scroll-lock
           key={study.slug}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

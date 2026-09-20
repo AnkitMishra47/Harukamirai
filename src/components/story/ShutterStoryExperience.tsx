@@ -296,6 +296,13 @@ const SCENE_SLIDE_OFFSET_PCT = 105;
  */
 const STAGE_REVEAL_DELAY_MS = 300;
 /**
+ * How long the theatre takes to leave once the story hands over - the gate's own
+ * 550ms transition, read the same way STAGE_REVEAL_DELAY_MS reads it. The
+ * soundtrack fades across exactly this window, so the music reaches silence on
+ * the frame the theatre finishes clearing rather than stopping dead under it.
+ */
+const EXIT_TRANSITION_MS = 550;
+/**
  * Reopening from the hero has no gate to wait for - it renders already lifted.
  * One tick, purely so the scene reset lands before the entrance is asked for.
  */
@@ -568,7 +575,7 @@ export function ShutterStoryExperience() {
   };
 
   const exitToPortfolio = () => {
-    successionEngine.stop();
+    successionEngine.fadeOut(EXIT_TRANSITION_MS);
     if (revealTimerRef.current) window.clearTimeout(revealTimerRef.current);
     revealTimerRef.current = null;
     setIsStageRevealed(false);
@@ -577,7 +584,7 @@ export function ShutterStoryExperience() {
     window.dispatchEvent(new CustomEvent("portfolio-revealed"));
     setTimeout(() => {
       setIsDismissed(true);
-    }, 550);
+    }, EXIT_TRANSITION_MS);
   };
 
   /*
@@ -1004,11 +1011,16 @@ export function ShutterStoryExperience() {
     ) {
       return;
     }
+    if (currentSceneIdx >= SCENES.length - 1) {
+      exitToPortfolio();
+      return;
+    }
     setDirection(1);
-    setCurrentSceneIdx((curr) => (curr + 1) % SCENES.length);
+    setCurrentSceneIdx((curr) => curr + 1);
     setProgress(0);
   }, [
     progress,
+    currentSceneIdx,
     isShutterLifted,
     isStageRevealed,
     isExitingTheater,
@@ -1050,7 +1062,15 @@ export function ShutterStoryExperience() {
    */
 
   return (
-    <div className="fixed inset-0 z-50 select-none overflow-hidden font-sans h-[100dvh]">
+    /* `data-scroll-lock` stops the portfolio scrolling underneath the
+       takeover - see the scroll-lock block in globals.css. It is an attribute
+       in the server-rendered markup rather than an effect precisely so that it
+       is in force at the first paint, which is when this overlay first covers
+       the page. */
+    <div
+      data-scroll-lock
+      className="fixed inset-0 z-50 select-none overflow-hidden font-sans h-[100dvh]"
+    >
       {/* 
         ========================================================================
         LAYER 1: CINEMATIC STORYLINE THEATER (Sits underneath at z-40)

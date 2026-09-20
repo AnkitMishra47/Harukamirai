@@ -167,10 +167,36 @@ export function ScrollRunes() {
   /** schedule(), reachable from measure() without a dependency cycle. */
   const wake = useRef(() => {});
 
+  /**
+   * Document height, cached. Read from the layout only when the document can
+   * actually have changed size, never while scrolling.
+   */
+  const maxRef = useRef(0);
+  const remeasureDoc = useCallback(() => {
+    maxRef.current = document.documentElement.scrollHeight - window.innerHeight;
+  }, []);
+
+  /*
+   * Nothing in here may read the layout.
+   *
+   * This runs once per animation frame for the whole length of a scroll, and it
+   * used to open by reading `document.documentElement.scrollHeight` - which
+   * forces a full document layout - and then, for each seal, a
+   * `getBoundingClientRect()` interleaved with `dataset` writes, which is a
+   * read/write/read thrash that forces layout again. Traced across one touch
+   * scroll at 412x748: Layout ran 152 times and UpdateLayoutTree 152 times,
+   * about once per frame, for a gesture that should need neither.
+   *
+   * The document height is cached and refreshed only when the document can have
+   * changed size. The seals' rects are not read here at all: the docks are
+   * `position: fixed` (see scroll-runes.module.css), so scrolling cannot move
+   * them, and the only code that wants their centres - the pointer reach test
+   * and the ink probe - runs in the settled branch below, off the scroll path.
+   */
   const measure = useCallback(() => {
     rafRef.current = 0;
     const vh = window.innerHeight;
-    const max = document.documentElement.scrollHeight - vh;
+    const max = maxRef.current;
     const y = window.scrollY;
 
     // Same primitive back means React bails out, so a scroll that changes
@@ -189,22 +215,24 @@ export function ScrollRunes() {
     for (let i = 0; i < docks.length; i++) {
       const dock = docks[i];
       if (!dock) continue;
-      const rect = dock.getBoundingClientRect();
-      const cx = (rect.left + rect.right) / 2;
-      const cy = (rect.top + rect.bottom) / 2;
-      centres.current[i].x = cx;
-      centres.current[i].y = cy;
       if (dock.dataset.show !== "true" || near.current[i]) {
         dock.dataset.veiled = "false";
         continue;
       }
       if (!settled) {
         // Still moving, so the seal stays present whatever is under it, and
-        // there is no reason to pay for the probe at all.
+        // there is no reason to pay for the probe at all - nor for the geometry
+        // the probe needs, which is why the rect is read below this line and
+        // not above it.
         dock.dataset.veiled = "false";
         waiting = true;
         continue;
       }
+      const rect = dock.getBoundingClientRect();
+      const cx = (rect.left + rect.right) / 2;
+      const cy = (rect.top + rect.bottom) / 2;
+      centres.current[i].x = cx;
+      centres.current[i].y = cy;
       dock.dataset.veiled = inkUnder(dock, cx, cy) ? "true" : "false";
     }
 
@@ -256,20 +284,31 @@ export function ScrollRunes() {
      * as it bubbles nowhere, and costs nothing on a page that has finished
      * loading.
      */
-    const onLoad = () => schedule();
+    const onLoad = () => {
+      remeasureDoc();
+      schedule();
+    };
 
+    remeasureDoc();
     schedule();
+    const onResize = () => {
+      remeasureDoc();
+      onScroll();
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
     window.addEventListener("pointermove", onPointer, { passive: true });
     window.addEventListener("load", onLoad, true);
     // The document grows and shrinks between routes and as images settle, and
     // neither of those fires scroll or resize.
-    const ro = new ResizeObserver(schedule);
+    const ro = new ResizeObserver(() => {
+      remeasureDoc();
+      schedule();
+    });
     ro.observe(document.documentElement);
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("load", onLoad, true);
       ro.disconnect();

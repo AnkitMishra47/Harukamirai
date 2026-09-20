@@ -413,6 +413,35 @@ html {
 .ring-pulse { animation: ring-pulse 4s ease-in-out infinite; transform-origin: 400px 400px; transform-box: view-box; will-change: transform; }
 .circle-in { animation: circle-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
+/* Transmutation Circle Navigation Loader */
+@keyframes alchemyDrawOuter {
+  0% { stroke-dashoffset: 300; transform: rotate(0deg); }
+  50% { stroke-dashoffset: 0; transform: rotate(180deg); }
+  100% { stroke-dashoffset: -300; transform: rotate(360deg); }
+}
+@keyframes alchemyDrawInner {
+  0% { stroke-dashoffset: 160; transform: rotate(360deg); }
+  50% { stroke-dashoffset: 0; transform: rotate(180deg); }
+  100% { stroke-dashoffset: -160; transform: rotate(0deg); }
+}
+@keyframes alchemyAuraPulse {
+  0%, 100% { filter: drop-shadow(0 0 6px var(--accent)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 20px var(--gold)); transform: scale(1.03); }
+}
+.alchemy-draw-outer {
+  stroke-dasharray: 180;
+  animation: alchemyDrawOuter 3s ease-in-out infinite;
+  transform-origin: 50px 50px;
+}
+.alchemy-draw-inner {
+  stroke-dasharray: 120;
+  animation: alchemyDrawInner 2.4s ease-in-out infinite;
+  transform-origin: 50px 50px;
+}
+.alchemy-pulse-box {
+  animation: alchemyAuraPulse 2s ease-in-out infinite;
+}
+
 
 /* Scroll reveals - class flipped once by IntersectionObserver */
 .reveal-up { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); will-change: transform, opacity; }

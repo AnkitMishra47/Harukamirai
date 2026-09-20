@@ -72,10 +72,10 @@ export function Footer() {
           </p>
           
           <div className="flex items-center gap-4 text-xs font-medium">
-            <Link href="/about" className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">About</Link>
-            <Link href="/work" className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">Work</Link>
-            <Link href="/resume" className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">Resume</Link>
-            <Link href="/contact" className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">Contact</Link>
+            <Link href="/about" prefetch={true} className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">About</Link>
+            <Link href="/work" prefetch={true} className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">Work</Link>
+            <Link href="/resume" prefetch={true} className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">Resume</Link>
+            <Link href="/contact" prefetch={true} className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">Contact</Link>
           </div>
 
           <button

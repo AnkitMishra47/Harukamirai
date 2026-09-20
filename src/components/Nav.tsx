@@ -91,6 +91,7 @@ export function Nav() {
             voice-control user can say what they can read (WCAG 2.5.3). */}
         <Link
           href="/"
+          prefetch={true}
           className="flex items-center gap-3 group shrink-0"
           onClick={() => setOpen(false)}
         >
@@ -123,6 +124,7 @@ export function Nav() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
+                    prefetch={true}
                     className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
                       isActive
                         ? "text-[var(--accent)] bg-[var(--accent)]/10 font-semibold"
@@ -221,6 +223,7 @@ export function Nav() {
                   >
                     <Link
                       href={l.href}
+                      prefetch={true}
                       onClick={() => setOpen(false)}
                       className={`block rounded-md px-3 py-3 font-display text-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
                         isActive

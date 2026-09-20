@@ -12,6 +12,7 @@ import { CommandPalette } from "@/components/command/CommandPalette";
 import { ShutterStoryExperience } from "@/components/story/ShutterStoryExperience";
 import { RecruiterBriefModal } from "@/components/story/RecruiterBriefModal";
 import { AdventureQuest } from "@/components/adventure/AdventureQuest";
+import { TransmutationLoader } from "@/components/TransmutationLoader";
 import { profile } from "@/content";
 import "./globals.css";
 
@@ -77,6 +78,7 @@ export default function RootLayout({
         </main>
         <AdventureQuest />
         <ScrollRunes />
+        <TransmutationLoader />
         <Footer />
       </body>
     </html>

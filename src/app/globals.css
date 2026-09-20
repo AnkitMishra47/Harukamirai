@@ -314,13 +314,26 @@ html {
    HERO ENTRANCE - Cinematic split-and-converge motion
    Opposing elements sweep in from left and right and merge in the center.
    ============================================================ */
+/*
+ * Every entrance below lands on `transform: none`, never `translate3d(0,0,0)`.
+ *
+ * They are the same picture and not the same thing. An identity transform is
+ * still a transform: it keeps the element a compositing candidate for the life
+ * of the page, and with `animation-fill-mode: both` the final keyframe stays
+ * applied forever - so eleven hero letters, six staggered hero rows and every
+ * left/right reveal held a layer each long after they had finished moving. The
+ * same distinction is why the lightbox used to lay itself out against a page
+ * div (see Lightbox.tsx): `matrix(1, 0, 0, 1, 0, 0)` is not nothing.
+ *
+ * `.reveal-up.is-in` already did this correctly; its siblings did not.
+ */
 @keyframes hero-in-left {
   from { opacity: 0; transform: translate3d(-54px, 0, 0); }
-  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  to   { opacity: 1; transform: none; }
 }
 @keyframes hero-in-right {
   from { opacity: 0; transform: translate3d(54px, 0, 0); }
-  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  to   { opacity: 1; transform: none; }
 }
 
 .hero-in-left { animation: hero-in-left 850ms cubic-bezier(0.16, 1, 0.3, 1) both; }
@@ -336,11 +349,11 @@ html {
 
 @keyframes hero-letter-left {
   from { opacity: 0; transform: translate3d(-32px, 0, 0); }
-  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  to   { opacity: 1; transform: none; }
 }
 @keyframes hero-letter-right {
   from { opacity: 0; transform: translate3d(32px, 0, 0); }
-  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  to   { opacity: 1; transform: none; }
 }
 
 .hero-letter-left {
@@ -358,7 +371,7 @@ html {
 
 @keyframes hero-book-in {
   from { opacity: 0; transform: translate3d(64px, 0, 0) scale(0.94); }
-  to   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  to   { opacity: 1; transform: none; }
 }
 .hero-book {
   animation: hero-book-in 950ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
@@ -462,9 +475,9 @@ html {
 .reveal-up { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); will-change: transform, opacity; }
 .reveal-up.is-in { opacity: 1; transform: none; will-change: auto; }
 .reveal-left { opacity: 0; transform: translate3d(-52px, 0, 0); transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1); will-change: transform, opacity; }
-.reveal-left.is-in { opacity: 1; transform: translate3d(0, 0, 0); will-change: auto; }
+.reveal-left.is-in { opacity: 1; transform: none; will-change: auto; }
 .reveal-right { opacity: 0; transform: translate3d(52px, 0, 0); transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1); will-change: transform, opacity; }
-.reveal-right.is-in { opacity: 1; transform: translate3d(0, 0, 0); will-change: auto; }
+.reveal-right.is-in { opacity: 1; transform: none; will-change: auto; }
 .brush path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s cubic-bezier(0.65,0,0.35,1); }
 .brush circle { opacity: 0; transform: scale(0); transform-origin: 300px 12px; transform-box: view-box; transition: opacity .4s 1.2s, transform .4s 1.2s; }
 .brush.is-in path { stroke-dashoffset: 0; }

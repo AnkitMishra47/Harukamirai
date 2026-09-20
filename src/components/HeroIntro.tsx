@@ -31,6 +31,33 @@ export function HeroIntro() {
   }, []);
 
   /*
+   * The entrance animations are taken off the letters once they have played.
+   *
+   * `animation-fill-mode: both` does not stop when the animation ends - it keeps
+   * the last keyframe applied for the life of the page, and Chrome keeps an
+   * element composited while a compositable property (here `opacity`) is being
+   * animated, finished or not. So every letter of the name held its own layer
+   * forever, on a page already carrying 114 of them across 13.5 MPx.
+   *
+   * On a real Galaxy S24 Ultra that is not theoretical: scrolling to the hero
+   * repeatedly, roughly one pass in twelve rendered the name with a random
+   * handful of letters simply absent - "K T", "MI R" - because the compositor
+   * had dropped their tiles and nothing ever asked for them again. The DOM was
+   * always correct, which is why it never reproduced in a headless browser.
+   *
+   * The final state of every one of these animations is the element's natural
+   * state (opacity 1, no transform), so dropping the class changes nothing
+   * visible and leaves plain, un-composited text behind.
+   */
+  const [entranceDone, setEntranceDone] = useState(false);
+  useEffect(() => {
+    setEntranceDone(false);
+    // Longest letter delay (0.5s) + duration (0.7s), plus a margin.
+    const t = setTimeout(() => setEntranceDone(true), 1600);
+    return () => clearTimeout(t);
+  }, [entranceKey]);
+
+  /*
    * The parallax runs only where something reads it.
    *
    * `--hero-p` has exactly two consumers: `.hero-book`, inside an
@@ -157,13 +184,19 @@ export function HeroIntro() {
               <span key={line} className="block whitespace-nowrap">
                 {Array.from(line).map((c, i) => {
                   const isAIChar = li === 0 && (i === 0 || i === 3);
-                  const letterClass = li === 0 ? "hero-letter-left" : "hero-letter-right";
+                  const letterClass = entranceDone
+                    ? ""
+                    : li === 0
+                      ? "hero-letter-left"
+                      : "hero-letter-right";
                   return (
                     <span
                       key={i}
                       className={`${letterClass} inline-block ${isAIChar ? "text-[var(--accent)]" : ""}`}
                       style={{
-                        animationDelay: `${0.22 + (li * 4 + i) * 0.04}s`,
+                        ...(entranceDone
+                          ? {}
+                          : { animationDelay: `${0.22 + (li * 4 + i) * 0.04}s` }),
                         ...(isAIChar
                           ? { textShadow: "0 0 28px var(--accent-glow), 0 0 12px var(--accent-glow)" }
                           : {}),

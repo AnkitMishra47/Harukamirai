@@ -1837,18 +1837,21 @@ export function ShutterStoryExperience() {
           <header
             className={`absolute inset-x-0 top-0 flex items-center justify-between gap-3 ${styles.gutter} ${styles.topInset}`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 min-w-0">
               <span className="size-2 rounded-full bg-[#42a9a6] animate-pulse" />
-              <span className="font-mono text-[0.8rem] uppercase tracking-[0.2em] text-[#e6e3ea]/80 font-medium">
-                HARUKA MIRAI · 遥か未来
+              <span className="font-mono text-[0.7rem] sm:text-[0.8rem] uppercase tracking-[0.16em] sm:tracking-[0.2em] text-[#e6e3ea]/80 font-medium whitespace-nowrap">
+                HARUKA MIRAI
+                <span className="hidden sm:inline"> · 遥か未来</span>
               </span>
             </div>
             <button
               type="button"
               onClick={exitToPortfolio}
-              className="font-mono text-[0.8rem] text-[#e6e3ea]/75 hover:text-[#e6e3ea] transition-colors cursor-pointer inline-flex items-center gap-1.5 group leading-none"
+              className="font-mono text-[0.7rem] sm:text-[0.8rem] text-[#e6e3ea]/75 hover:text-[#e6e3ea] transition-colors cursor-pointer inline-flex items-center gap-1.5 group leading-none shrink-0"
             >
-              <span className="cap-align">Skip to index</span>
+              <span className="cap-align whitespace-nowrap">
+                Skip<span className="hidden sm:inline"> to index</span>
+              </span>
               <svg
                 width="12"
                 height="12"
@@ -1932,8 +1935,11 @@ export function ShutterStoryExperience() {
                 site: SCENES.length, the case study list, the award years.
               */}
               <p className={`${styles.manifest} mt-6 font-mono uppercase text-[#e6e3ea]/85`}>
-                {SCENES.length} acts · {caseStudies.length} case studies · awards in{" "}
-                {AWARD_YEARS}
+                <span className="whitespace-nowrap">{SCENES.length} acts</span>
+                <span aria-hidden className="text-[#8bc2c0]/70">·</span>
+                <span className="whitespace-nowrap">{caseStudies.length} case studies</span>
+                <span aria-hidden className="text-[#8bc2c0]/70">·</span>
+                <span className="whitespace-nowrap">awards in {AWARD_YEARS}</span>
               </p>
             </div>
           </div>

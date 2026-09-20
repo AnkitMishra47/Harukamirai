@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "motion/react";
-import { profile, photos, type Photo } from "@/content";
+import { profile, photos, awards, caseStudies, type Photo } from "@/content";
 import { trackDownload } from "@/lib/track-download";
 import { successionEngine } from "@/lib/audio-synthesizer";
 import styles from "./story-scene.module.css";
+import { CloverSeal } from "./CloverSeal";
 
 /**
  * Every photograph the story can show, keyed by its own src.
@@ -347,6 +348,15 @@ const SHUTTER_LIFT_MIN_PX = 90; // ceiling, so a tall screen is no harder to ope
 const SHUTTER_FLICK_VELOCITY_PX_PER_S = SWIPE_VELOCITY_PX_PER_S;
 const SHUTTER_FLICK_MIN_PX = 28; // a flick still has to actually travel
 const SHUTTER_DRAG_SLOP_PX = 6; // travel before a press stops being a possible tap
+
+/**
+ * "awards in 2024 and 2025", built from the award list rather than written out,
+ * so the gate cannot go on claiming a year after the content stops saying it.
+ */
+const AWARD_YEARS = [...awards]
+  .map((a) => a.year)
+  .sort()
+  .join(" and ");
 /**
  * Velocity is measured over a window, not between two consecutive moves.
  *
@@ -522,7 +532,7 @@ export function ShutterStoryExperience() {
     const handleReopen = () => {
       setIsDismissed(false);
       setIsExitingTheater(false);
-      setIsShutterArming(false);
+      setIsShutterCharged(false);
       setIsShutterLifted(true);
       setCurrentSceneIdx(0);
       setDirection(1);
@@ -549,24 +559,19 @@ export function ShutterStoryExperience() {
     setIsPaused(false);
     successionEngine.play();
 
-    // Park the teaser this frame so the gate has somewhere to move FROM, and
-    // lift on the next. Two frames rather than one: the first commits the class
-    // removal, the second is the one the transition can start on.
-    setIsShutterArming(true);
-    cancelAnimationFrame(armRafRef.current);
-    armRafRef.current = requestAnimationFrame(() => {
-      armRafRef.current = requestAnimationFrame(() => {
-        armRafRef.current = 0;
-        setIsShutterLifted(true);
-      });
-    });
+    /*
+     * Open on the press, in the same tick.
+     *
+     * There used to be a beat here to let the seam flare first. It flares on
+     * hover and on pointer-down already, so by the time anyone commits, the
+     * light has answered - and a pause in front of a 1.4s ease does not read as
+     * anticipation, it reads as the gate hesitating. The panels carry an
+     * explicit `translate3d(0,0,0)`, so the transition has a value to start
+     * from without being given a frame to find one.
+     */
+    setIsShutterCharged(true);
+    setIsShutterLifted(true);
   };
-
-  useEffect(() => {
-    return () => {
-      if (armRafRef.current) cancelAnimationFrame(armRafRef.current);
-    };
-  }, []);
 
   const toggleSoundtrack = () => {
     const next = !isMusicMuted;
@@ -588,31 +593,32 @@ export function ShutterStoryExperience() {
   };
 
   /*
-   * The shutter is dragged, not clicked at.
+   * The shutter is pulled apart, not clicked at.
    *
-   * It used to sample Y at press and Y at release and lift if the difference
-   * was upward enough. Nothing moved in between, so the gate could only ever
-   * behave like a button that happened to need a swipe - you pushed, nothing
-   * answered, and then it was simply gone. A shutter you are pulling up should
-   * be under your thumb the whole way.
+   * One pointer cannot do what two hands would, so any horizontal travel parts
+   * the panels symmetrically: drag distance is read as an absolute, the left
+   * panel takes it one way and the right panel the other. Dragging left and
+   * dragging right therefore do the same thing, which is the only mapping that
+   * does not leave half of all attempts doing nothing.
    *
-   * The live offset is written straight to the element's `transform`, not held
+   * The live offset is written straight to each panel's `transform`, not held
    * in React state: a gesture is sixty writes a second and not one of them
-   * needs a re-render. The two things that DO need React are the class swap
-   * that parks the idle teaser animation (a running animation outranks an
-   * inline style, so the teaser has to stand down or it fights the finger) and
-   * nothing else.
+   * needs a re-render. The two things that DO need React are the class that
+   * stands the transition down while a finger is on the gate, and the charged
+   * class that brightens the seam.
    *
    * Listeners go on `window` rather than through `setPointerCapture`, because
    * capturing on the gate retargets the click the browser synthesises at
    * release, and the buttons inside the gate need that click intact.
    */
   const shutterRef = useRef<HTMLDivElement>(null);
+  const panelLeftRef = useRef<HTMLDivElement>(null);
+  const panelRightRef = useRef<HTMLDivElement>(null);
   const shutterDragRef = useRef<{
-    startY: number;
+    startX: number;
     startT: number;
-    currentY: number;
-    sampleY: number;
+    currentX: number;
+    sampleX: number;
     sampleT: number;
     velocity: number;
     active: boolean;
@@ -621,31 +627,26 @@ export function ShutterStoryExperience() {
   const shutterDraggedRef = useRef(false);
   const [isShutterDragging, setIsShutterDragging] = useState(false);
   /**
-   * One frame with the teaser animation gone and the lift not yet applied.
-   *
-   * A running animation on `transform` suppresses a transition of the same
-   * property, so swapping the teaser class straight for the lifted one gave the
-   * transition no before-change value to start from and the gate teleported.
-   * Traced per frame: teaser -> lifted in one frame reads -748, -748, -748...;
-   * dropping the teaser a frame earlier reads -133, -248, -344, -423, -486...,
-   * which is the 0.55s ease-out the stylesheet has always asked for.
-   *
-   * This state IS that frame. It renders neither class.
+   * A hand is on the gate, or hovering it. Purely a lighting state: the seam
+   * widens and the haze swells so the gate answers before it has moved.
    */
-  const [isShutterArming, setIsShutterArming] = useState(false);
-  const armRafRef = useRef(0);
+  const [isShutterCharged, setIsShutterCharged] = useState(false);
 
-  /*
-   * Hands the transform back to the stylesheet on the frame AFTER the dragging
-   * class is gone. Clearing it in the same tick would clear it while
-   * `transition: none` still applied, and the gate would jump rather than
-   * settle.
-   */
-  const releaseShutterTransform = () => {
+  /** Both panels back to shut, and the stylesheet back in charge of getting there. */
+  const releaseShutterPanels = () => {
     requestAnimationFrame(() => {
-      const el = shutterRef.current;
-      if (el) el.style.transform = "";
+      if (panelLeftRef.current) panelLeftRef.current.style.transform = "";
+      if (panelRightRef.current) panelRightRef.current.style.transform = "";
     });
+  };
+
+  const partPanels = (distance: number) => {
+    if (panelLeftRef.current) {
+      panelLeftRef.current.style.transform = `translate3d(${-distance}px, 0, 0)`;
+    }
+    if (panelRightRef.current) {
+      panelRightRef.current.style.transform = `translate3d(${distance}px, 0, 0)`;
+    }
   };
 
   const handleShutterPointerDown = (e: React.PointerEvent) => {
@@ -655,6 +656,7 @@ export function ShutterStoryExperience() {
     if (!el) return;
 
     shutterDraggedRef.current = false;
+    setIsShutterCharged(true);
     /*
      * Every time below is `performance.now()`, read at the moment the handler
      * runs. Not `e.timeStamp`: this one is React's synthetic event and the ones
@@ -664,10 +666,10 @@ export function ShutterStoryExperience() {
      */
     const now = performance.now();
     const drag = {
-      startY: e.clientY,
+      startX: e.clientX,
       startT: now,
-      currentY: e.clientY,
-      sampleY: e.clientY,
+      currentX: e.clientX,
+      sampleX: e.clientX,
       sampleT: now,
       velocity: 0,
       active: false,
@@ -681,23 +683,23 @@ export function ShutterStoryExperience() {
       const t = performance.now();
       const dt = t - d.sampleT;
       if (dt >= SHUTTER_VELOCITY_WINDOW_MS) {
-        d.velocity = (ev.clientY - d.sampleY) / dt;
-        d.sampleY = ev.clientY;
+        // Speed of the parting, so direction is not part of the reading.
+        d.velocity = Math.abs(ev.clientX - d.sampleX) / dt;
+        d.sampleX = ev.clientX;
         d.sampleT = t;
       }
 
-      d.currentY = ev.clientY;
-      const dy = ev.clientY - d.startY;
+      d.currentX = ev.clientX;
+      const travelled = Math.abs(ev.clientX - d.startX);
       // Inside the slop the gesture is still allowed to turn out to be a tap.
       if (!d.active) {
-        if (dy > -SHUTTER_DRAG_SLOP_PX) return;
+        if (travelled < SHUTTER_DRAG_SLOP_PX) return;
         d.active = true;
         shutterDraggedRef.current = true;
         setIsShutterDragging(true);
       }
-      // Up moves the gate; down is a wall, because there is nothing below it.
-      const offset = Math.max(-el.offsetHeight, Math.min(0, dy));
-      el.style.transform = `translate3d(0, ${offset}px, 0)`;
+      // Each panel only has its own half to travel before it is fully gone.
+      partPanels(Math.min(travelled, el.offsetWidth / 2));
     };
 
     const detach = () => {
@@ -713,16 +715,17 @@ export function ShutterStoryExperience() {
       shutterDragRef.current = null;
       if (!d || !d.active) {
         setIsShutterDragging(false);
+        setIsShutterCharged(false);
         return;
       }
 
-      // `d.currentY`, not `ev.clientY`: the tracked position is the one the gate
-      // is actually sitting at, and it cannot be contradicted by whatever
-      // coordinates the release event happens to carry.
-      const travelled = d.startY - d.currentY;
+      // `d.currentX`, not `ev.clientX`: the tracked position is the one the
+      // panels are actually sitting at, and it cannot be contradicted by
+      // whatever coordinates the release event happens to carry.
+      const travelled = Math.abs(d.currentX - d.startX);
       const threshold = Math.min(
         SHUTTER_LIFT_MIN_PX,
-        el.offsetHeight * SHUTTER_LIFT_RATIO,
+        (el.offsetWidth / 2) * SHUTTER_LIFT_RATIO,
       );
       /*
        * Two readings of the same hand, and the faster one wins.
@@ -738,27 +741,28 @@ export function ShutterStoryExperience() {
       const windowed =
         releasedAt - d.sampleT <= SHUTTER_VELOCITY_STALE_MS ? d.velocity : 0;
       const elapsed = releasedAt - d.startT;
-      const overall = elapsed > 0 ? (d.currentY - d.startY) / elapsed : 0;
+      const overall = elapsed > 0 ? travelled / elapsed : 0;
       // Both readings are px/ms, so the threshold comes down to the same units.
       const flicked =
         travelled >= SHUTTER_FLICK_MIN_PX &&
-        Math.min(windowed, overall) <= -SHUTTER_FLICK_VELOCITY_PX_PER_S / 1000;
+        Math.max(windowed, overall) >= SHUTTER_FLICK_VELOCITY_PX_PER_S / 1000;
 
       setIsShutterDragging(false);
       if (travelled >= threshold || flicked) {
         /*
-         * The inline transform STAYS on a commit. It is where the thumb left
-         * the gate, and it is the value the lift transition has to travel from
-         * - clearing it here would snap the gate back to shut for the two
-         * frames before `.shutterLifted` lands. `.shutterLifted` carries
-         * `!important`, so it overrides the inline value the moment it applies
-         * and the leftover declaration is inert from then on.
+         * The inline transforms STAY on a commit. They are where the hand left
+         * the panels, and they are the values the opening transition has to
+         * travel from - clearing them here would snap the gate shut for the two
+         * frames before `.shutterOpen` lands. That class carries `!important`,
+         * so it overrides the inline values the moment it applies and the
+         * leftover declarations are inert from then on.
          */
         liftShutter();
       } else {
-        // A refusal has nowhere to be but home, so the gate's own transition
-        // settles it back down.
-        releaseShutterTransform();
+        // A refusal has nowhere to be but shut, so the panels' own transition
+        // settles them back.
+        setIsShutterCharged(false);
+        releaseShutterPanels();
       }
     };
 
@@ -767,8 +771,8 @@ export function ShutterStoryExperience() {
      *
      * The browser cancels when it takes the gesture over - a scroll handoff, the
      * touch leaving the surface, an interruption - and the event it sends has no
-     * meaningful coordinates: Chrome reports `clientY: 0`. Routed through the
-     * release path, that reads as a pull the full height of the screen and the
+     * meaningful coordinates: Chrome reports `clientX: 0`. Routed through the
+     * release path, that reads as a pull the full width of the screen and the
      * shutter flies open on a gesture the visitor never finished. Cancelling
      * puts it back where it started, every time.
      */
@@ -776,7 +780,8 @@ export function ShutterStoryExperience() {
       detach();
       shutterDragRef.current = null;
       setIsShutterDragging(false);
-      releaseShutterTransform();
+      setIsShutterCharged(false);
+      releaseShutterPanels();
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
@@ -786,8 +791,8 @@ export function ShutterStoryExperience() {
 
   /*
    * A gesture that travelled is not a tap, whatever click the browser sends
-   * after it. Without this, letting go halfway down over the grip lip would
-   * spring the gate back and then immediately open it anyway.
+   * after it. Without this, letting go halfway through a pull would spring the
+   * gate shut and then immediately open it anyway.
    */
   const handleShutterClickCapture = (e: React.MouseEvent) => {
     if (!shutterDraggedRef.current) return;
@@ -796,8 +801,13 @@ export function ShutterStoryExperience() {
     e.stopPropagation();
   };
 
+  /*
+   * A wheel is the desktop equivalent of shoving the gate. Either axis counts:
+   * a trackpad swipe sideways is the gesture the panels are asking for, and a
+   * mouse only has the vertical one to offer.
+   */
   const handleShutterWheel = (e: React.WheelEvent) => {
-    if (e.deltaY > 25) {
+    if (Math.abs(e.deltaX) > 25 || e.deltaY > 25) {
       liftShutter();
     }
   };
@@ -1766,146 +1776,219 @@ export function ShutterStoryExperience() {
       <div
         ref={shutterRef}
         onPointerDown={handleShutterPointerDown}
+        onPointerEnter={() => !isShutterLifted && setIsShutterCharged(true)}
+        onPointerLeave={() => !isShutterDragging && setIsShutterCharged(false)}
         onClickCapture={handleShutterClickCapture}
         onWheel={handleShutterWheel}
-        className={`fixed inset-0 z-50 flex flex-col justify-between bg-[#08090c] text-[var(--text)] select-none pointer-events-auto h-[100dvh] border-b-2 border-amber-400/30 shadow-[0_25px_60px_rgba(0,0,0,0.95)] ${
-          styles.shutterGate
-        } ${
-          isShutterLifted
-            ? styles.shutterLifted
-            : isShutterDragging
-              ? styles.shutterDragging
-              : isShutterArming
-                ? "" // the frame that gives the transition a starting value
-                : styles.shutterTeaser
-        }`}
+        className={`fixed inset-0 z-50 select-none pointer-events-auto h-[100dvh] ${
+          styles.shutterShell
+        } ${isShutterCharged ? styles.shutterCharged : ""} ${
+          isShutterDragging ? styles.shutterDragging : ""
+        } ${isShutterLifted ? styles.shutterOpen : ""}`}
         style={{
-          backgroundImage:
-            "linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px)",
-          backgroundSize: "100% 32px",
-          // `none`, not `pan-x`: the gesture this surface exists for is vertical,
-          // and the browser must not claim it for a scroll or a pull-to-refresh.
-          // Vertical panning was already off here, so nothing scrollable is lost.
+          // `none`, not `pan-y`: the gesture this surface exists for is
+          // horizontal, and the browser must not claim it for a back-swipe.
           touchAction: "none",
         }}
       >
-        {/* Subtle Ambient Radial Backlight */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-35"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 50% 40%, rgba(190, 24, 93, 0.18), transparent 70%)",
-          }}
-          aria-hidden
-        />
+        {/* The room on the other side, and the haze standing in the doorway. */}
+        <div className={styles.hiddenLight} aria-hidden />
+        <div className={styles.lightAtmosphere} aria-hidden />
+        <div className={styles.floorSpill} aria-hidden />
 
-        {/* Top Header */}
-        <header
-          className={`relative z-10 flex items-center justify-between gap-3 pb-4 sm:pb-6 border-b border-white/10 ${styles.gutter} ${styles.topInset}`}
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="size-2 rounded-full bg-[var(--accent)] animate-pulse" />
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/75 font-medium">
-              HARUKA MIRAI · 遥か未来
-            </span>
+        {/*
+          The two halves of the gate. The seal is one drawing clipped down the
+          middle, so the panels carry a half each and parting them tears it.
+        */}
+        <div ref={panelLeftRef} className={`${styles.panel} ${styles.panelLeft}`} aria-hidden>
+          <div className={styles.emblemHalf}>
+            <CloverSeal />
           </div>
-          <button
-            type="button"
-            onClick={exitToPortfolio}
-            className="font-mono text-xs text-white/50 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1.5 group leading-none"
+        </div>
+        <div ref={panelRightRef} className={`${styles.panel} ${styles.panelRight}`} aria-hidden>
+          <div className={styles.emblemHalf}>
+            <CloverSeal />
+          </div>
+        </div>
+
+        <div className={styles.dust} aria-hidden>
+          <i />
+          <i />
+          <i />
+          <i />
+        </div>
+        <div className={styles.centerLight} aria-hidden />
+        <div className={styles.seamShine} aria-hidden />
+        <div className={styles.lightFlood} aria-hidden />
+
+        {/* Everything written on the gate, which leaves when the gate does. */}
+        <div className={styles.shutterContent}>
+          <header
+            className={`absolute inset-x-0 top-0 flex items-center justify-between gap-3 ${styles.gutter} ${styles.topInset}`}
           >
-            <span className="cap-align">Skip to index</span>
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="shrink-0 transition-transform group-hover:translate-x-0.5"
-              aria-hidden
-            >
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </button>
-        </header>
-
-        {/* Center Sanctuary Callout */}
-        <main
-          className={`relative z-10 mx-auto max-w-2xl w-full text-center flex-1 min-h-0 py-4 ${styles.gutter} ${styles.stageScroller}`}
-        >
-          <div className={styles.stageItem}>
-          <p className="font-jp text-xs sm:text-sm uppercase tracking-[0.28em] text-[var(--accent)] mb-3">
-            遥か未来 · 反魔法
-          </p>
-          <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-white leading-[1.08]">
-            Welcome to Haruka Mirai.
-          </h1>
-          <p className="mt-4 sm:mt-6 text-sm sm:text-base text-white/70 max-w-lg mx-auto leading-relaxed">
-            A quiet journey through engineering, scale, and craft. Step inside to explore how high-stakes systems were built.
-          </p>
-
-          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2.5">
+              <span className="size-2 rounded-full bg-[#42a9a6] animate-pulse" />
+              <span className="font-mono text-[0.8rem] uppercase tracking-[0.2em] text-[#e6e3ea]/80 font-medium">
+                HARUKA MIRAI · 遥か未来
+              </span>
+            </div>
             <button
               type="button"
-              onClick={liftShutter}
-              className="w-full sm:w-auto group relative inline-flex items-center justify-center gap-2.5 rounded-full bg-[var(--accent)] px-7 py-3.5 font-sans text-xs sm:text-sm font-semibold text-[var(--bg)] shadow-[0_0_35px_var(--accent-glow)] transition-all hover:scale-[1.02] cursor-pointer"
+              onClick={exitToPortfolio}
+              className="font-mono text-[0.8rem] text-[#e6e3ea]/75 hover:text-[#e6e3ea] transition-colors cursor-pointer inline-flex items-center gap-1.5 group leading-none"
             >
-              <span>Lift Shutter & Enter</span>
+              <span className="cap-align">Skip to index</span>
               <svg
-                width="15"
-                height="15"
+                width="12"
+                height="12"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="shrink-0 transition-transform group-hover:-translate-y-0.5"
+                className="shrink-0 transition-transform group-hover:translate-x-0.5"
                 aria-hidden
               >
-                <polyline points="18 15 12 9 6 15" />
+                <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </button>
+          </header>
 
-            <button
-              type="button"
-              onClick={exitToPortfolio}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3.5 font-mono text-xs uppercase tracking-[0.14em] text-white/80 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
-            >
-              <span>Browse Portfolio Directly</span>
-            </button>
-          </div>
-          </div>
-        </main>
+          <div className={styles.gateCenter}>
+            <div className={styles.copyScrim} aria-hidden />
+            <div className={styles.brandLockup}>
+              <h1 className={`${styles.jpTitle} font-jp text-[#e6e3ea]/92`}>遥か未来</h1>
+              <p className={`${styles.enTitle} font-display uppercase text-[#e6e3ea]`}>
+                Haruka Mirai
+              </p>
+              <div className={styles.quietLine} aria-hidden />
+              <p className={`${styles.tagline} font-display uppercase text-[#e6e3ea]/90`}>
+                Engineer a brighter tomorrow
+              </p>
+            </div>
 
-        {/* Shutter Bottom Architectural Grip Lip (Draggable & Clickable) */}
-        <footer
-          onClick={liftShutter}
-          className={`relative z-10 flex items-center justify-between gap-3 pt-3.5 sm:pt-4 border-t border-white/15 bg-black/80 hover:bg-black/90 font-mono text-[11px] text-white/70 hover:text-white transition-colors cursor-pointer ${styles.gutter} ${styles.bottomInset} group shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]`}
-        >
-          <span>Ankit Mishra · Senior SWE</span>
-          <span className="inline-flex items-center gap-1.5 font-semibold text-amber-300 tracking-wider group-hover:text-amber-200 transition-colors">
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="animate-bounce"
-              aria-hidden
-            >
-              <polyline points="18 15 12 9 6 15" />
-            </svg>
-            <span>SLIDE UP OR CLICK TO ENTER</span>
+            <div className={styles.gateActions}>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={liftShutter}
+                  className={`${styles.gateAction} w-full sm:w-auto group inline-flex items-center justify-center gap-2.5 px-8 py-4 font-display font-bold uppercase text-[#15101a] border border-[#8bc2c0]/60 bg-[linear-gradient(180deg,#8bc2c0,#42a9a6)] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_12px_38px_rgba(66,169,166,0.22)] transition-transform hover:-translate-y-0.5 cursor-pointer`}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="shrink-0 transition-transform group-hover:-translate-x-1"
+                    aria-hidden
+                  >
+                    <polyline points="11 17 6 12 11 7" />
+                  </svg>
+                  <span className="cap-align">See what&apos;s behind</span>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="shrink-0 transition-transform group-hover:translate-x-1"
+                    aria-hidden
+                  >
+                    <polyline points="13 7 18 12 13 17" />
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={exitToPortfolio}
+                  className={`${styles.gateAction} w-full sm:w-auto inline-flex items-center justify-center px-7 py-4 font-display font-semibold uppercase text-[#e6e3ea]/90 border border-[#8bc2c0]/40 bg-black/25 hover:text-[#e6e3ea] hover:bg-[#42a9a6]/10 transition-colors cursor-pointer`}
+                >
+                  <span className="cap-align">Skip to the work</span>
+                </button>
+              </div>
+
+              {/*
+                The promise, made specific. "Something is behind this" stays a
+                mood until it is a count, and every number here is read off the
+                site: SCENES.length, the case study list, the award years.
+              */}
+              <p className={`${styles.manifest} mt-6 font-mono uppercase text-[#e6e3ea]/85`}>
+                {SCENES.length} acts · {caseStudies.length} case studies · awards in{" "}
+                {AWARD_YEARS}
+              </p>
+            </div>
+          </div>
+
+          <span
+            className={`${styles.wordStack} font-mono text-[0.7rem] uppercase tracking-[0.15em] font-semibold text-[#e6e3ea]/70`}
+            aria-hidden
+          >
+            <span>Code</span>
+            <span>Learn</span>
+            <span>Build</span>
+            <span>Repeat</span>
           </span>
-          <span className="hidden sm:inline">OneIT Australia</span>
-        </footer>
+
+          <span
+            className={`${styles.sideRail} font-jp text-[0.8rem] text-[#e6e3ea]/60`}
+            aria-hidden
+          >
+            まだ終わりじゃない
+          </span>
+
+          {/*
+            The grip. Two handles either side of the seam with the arrows
+            pointing the way out, so the gate shows the gesture instead of
+            spelling it out. The words underneath are a label now, not an
+            instruction, and the button above remains the path for anyone who
+            would rather not touch the gate at all.
+          */}
+          <footer className={`${styles.gateHint} ${styles.bottomInset}`}>
+            <span className={styles.gripRow} aria-hidden>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#8bc2c0"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`${styles.gripArrow} ${styles.gripArrowLeft}`}
+                style={{ ["--nudge" as string]: "-4px" }}
+              >
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+              <span className={`${styles.grip} ${styles.gripLeft}`} />
+              <span className={`${styles.grip} ${styles.gripRight}`} />
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#8bc2c0"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`${styles.gripArrow} ${styles.gripArrowRight}`}
+                style={{ ["--nudge" as string]: "4px" }}
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </span>
+            <span className={`${styles.gateLabel} font-mono uppercase font-semibold text-[#8bc2c0]`}>
+              Push the gate
+            </span>
+          </footer>
+        </div>
       </div>
     </div>
   );

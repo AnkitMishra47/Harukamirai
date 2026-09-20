@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>video frames</title>
+<style>
+  /* The site's own self-hosted subsets, served by the running dev/prod server.
+     ffmpeg drawtext cannot load woff2, which is why the captions are rendered
+     as real HTML here and screenshotted rather than drawn by the encoder. */
+  @font-face { font-family: Geist;    src: url("http://localhost:3000/fonts/Geist-subset.woff2") format("woff2");    font-weight: 100 900; font-display: block; }
+  @font-face { font-family: Fraunces; src: url("http://localhost:3000/fonts/Fraunces-subset.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
+  @font-face { font-family: Shippori; src: url("http://localhost:3000/fonts/ShipporiMincho-subset.woff2") format("woff2"); font-weight: 400; font-display: block; }
+
+  /* leaf-5 (dark) tokens, copied from globals.css - the frame furniture is the
+     same material as the site it surrounds. */
+  :root {
+    --bg:            #15101a;
+    --bg-inset:      #0e0a11;
+    --text:          #e6e3ea;
+    --text-muted:    #a295af;
+    --accent:        #42a9a6;
+    --accent-hover:  #8bc2c0;
+    --gold:          #ee681f;
+    --border:        #3c3048;
+    --leather-a:     #241a15;
+    --leather-edge:  #140e0a;
+    --foil:          #c9a227;
+    --foil-hi:       #f5dd9a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; font-family: Geist, sans-serif; -webkit-font-smoothing: antialiased; }
+  .frame { position: relative; overflow: hidden; }
+
+  /* ---------- 1080x1350 ground plate ---------- */
+  #plate { width: 1080px; height: 1350px; background: var(--bg-inset); }
+  #plate .title {
+    height: 130px; display: flex; align-items: center; gap: 18px; padding: 0 54px;
+    background: linear-gradient(180deg, #1b1420, #120d17);
+    border-bottom: 1px solid var(--border);
+  }
+  #plate .title .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+  #plate .title .wordmark { font-size: 31px; letter-spacing: .17em; text-transform: uppercase; color: var(--text); font-weight: 600; }
+  #plate .title .jp { margin-left: auto; font-family: Shippori, serif; font-size: 27px; color: var(--text-muted); letter-spacing: .12em; }
+  #plate .stage { height: 1020px; background:
+      radial-gradient(120% 80% at 50% 40%, #191222 0%, #0e0a11 70%); }
+  #plate .band { height: 200px; background: linear-gradient(180deg, #120d17, #0b0810); border-top: 1px solid var(--border); }
+
+  /* ---------- 1080x200 annotation card ---------- */
+  .card {
+    width: 1080px; height: 200px; padding: 0 60px;
+    background: linear-gradient(180deg, #120d17, #0b0810);
+    border-top: 2px solid var(--accent);
+    display: flex; flex-direction: column; justify-content: center; gap: 14px;
+  }
+  .card .kicker {
+    font-size: 21px; letter-spacing: .26em; text-transform: uppercase;
+    color: var(--accent-hover); font-weight: 600; display: flex; align-items: center; gap: 13px;
+  }
+  .card .kicker::before { content: ""; width: 26px; height: 2px; background: var(--accent); }
+  .card .line { font-size: 45px; line-height: 1.16; color: var(--text); font-weight: 500; letter-spacing: -.012em; }
+  .card .line em { font-style: normal; color: var(--accent-hover); }
+  .card.two .line { font-size: 38px; }
+
+  /* ---------- 1080x1350 end card ---------- */
+  #end { width: 1080px; height: 1350px; background:
+      radial-gradient(130% 75% at 50% 32%, #1d1526 0%, #0e0a11 68%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 0 80px; }
+  #end .seal { width: 148px; height: 148px; margin-bottom: 52px; opacity: .95; }
+  #end .jp { font-family: Shippori, serif; font-size: 62px; color: var(--text); letter-spacing: .16em; margin-bottom: 14px; }
+  #end .name { font-family: Fraunces, serif; font-size: 96px; font-weight: 600; color: var(--text); letter-spacing: -.02em; line-height: 1.02; }
+  #end .role { margin-top: 22px; font-size: 32px; color: var(--text-muted); letter-spacing: .03em; }
+  #end .rule { width: 190px; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); margin: 54px 0; }
+  #end .domain { font-size: 54px; color: var(--accent-hover); letter-spacing: .05em; font-weight: 600; }
+  #end .sub { margin-top: 26px; font-size: 26px; color: var(--text-muted); letter-spacing: .12em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div id="plate" class="frame">
+  <div class="title">
+    <span class="dot"></span>
+    <span class="wordmark">harukamirai.engineer</span>
+    <span class="jp">遥か未来</span>
+  </div>
+  <div class="stage"></div>
+  <div class="band"></div>
+</div>
+
+<div id="cards"></div>
+
+<div id="end" class="frame">
+  <svg class="seal" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+    <g stroke="#42a9a6" stroke-width="1.1" opacity=".55">
+      <circle cx="50" cy="50" r="46" />
+      <circle cx="50" cy="50" r="38" stroke-dasharray="3 5" />
+    </g>
+    <g fill="#e6e3ea">
+      <ellipse cx="50.00" cy="33.00" rx="9.6" ry="13.0" transform="rotate(0.0 50.00 33.00)" />
+      <ellipse cx="66.17" cy="44.75" rx="9.6" ry="13.0" transform="rotate(72.0 66.17 44.75)" />
+      <ellipse cx="59.99" cy="63.75" rx="9.6" ry="13.0" transform="rotate(144.0 59.99 63.75)" />
+      <ellipse cx="40.01" cy="63.75" rx="9.6" ry="13.0" transform="rotate(216.0 40.01 63.75)" />
+      <ellipse cx="33.83" cy="44.75" rx="9.6" ry="13.0" transform="rotate(288.0 33.83 44.75)" fill="#ee681f" />
+    </g>
+  </svg>
+  <div class="jp">遥か未来</div>
+  <div class="name">Ankit Mishra</div>
+  <div class="role">Senior Software Engineer · AI &amp; Core Systems</div>
+  <div class="rule"></div>
+  <div class="domain">harukamirai.engineer</div>
+  <div class="sub">The whole thing is live. Go open it.</div>
+</div>
+
+<script>
+/* Card copy. Every line is traceable to src/content/*.ts or to the story
+   scenes in ShutterStoryExperience.tsx - nothing here is invented.
+   The 2024 and 2025 honours use the certificate wording in full: "Mid
+   Developer of the Year", and "Runner-up" kept attached to "Employee of the
+   Year", which is a materially different credential from winning it. */
+const CARDS = [
+  ["gate",    "Haruka Mirai · 遥か未来", "Every visit opens on a gate. Lift it."],
+  ["act01",   "Act 01 · The First Spark","2022. Joined OneIT Australia as an intern, working AWST."],
+  ["act02",   "Act 02 · Focus & Craft",  "Production ownership, refined late at night."],
+  ["act03",   "Act 03 · Engineering at Scale", "25,000,000 embeddings, <em>14.8 ms</em> p99."],
+  ["act04",   "Act 04 · Executive Honours",    "Mid Developer of the Year 2024.<br>Runner-up, Employee of the Year 2025.", true],
+  ["act05",   "Act 05 · Beyond the Screen",    "Himalayan ridges, chess, and coffee that takes ten minutes."],
+  ["act06",   "Act 06 · Executive Overview",   "Three years. Three milestones. A Master's in the cracks."],
+  ["site",    "Behind the story",        "The portfolio itself."],
+  ["theme",   "Four leaves, then five",  "The clover isn't a logo. It's a switch."],
+  // "Seven" is the true total but the heading on screen in this shot reads
+  // "Six systems I've had my hands on" - six at OneIT plus one independent
+  // (src/app/work/page.tsx:14). A caption that argues with the frame behind it
+  // reads as an error, so it names the split instead of the total.
+  ["work",    "Work",                    "Six at OneIT, one independent. Each with its architecture.", true],
+  ["case",    "Case study",              "Every card opens into the real design."],
+  // The grimoire spread lives on the home timeline, not on /resume: this shot
+  // shows the written record and a "Download PDF" button, so the earlier
+  // "not a PDF you endure" line was contradicted by the frame it sat under.
+  ["resume",  "Resume",                  "The whole arc, end to end. PDF if you want one."],
+  ["palette", "Ctrl + K",                "A command palette, because recruiters skim."],
+  ["split",   "One build",               "Same site, two viewports."],
+];
+const host = document.getElementById("cards");
+for (const [id, kicker, line, two] of CARDS) {
+  const el = document.createElement("div");
+  el.className = "card frame" + (two ? " two" : "");
+  el.id = "card-" + id;
+  el.innerHTML = `<div class="kicker">${kicker}</div><div class="line">${line}</div>`;
+  host.appendChild(el);
+}
+window.__CARD_IDS = CARDS.map((c) => c[0]);
+</script>
+</body>
+</html>

@@ -22,3 +22,6 @@ public/photos/*SWI*
 src/.env
 src/content/.env
 .playwright-mcp/
+
+# Rendered video deliverables - the pipeline in scripts/video/ rebuilds them
+Documentation/video/*.mp4

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "motion/react";
-import { profile, photos, awards, caseStudies, type Photo } from "@/content";
+import { profile, photos, type Photo } from "@/content";
 import { trackDownload } from "@/lib/track-download";
 import { successionEngine } from "@/lib/audio-synthesizer";
 import styles from "./story-scene.module.css";
@@ -360,14 +360,6 @@ const SHUTTER_FLICK_VELOCITY_PX_PER_S = SWIPE_VELOCITY_PX_PER_S;
 const SHUTTER_FLICK_MIN_PX = 28; // a flick still has to actually travel
 const SHUTTER_DRAG_SLOP_PX = 6; // travel before a press stops being a possible tap
 
-/**
- * "awards in 2024 and 2025", built from the award list rather than written out,
- * so the gate cannot go on claiming a year after the content stops saying it.
- */
-const AWARD_YEARS = [...awards]
-  .map((a) => a.year)
-  .sort()
-  .join(" and ");
 /**
  * Velocity is measured over a window, not between two consecutive moves.
  *
@@ -1882,65 +1874,99 @@ export function ShutterStoryExperience() {
               </p>
             </div>
 
-            <div className={styles.gateActions}>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={liftShutter}
-                  className={`${styles.gateAction} w-full sm:w-auto group inline-flex items-center justify-center gap-2.5 px-8 py-4 font-display font-bold uppercase text-[#15101a] border border-[#8bc2c0]/60 bg-[linear-gradient(180deg,#8bc2c0,#42a9a6)] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_12px_38px_rgba(66,169,166,0.22)] transition-transform hover:-translate-y-0.5 cursor-pointer`}
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="shrink-0 transition-transform group-hover:-translate-x-1"
-                    aria-hidden
+            <div className={styles.gateLower}>
+              <div className={styles.gateActions}>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={liftShutter}
+                    className={`${styles.gateAction} w-full sm:w-auto group inline-flex items-center justify-center gap-2.5 px-8 py-4 font-display font-bold uppercase text-[#15101a] border border-[#8bc2c0]/60 bg-[linear-gradient(180deg,#8bc2c0,#42a9a6)] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_12px_38px_rgba(66,169,166,0.22)] transition-transform hover:-translate-y-0.5 cursor-pointer`}
                   >
-                    <polyline points="11 17 6 12 11 7" />
-                  </svg>
-                  <span className="cap-align">See what&apos;s behind</span>
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="shrink-0 transition-transform group-hover:translate-x-1"
-                    aria-hidden
-                  >
-                    <polyline points="13 7 18 12 13 17" />
-                  </svg>
-                </button>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="shrink-0 transition-transform group-hover:-translate-x-1"
+                      aria-hidden
+                    >
+                      <polyline points="11 17 6 12 11 7" />
+                    </svg>
+                    <span className="cap-align">See what&apos;s behind</span>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="shrink-0 transition-transform group-hover:translate-x-1"
+                      aria-hidden
+                    >
+                      <polyline points="13 7 18 12 13 17" />
+                    </svg>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={exitToPortfolio}
-                  className={`${styles.gateAction} w-full sm:w-auto inline-flex items-center justify-center px-7 py-4 font-display font-semibold uppercase text-[#e6e3ea]/90 border border-[#8bc2c0]/40 bg-black/25 hover:text-[#e6e3ea] hover:bg-[#42a9a6]/10 transition-colors cursor-pointer`}
-                >
-                  <span className="cap-align">Skip to the work</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={exitToPortfolio}
+                    className={`${styles.gateAction} w-full sm:w-auto inline-flex items-center justify-center px-7 py-4 font-display font-semibold uppercase text-[#e6e3ea]/90 border border-[#8bc2c0]/40 bg-black/25 hover:text-[#e6e3ea] hover:bg-[#42a9a6]/10 transition-colors cursor-pointer`}
+                  >
+                    <span className="cap-align">Skip to the work</span>
+                  </button>
+                </div>
+
               </div>
-
-              {/*
-                The promise, made specific. "Something is behind this" stays a
-                mood until it is a count, and every number here is read off the
-                site: SCENES.length, the case study list, the award years.
-              */}
-              <p className={`${styles.manifest} mt-6 font-mono uppercase text-[#e6e3ea]/85`}>
-                <span className="whitespace-nowrap">{SCENES.length} acts</span>
-                <span aria-hidden className="text-[#8bc2c0]/70">·</span>
-                <span className="whitespace-nowrap">{caseStudies.length} case studies</span>
-                <span aria-hidden className="text-[#8bc2c0]/70">·</span>
-                <span className="whitespace-nowrap">awards in {AWARD_YEARS}</span>
-              </p>
+            {/*
+              The grip. Two handles either side of the seam with the arrows
+              pointing the way out, so the gate shows the gesture instead of
+              spelling it out. The words underneath are a label now, not an
+              instruction, and the button above remains the path for anyone who
+              would rather not touch the gate at all.
+            */}
+            <footer className={`${styles.gateHint} ${styles.bottomInset}`}>
+              <span className={styles.gripRow} aria-hidden>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#8bc2c0"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`${styles.gripArrow} ${styles.gripArrowLeft}`}
+                  style={{ ["--nudge" as string]: "-4px" }}
+                >
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+                <span className={`${styles.grip} ${styles.gripLeft}`} />
+                <span className={`${styles.grip} ${styles.gripRight}`} />
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#8bc2c0"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`${styles.gripArrow} ${styles.gripArrowRight}`}
+                  style={{ ["--nudge" as string]: "4px" }}
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </span>
+              <span className={`${styles.gateLabel} font-mono uppercase font-semibold text-[#8bc2c0]`}>
+                Push the gate
+              </span>
+            </footer>
             </div>
           </div>
 
@@ -1961,50 +1987,6 @@ export function ShutterStoryExperience() {
             まだ終わりじゃない
           </span>
 
-          {/*
-            The grip. Two handles either side of the seam with the arrows
-            pointing the way out, so the gate shows the gesture instead of
-            spelling it out. The words underneath are a label now, not an
-            instruction, and the button above remains the path for anyone who
-            would rather not touch the gate at all.
-          */}
-          <footer className={`${styles.gateHint} ${styles.bottomInset}`}>
-            <span className={styles.gripRow} aria-hidden>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#8bc2c0"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={`${styles.gripArrow} ${styles.gripArrowLeft}`}
-                style={{ ["--nudge" as string]: "-4px" }}
-              >
-                <polyline points="15 18 9 12 15 6" />
-              </svg>
-              <span className={`${styles.grip} ${styles.gripLeft}`} />
-              <span className={`${styles.grip} ${styles.gripRight}`} />
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#8bc2c0"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={`${styles.gripArrow} ${styles.gripArrowRight}`}
-                style={{ ["--nudge" as string]: "4px" }}
-              >
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </span>
-            <span className={`${styles.gateLabel} font-mono uppercase font-semibold text-[#8bc2c0]`}>
-              Push the gate
-            </span>
-          </footer>
         </div>
       </div>
     </div>

@@ -553,13 +553,41 @@
 /* ---- the panels ---- */
 
 .panel {
+  /*
+   * Board seams at 137 and 89, grain at 11, 23 and 41. Coprime on purpose: the
+   * face only repeats where every run lines up at once, which is far wider than
+   * any screen.
+   */
+  --timber:
+    repeating-linear-gradient(90deg,
+      rgba(0,0,0,0.55) 0 2px,
+      rgba(168,116,68,0.05) 2px 3px,
+      transparent 3px 137px),
+    repeating-linear-gradient(90deg,
+      transparent 0 61px,
+      rgba(0,0,0,0.3) 61px 62px,
+      rgba(168,116,68,0.032) 62px 63px,
+      transparent 63px 89px),
+    repeating-linear-gradient(90deg,
+      transparent 0 3px,
+      rgba(122,84,50,0.05) 3px 4px,
+      transparent 4px 11px),
+    repeating-linear-gradient(90deg,
+      transparent 0 9px,
+      rgba(0,0,0,0.16) 9px 10px,
+      transparent 10px 23px),
+    repeating-linear-gradient(91deg,
+      transparent 0 17px,
+      rgba(150,104,62,0.035) 17px 19px,
+      transparent 19px 41px),
+    linear-gradient(180deg, #17110b 0%, #100b07 46%, #080605 100%);
   position: absolute;
   top: 0;
   z-index: 5;
   width: 50%;
   height: 100%;
   overflow: hidden;
-  background-color: #0b0810;
+  background-color: #0c0906;
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.018),
     inset 0 -34px 70px rgba(0, 0, 0, 0.54),
@@ -573,54 +601,70 @@
  * The plank rhythm is a repeating gradient rather than a texture, and the two
  * panels are given different offsets so the join does not mirror itself.
  */
+/*
+ * THE TIMBER.
+ *
+ * The light is teal. The door is not. Painting the door in the same cold
+ * colours as the light is what made it read as backlit metal panelling rather
+ * than a gate, so the material is now dark walnut and only the light falling on
+ * it is the palette's steel. That separation is the whole fix; nothing here is
+ * bright enough to bring the lamplit gold back.
+ *
+ * Three things were doing the metal, and all three are dealt with:
+ *
+ * 1. THE BOARDS RAN THE WRONG WAY. Seams every 141px horizontally read as
+ *    riveted panelling. They run vertically now, which is how a board gate is
+ *    built and which also gives the eye something to watch travel when the
+ *    panels part sideways.
+ *
+ * 2. THE REPEAT WAS MACHINED. One period, exactly 141px, tiling perfectly
+ *    across the screen. Timber has no period. The seams are two runs at 137px
+ *    and 89px and the grain is three more at 11px, 23px and 41px - none of them
+ *    divides into another, so the pattern does not visibly come back around.
+ *
+ * 3. THE HIGHLIGHTS WERE WHITE. Pure white specular on an even surface is the
+ *    one thing wood never does; it scatters, it does not mirror. Every
+ *    highlight in the material is now a low-alpha umber, and the sheen along
+ *    the inner edge is dimmer and broader than the hard line it was.
+ */
 .panelLeft {
   left: 0;
   background-image:
-    linear-gradient(90deg, rgba(0,0,0,0.42), rgba(0,0,0,0.12) 54%, rgba(66,169,166,0.06) 76%, rgba(102,190,188,0.2) 98%, rgba(200,238,237,0.3)),
-    radial-gradient(ellipse at 100% 46%, rgba(24,88,103,0.22), transparent 34%),
-    repeating-linear-gradient(0deg,
-      rgba(255,255,255,0.018) 0 1px,
-      transparent 1px 67px,
-      rgba(0,0,0,0.44) 68px 72px,
-      rgba(255,255,255,0.018) 73px 74px,
-      transparent 74px 141px),
-    linear-gradient(96deg, transparent 0 12%, rgba(60,48,72,0.1) 12.2% 12.8%, transparent 13% 32%, rgba(255,255,255,0.03) 32.4% 33.1%, transparent 33.4% 62%, rgba(60,48,72,0.1) 62.1% 63%, transparent 63.4%),
-    linear-gradient(180deg, #1a1420 0%, #100c15 45%, #08060b 100%);
+    /* light from the seam, falling across the face towards the outer edge */
+    linear-gradient(90deg, rgba(0,0,0,0.52), rgba(0,0,0,0.18) 54%, rgba(66,169,166,0.045) 78%, rgba(102,190,188,0.12) 96%, rgba(160,214,213,0.17)),
+    radial-gradient(ellipse at 100% 46%, rgba(24,88,103,0.16), transparent 34%),
+    var(--timber);
 }
 
 .panelRight {
   right: 0;
   background-image:
-    linear-gradient(270deg, rgba(0,0,0,0.42), rgba(0,0,0,0.12) 54%, rgba(66,169,166,0.06) 76%, rgba(102,190,188,0.2) 98%, rgba(200,238,237,0.3)),
-    radial-gradient(ellipse at 0% 46%, rgba(24,88,103,0.22), transparent 34%),
-    repeating-linear-gradient(0deg,
-      rgba(255,255,255,0.018) 0 1px,
-      transparent 1px 67px,
-      rgba(0,0,0,0.44) 68px 72px,
-      rgba(255,255,255,0.018) 73px 74px,
-      transparent 74px 141px),
-    linear-gradient(84deg, transparent 0 8%, rgba(60,48,72,0.1) 8.2% 9%, transparent 9.4% 35%, rgba(255,255,255,0.026) 35.3% 36%, transparent 36.4% 70%, rgba(60,48,72,0.1) 70.3% 71%, transparent 71.4%),
-    linear-gradient(180deg, #1a1420 0%, #100c15 45%, #08060b 100%);
+    linear-gradient(270deg, rgba(0,0,0,0.52), rgba(0,0,0,0.18) 54%, rgba(66,169,166,0.045) 78%, rgba(102,190,188,0.12) 96%, rgba(160,214,213,0.17)),
+    radial-gradient(ellipse at 0% 46%, rgba(24,88,103,0.16), transparent 34%),
+    var(--timber);
 }
 
-/* Grain, fine enough to break up the flat gradient without reading as noise. */
+/*
+ * Figure in the grain: the wander that stops the runs above reading as ruling.
+ * Slightly off-vertical so it drifts across the boards the way real grain does.
+ */
 .panel::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.86;
+  opacity: 0.8;
   background:
-    linear-gradient(0deg, transparent, rgba(255,255,255,0.012) 46%, transparent 48% 100%),
-    repeating-linear-gradient(93deg,
-      rgba(255,255,255,0.017) 0 1px,
+    linear-gradient(0deg, transparent, rgba(168,116,68,0.022) 46%, transparent 48% 100%),
+    repeating-linear-gradient(88.5deg,
+      rgba(168,116,68,0.028) 0 1px,
       transparent 1px 8px,
-      rgba(0,0,0,0.11) 8px 10px,
-      transparent 10px 21px),
-    repeating-linear-gradient(87deg,
+      rgba(0,0,0,0.1) 8px 10px,
+      transparent 10px 29px),
+    repeating-linear-gradient(91.5deg,
       transparent 0 28px,
-      rgba(84,64,104,0.05) 29px 31px,
-      transparent 32px 55px);
+      rgba(96,64,38,0.05) 29px 31px,
+      transparent 32px 67px);
 }
 
 /* The light from the seam falling across the inner edge of each panel. */
@@ -639,15 +683,15 @@
 .panelLeft::after {
   right: 0;
   background:
-    linear-gradient(90deg, transparent 0%, rgba(24,88,103,0.06) 34%, rgba(66,169,166,0.14) 68%, rgba(190,236,235,0.32) 100%),
-    radial-gradient(ellipse at 100% 48%, rgba(139,194,192,0.26), transparent 56%);
+    linear-gradient(90deg, transparent 0%, rgba(24,88,103,0.05) 40%, rgba(66,169,166,0.1) 74%, rgba(150,208,207,0.2) 100%),
+    radial-gradient(ellipse at 100% 48%, rgba(139,194,192,0.18), transparent 62%);
 }
 
 .panelRight::after {
   left: 0;
   background:
-    linear-gradient(270deg, transparent 0%, rgba(24,88,103,0.06) 34%, rgba(66,169,166,0.14) 68%, rgba(190,236,235,0.32) 100%),
-    radial-gradient(ellipse at 0% 48%, rgba(139,194,192,0.26), transparent 56%);
+    linear-gradient(270deg, transparent 0%, rgba(24,88,103,0.05) 40%, rgba(66,169,166,0.1) 74%, rgba(150,208,207,0.2) 100%),
+    radial-gradient(ellipse at 0% 48%, rgba(139,194,192,0.18), transparent 62%);
 }
 
 /* ---- the seal, cut down the seam ---- */
@@ -660,8 +704,15 @@
  */
 .emblemHalf {
   --seal: clamp(116px, 13vw, 208px);
+  /*
+   * Lifted off the middle so the seal sits behind the KANJI rather than behind
+   * the lockup's centre of mass. The lockup carries three smaller lines under
+   * the kanji that the prototype's did not, which drags its centre down and
+   * left the mark peeking out below the title. The offset tracks viewport
+   * height because those lines are sized in vh-ish clamps too.
+   */
   position: absolute;
-  top: calc(50% - 24px);
+  top: calc(50% - clamp(30px, 7.2vh, 80px));
   z-index: 2;
   width: calc(var(--seal) / 2);
   height: var(--seal);
@@ -866,7 +917,6 @@
  * off the seal.
  */
 .gateCenter {
-  --hint-reserve: 7.5rem;
   position: absolute;
   inset: 0;
   isolation: isolate;
@@ -874,8 +924,23 @@
   grid-template-rows: 1fr auto 1fr;
   place-items: center;
   padding: clamp(22px, 4vw, 46px);
-  padding-bottom: calc(clamp(22px, 4vw, 46px) + var(--hint-reserve));
   text-align: center;
+}
+
+/*
+ * Everything below the wordmark. Stretched across the bottom row so the actions
+ * sit under the lockup and the grip sits on the floor, with the slack between
+ * them rather than after them.
+ */
+.gateLower {
+  grid-row: 3;
+  align-self: stretch;
+  justify-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: clamp(0.5rem, 2vh, 1.25rem);
 }
 
 /*
@@ -911,9 +976,7 @@
 }
 
 .gateActions {
-  grid-row: 3;
-  align-self: start;
-  margin-top: clamp(14px, 5vh, 42px);
+  margin-top: clamp(14px, 4vh, 36px);
 }
 
 /* Bottom-left mantra and the vertical line down the right edge. */
@@ -983,8 +1046,6 @@
  * of it.
  */
 .gateHint {
-  position: absolute;
-  inset: auto 0 clamp(1.25rem, 4vh, 2.5rem) 0;
   display: grid;
   justify-items: center;
   gap: 0.55rem;
@@ -1074,17 +1135,6 @@
   font-weight: 500;
   letter-spacing: 0.15em;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 0 26px rgba(0, 0, 0, 0.85);
-}
-
-.manifest {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0.15rem 0.5rem;
-  font-size: clamp(0.8rem, 1.2vw, 0.95rem);
-  letter-spacing: 0.1em;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 0 20px rgba(0, 0, 0, 0.8);
 }
 
 .gateAction {
@@ -1190,15 +1240,6 @@
 @media (max-width: 640px), (max-height: 640px) {
   .emblemHalf {
     --seal: 96px;
-  }
-  /* Stacked buttons make the actions row much taller, so the grip needs more
-     room held back for it than it does on a wide screen. */
-  .gateCenter {
-    --hint-reserve: 6rem;
-  }
-  .manifest {
-    gap: 0.1rem 0.4rem;
-    letter-spacing: 0.06em;
   }
   .wordStack,
   .sideRail {

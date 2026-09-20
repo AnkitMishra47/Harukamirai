@@ -413,6 +413,21 @@ html {
 .ring-pulse { animation: ring-pulse 4s ease-in-out infinite; transform-origin: 400px 400px; transform-box: view-box; will-change: transform; }
 .circle-in { animation: circle-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
+/*
+ * The credibility band's wallpaper seal, capped on anything narrower than a
+ * desktop. It is `absolute inset-0` inside a section that clips it, so at 1200px
+ * most of it was never on screen - but a composited layer is allocated at the
+ * element's box, so the whole 1200x1200 was held and composited regardless. On
+ * the live site at 384x740 that was 1.44 MPx, the biggest layer on the page
+ * after the document itself, for a drawing at 4% opacity.
+ */
+@media (max-width: 1023px) {
+  .band-seal {
+    width: 680px;
+    height: 680px;
+  }
+}
+
 /* Transmutation Circle Navigation Loader */
 @keyframes alchemyDrawOuter {
   0% { stroke-dashoffset: 300; transform: rotate(0deg); }
@@ -501,7 +516,8 @@ html {
    faded at the rim so it never competes with the body copy it sits near. */
 .hero-seal-sm {
   translate: -50% -50%;
-  transform: scale(calc(var(--grimoire-w) * 1.7 / 900));
+  /* Divisor tracks the seal's rendered size - see HeroIntro. */
+  transform: scale(calc(var(--grimoire-w) * 1.7 / 680));
   opacity: 0.55;
   -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 78%);
   mask-image: radial-gradient(circle, #000 52%, transparent 78%);

@@ -269,8 +269,20 @@ export function HeroIntro() {
               centred on it, so it reads as the book's own casting circle
               instead of a pattern running behind the paragraph.
             */}
+            {/*
+              680, not 900. A composited layer is allocated at the element's own
+              box, not at the size it ends up after a transform - so a 900px seal
+              scaled down to fit a 384px screen still costs a 900x900 texture to
+              hold and composite. Measured on the live site at 384x740: the seal
+              layers alone were 0.81 and 1.44 MPx of a 15.5 MPx total.
+
+              680 is the largest this is ever displayed at (`--grimoire-w` caps at
+              400px, times the 1.7 in the scale below), so the transform only ever
+              scales DOWN from here and the drawing stays sharp. Rendering smaller
+              and scaling up would save more and look worse.
+            */}
             <div className="hero-seal-sm pointer-events-none absolute left-1/2 top-1/2 -z-10 lg:hidden" aria-hidden>
-              <MagicCircle size={900} />
+              <MagicCircle size={680} />
             </div>
             <div
               aria-hidden

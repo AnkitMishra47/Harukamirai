@@ -16,8 +16,11 @@ export default function HomePage() {
 
       {/* CREDIBILITY */}
       <section className="relative border-y border-[var(--border)] bg-[var(--bg-elevated)] overflow-hidden">
+        {/* `band-seal` lets the stylesheet cap this below lg - a 1200px texture
+            for wallpaper at 4% opacity on a 384px screen is the single largest
+            layer on the page after the document itself. */}
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
-          <MagicCircle size={1200} intensity="subtle" />
+          <MagicCircle size={1200} intensity="subtle" className="band-seal" />
         </div>
         {/* Banded section: padding sits inside the tinted box, so it takes both sides. */}
         <div className="relative mx-auto max-w-7xl px-6 lg:px-12 py-band grid gap-10 md:grid-cols-3">

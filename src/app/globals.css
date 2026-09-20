@@ -413,27 +413,6 @@ html {
 .ring-pulse { animation: ring-pulse 4s ease-in-out infinite; transform-origin: 400px 400px; transform-box: view-box; will-change: transform; }
 .circle-in { animation: circle-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-/*
- * The seal keeps its drawing on a phone and gives up its motion.
- *
- * Measured on the homepage at 412x748 under a 20x CPU throttle: parking these
- * bands took main-thread long-task time from 6838ms to 4531ms across a scripted
- * scroll. An SVG group transform is a repaint, not a composited layer, so five
- * bands turning over 30 vector elements is thirty shapes re-rasterised per
- * frame - twice over, because the hero seal and the band seal are both on the
- * page. Scoped to `.magic-seal` so the clover toggle and the grimoire, which
- * share these classes and are small, keep turning.
- */
-@media (hover: none) and (pointer: coarse) {
-  .magic-seal .spin-cw,
-  .magic-seal .spin-ccw,
-  .magic-seal .ring-pulse {
-    animation: none;
-  }
-  .magic-seal {
-    will-change: auto;
-  }
-}
 
 /* Scroll reveals - class flipped once by IntersectionObserver */
 .reveal-up { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); will-change: transform, opacity; }

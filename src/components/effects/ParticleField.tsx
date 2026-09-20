@@ -19,27 +19,47 @@ export function ParticleField() {
     const canvas = ref.current;
     if (!canvas) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    /*
-     * Not on a touch screen, for the same reason `CursorTrail` is not: the
-     * effect costs more there than it is worth. This one is the homepage's
-     * single most expensive thing to draw - a canvas the height of the hero,
-     * cleared and repainted whole on every frame (measured: a 618x1755 backing
-     * store at 412px of viewport). Skipping it on a coarse pointer took
-     * main-thread long-task time across a scripted scroll from 6838ms to
-     * 3279ms, more than every other effect on the page put together. Desktop,
-     * which has the frames to spend, is unchanged.
-     */
-    if (window.matchMedia("(pointer: coarse)").matches) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    /*
+     * A phone gets fewer motes, drawn into a smaller buffer - not none.
+     *
+     * This is the homepage's most expensive thing to draw: a canvas the height
+     * of the hero, cleared and repainted whole on every frame. Skipping it
+     * outright on touch measured well (main-thread long-task time across a
+     * scripted scroll fell from 6838ms to 3279ms, reproducibly), and it also
+     * took the life out of the hero, which is not a trade worth making for a
+     * portfolio. So the budget is cut instead of the effect.
+     *
+     * Two multipliers, both on the per-frame cost: the backing store drops from
+     * device pixels to CSS pixels (at 412px of viewport, 618x1755 becomes
+     * 412x1170 - 2.2x fewer pixels to clear), and the population drops from 50
+     * to 18. The motes are individually a little coarser and a little sparser;
+     * the hero still has something drifting through it.
+     *
+     * What is NOT the expense, tested and refuted: the full-canvas `clearRect`
+     * below. Clearing only each mote's own footprint instead - about 1800 pixels
+     * a frame rather than 482,000 - measured 5146ms against 4835ms across four
+     * interleaved runs, which is no change. The cost travels with the canvas
+     * being recomposited each frame, not with how much of it is painted, so
+     * there is nothing to win by drawing more cleverly and the simple version
+     * stays.
+     *
+     * Treat the absolute figures as an upper bound. They come from headless
+     * Chrome with `--disable-gpu`, where compositing a canvas falls to the CPU;
+     * a real phone has a GPU for exactly this and will pay less.
+     *
+     * Desktop is untouched.
+     */
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const dpr = coarse ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
     let W = 0;
     let H = 0;
     let raf = 0;
     const particles: Particle[] = [];
-    const MAX_PARTICLES = 50;
+    const MAX_PARTICLES = coarse ? 18 : 50;
     let accent =
       getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() ||
       "#2c5840";
@@ -103,7 +123,7 @@ export function ParticleField() {
       ctx!.clearRect(0, 0, W, H);
       ctx!.fillStyle = accent;
 
-      if (particles.length < MAX_PARTICLES && Math.random() < 0.4) spawn();
+      if (particles.length < MAX_PARTICLES && Math.random() < (coarse ? 0.22 : 0.4)) spawn();
 
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];

@@ -211,18 +211,18 @@ export function HeroIntro() {
           </h1>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <div className="hero-in-left hero-in-4 inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--bg-elevated)_70%,var(--accent-glow))] py-1.5 pl-2 pr-3.5 shadow-[0_2px_12px_var(--accent-glow)] backdrop-blur-sm">
-              <span className="inline-flex items-center gap-0.5 rounded-full bg-[var(--accent)] px-2 py-0.5 font-display text-xs font-bold leading-none text-[var(--bg)] shadow-[0_0_8px_var(--accent)]">
+            <div className="hero-in-left hero-in-4 inline-flex items-center gap-2.5 rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--bg-elevated)_70%,var(--accent-glow))] py-1 pl-1.5 pr-3.5 shadow-[0_2px_12px_var(--accent-glow)] backdrop-blur-sm">
+              <span className="inline-flex items-center justify-center gap-0.5 rounded-full bg-[var(--accent)] px-2.5 py-1 font-display text-xs font-bold leading-none text-[var(--bg)] shadow-[0_0_10px_var(--accent)]">
                 <span>A</span>
-                <span className="opacity-70">·</span>
+                <span className="opacity-60">·</span>
                 <span>I</span>
               </span>
-              <span className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--text)]">
-                Software Engineer
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text)] leading-none flex items-center">
+                Senior Software Engineer
               </span>
             </div>
-            <span className="hero-in-right hero-in-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-              <span className="size-1 rounded-full bg-[var(--accent)]" aria-hidden />
+            <span className="hero-in-right hero-in-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)] leading-none">
+              <span className="size-1 rounded-full bg-[var(--accent)] shrink-0" aria-hidden />
               <span>Not a coincidence</span>
             </span>
           </div>

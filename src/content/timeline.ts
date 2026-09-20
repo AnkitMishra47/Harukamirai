@@ -1,7 +1,7 @@
 import type { TimelineEntry } from "./types";
 
 export const timeline: TimelineEntry[] = [
-  { id: "bca", date: "2019 - 2022", title: "Bachelor's Degree in Computer Applications, GGSIPU", note: "Graduated with 86% Distinction. First portfolio shipped in 2022.", kind: "education" },
+  { id: "bca", date: "2019 - 2022", title: "Bachelor's Degree in Computer Applications, GGSIPU", note: "Bachelor's in Computer Applications. First portfolio shipped in 2022.", kind: "education" },
   { id: "oneit-intern", date: "Jul 2022", title: "Junior SWE Intern, OneIT", note: "Joined right after graduation. Java and Angular on the Cougar platform.", kind: "role" },
   { id: "mca-start", date: "Sep 2022", title: "Master's (MCA) begins, Chandigarh University", note: "Two-year Master's degree, started while working full-time.", kind: "education" },
   { id: "oneit-junior", date: "Jan 2023", title: "Junior Software Engineer", note: "Stepped up to core engineer.", kind: "role" },

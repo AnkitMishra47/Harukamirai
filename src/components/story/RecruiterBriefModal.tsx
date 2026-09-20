@@ -102,7 +102,7 @@ export function RecruiterBriefModal() {
               3 Milestones
             </span>
             <span className="text-xs text-[var(--text-muted)]">
-              Intern to Senior SWE in 3 yrs + MCA (86%)
+              Intern to Senior SWE in 3 yrs + Master&apos;s
             </span>
           </div>
 

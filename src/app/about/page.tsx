@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { MagicReveal } from "@/components/effects/MagicReveal";
 import { TestimonialCarousel } from "@/components/TestimonialCarousel";
@@ -46,7 +47,7 @@ function ChapterMark({
         aria-hidden
       >
         <span
-          className={`${styles.thread} ${centered ? styles.threadFadeLeft : styles.threadStub}`}
+          className={`${styles.thread} ${styles.threadFadeLeft} ${centered ? "" : styles.threadShort}`}
         />
         <Seal />
         <span className={styles.numeral}>{numeral}</span>
@@ -186,6 +187,23 @@ export default function AboutPage() {
         <MagicReveal direction="left" className="mt-stack">
           <PhotoGallery photos={photos.offTheClock} />
         </MagicReveal>
+      </section>
+
+      {/* BOTTOM RETURN BRIDGE */}
+      <section className="mt-section mb-12 text-center">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-6 sm:p-8 max-w-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-center sm:text-left">
+            <p className="font-mono text-xs text-[var(--accent)] uppercase tracking-wider font-semibold">Done reading?</p>
+            <p className="text-sm text-[var(--text-muted)] mt-0.5">Return to explore production systems & skills.</p>
+          </div>
+          <Link
+            href="/"
+            className="group inline-flex items-center gap-2 rounded-full border border-[var(--accent)] bg-[var(--bg)] px-5 py-2.5 text-xs font-semibold text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg)] transition-all whitespace-nowrap"
+          >
+            <span aria-hidden>&larr;</span>
+            <span>Return to Homepage Overview</span>
+          </Link>
+        </div>
       </section>
     </article>
   );

@@ -48,6 +48,17 @@ export type TimelineEntry = {
 
 export type SkillGroup = { id: string; label: string; items: string[] };
 
+export type DisciplinePillar = {
+  id: string;
+  numeral: string;
+  title: string;
+  subtitle: string;
+  scaleBadge: string;
+  summary: string;
+  technologies: string[];
+  highlights: string[];
+};
+
 export type Award = { year: string; title: string; body: string };
 
 export type Testimonial = { quote: string; attribution: string };

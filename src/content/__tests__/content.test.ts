@@ -3,7 +3,7 @@ import { profile } from "@/content";
 
 describe("profile", () => {
   it("carries the current title and resume path", () => {
-    expect(profile.title).toBe("Senior Software Engineer · AI & Automation");
+    expect(profile.title).toBe("Senior Software Engineer · AI & Core Systems");
     expect(profile.resumePdf).toBe("/docs/AnkitResume.pdf");
   });
 });

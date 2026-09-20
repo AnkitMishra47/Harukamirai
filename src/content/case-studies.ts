@@ -56,6 +56,7 @@ export const caseStudies: CaseStudy[] = [
       { label: "My role", value: "Backend + integrations" },
     ],
     stack: ["Java", "Angular", "PostgreSQL · TimescaleDB", "SymmetricDS", "Grafana", "Docker", "RAG · Embeddings", "Python"],
+    featured: true,
   },
   {
     slug: "integration-middleware",
@@ -155,7 +156,8 @@ export const caseStudies: CaseStudy[] = [
     org: "independent",
     kicker: "Client · Next.js · 2025",
     title: "The Sprachkraft",
-    domain: "A language institute and study-abroad consultancy.",
+    domain:
+      "Full-stack bilingual educational portal with custom lead-capture pipelines, automated WhatsApp dispatch, and sub-second global edge delivery for an international consultancy.",
     problem: "The client needed a public site with lead capture, live in a day.",
     approach: [
       "7-page Next.js production site, App Router + TypeScript, scoped and shipped end-to-end in a single day.",
@@ -171,6 +173,5 @@ export const caseStudies: CaseStudy[] = [
     ],
     stack: ["Next.js", "TypeScript", "Tailwind", "Vercel"],
     links: [{ label: "thesprachkraft.com", href: "https://thesprachkraft.com/", external: true }],
-    featured: true,
   },
 ];

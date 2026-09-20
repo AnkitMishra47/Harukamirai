@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MagicReveal } from "@/components/effects/MagicReveal";
 import { CaseStudyGrid } from "@/components/CaseStudyGrid";
-import { caseStudies, photos, profile, timeline } from "@/content";
+import { caseStudies, photos, profile } from "@/content";
 
 export const metadata: Metadata = {
   title: `Work - ${profile.name}`,
@@ -13,7 +13,6 @@ export const metadata: Metadata = {
 export default function WorkPage() {
   const independent = caseStudies.filter((c) => c.org === "independent");
   const oneit = caseStudies.filter((c) => c.org === "oneit");
-  const career = timeline.filter((t) => t.kind === "role" || t.kind === "award");
 
   return (
     <article className="mx-auto max-w-7xl px-6 lg:px-12 pt-page">
@@ -110,40 +109,44 @@ export default function WorkPage() {
         </section>
       )}
 
-      {/* ONEIT TIMELINE */}
+      {/* CAREER OWNERSHIP BRIDGE */}
       <section className="pt-section">
-        <MagicReveal direction="left">
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
-            Day job · {career[0].date} - present
-          </p>
-          <h2 className="font-display text-3xl sm:text-4xl text-[var(--text)]">
-            {profile.employer.name} - three years of rapid career progression.
-          </h2>
-          <p className="mt-2 text-[var(--text-muted)]">
-            {profile.title} on {profile.employer.name}&apos;s Australian engineering team. Backend,
-            integrations, AI, and release cycle.
-          </p>
-        </MagicReveal>
-
-        {/* MagicReveal sits INSIDE the <li>, never between the <ol> and its
-            items: a reveal wrapper in that gap gives the list <div> children
-            and orphans every <li>, which is a real failure and not a lint nit.
-            The About page's timeline was fixed the same way. */}
-        <ol className="mt-stack relative border-l border-[var(--border)] pl-8 space-y-12">
-          {career.map((step, i) => (
-            <li key={step.id} className="list-none relative">
-              <MagicReveal direction={i % 2 === 0 ? "left" : "right"} delay={i * 0.1}>
-                <span
-                  className="timeline-dot absolute -left-[37px] top-1 block size-2.5 rounded-full bg-[var(--accent)] ring-4 ring-[var(--bg)] shadow-[0_0_10px_var(--accent)]"
-                  aria-hidden
-                />
-                <p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--accent)] font-medium">{step.date}</p>
-                <p className="font-display text-xl mt-0.5 text-[var(--text)]">{step.title}</p>
-                <p className="text-sm text-[var(--text-muted)] mt-1.5 max-w-2xl leading-relaxed">{step.note}</p>
-              </MagicReveal>
-            </li>
-          ))}
-        </ol>
+        <div className="rounded-3xl border border-[var(--border)] bg-[var(--bg-elevated)] p-8 sm:p-12 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[var(--accent)] via-[var(--gold)] to-transparent" />
+          <div className="max-w-3xl">
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-[var(--accent)] font-semibold">
+              End-to-End Delivery & Progression
+            </p>
+            <h2 className="font-display text-3xl sm:text-4xl mt-3 text-[var(--text)] leading-tight">
+              From Junior Intern to Senior Engineer in three years.
+            </h2>
+            <p className="mt-4 text-base md:text-lg text-[var(--text-muted)] leading-relaxed">
+              Every system on this page was delivered while working full-time across Australian timezones, owning backend APIs, database architecture, third-party middleware, and production RAG pipelines.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Link
+                href="/"
+                className="group inline-flex items-center gap-2 rounded-full border border-[var(--accent)] bg-[var(--bg)] px-6 py-3 text-sm font-semibold text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg)] transition-all"
+              >
+                <span aria-hidden>&larr;</span>
+                <span>Return to Homepage Overview</span>
+              </Link>
+              <Link
+                href="/about"
+                className="group inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg)] px-6 py-3 text-sm font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              >
+                <span>Read the personal arc & nominations</span>
+                <span aria-hidden>&rarr;</span>
+              </Link>
+              <Link
+                href="/resume"
+                className="inline-flex items-center gap-2 text-sm font-medium text-[var(--accent)] hover:underline px-2 py-3"
+              >
+                <span>View verified resume</span>
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
 
       <div className="mt-section text-center">

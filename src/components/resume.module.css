@@ -286,8 +286,9 @@
   border: 2px solid var(--border-strong);
 }
 
-.laneSwatchStudy { border-color: var(--gold); }
-.laneSwatchCareer { border-color: var(--accent); background: var(--accent); }
+.laneSwatchStudy { border-color: var(--gold); background: var(--bg); }
+.laneSwatchRole { border-color: var(--border-strong); background: var(--bg); }
+.laneSwatchAward { border-color: var(--accent); background: var(--accent); }
 
 /* ============================================================
    2. PAGE CARDS - systems and craft

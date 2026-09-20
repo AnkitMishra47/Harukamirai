@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { caseStudies, profile, skills, timeline } from "@/content";
 import { DownloadResumeButton } from "@/components/DownloadResumeButton";
+import { SkillsMatrix } from "@/components/SkillsMatrix";
 import { RevealScope } from "@/components/resume/RevealScope";
 import styles from "@/components/resume.module.css";
 
@@ -118,10 +119,13 @@ export function ResumeSheet() {
 
           <div className={`${styles.laneKey} mt-6`} aria-hidden>
             <span className={styles.laneKeyItem}>
-              <span className={`${styles.laneSwatch} ${styles.laneSwatchStudy}`} /> Study
+              <span className={`${styles.laneSwatch} ${styles.laneSwatchStudy}`} /> Study (Left Rail)
             </span>
             <span className={styles.laneKeyItem}>
-              <span className={`${styles.laneSwatch} ${styles.laneSwatchCareer}`} /> Career
+              <span className={`${styles.laneSwatch} ${styles.laneSwatchRole}`} /> Roles & Promotions
+            </span>
+            <span className={styles.laneKeyItem}>
+              <span className={`${styles.laneSwatch} ${styles.laneSwatchAward}`} /> Company Honours
             </span>
           </div>
 
@@ -191,32 +195,7 @@ export function ResumeSheet() {
 
         {/* ---------------------------------------------- CRAFT */}
         <section className="mt-stack" aria-labelledby="r-craft">
-          <div className={`${styles.sectionHead} mb-2`}>
-            <h2 id="r-craft" className={styles.kicker}>
-              Craft
-            </h2>
-            <span className={styles.thread} aria-hidden />
-          </div>
-
-          <ul className={`${styles.craft} mt-6`}>
-            {skills.map((g, i) => (
-              <li
-                key={g.id}
-                className={styles.craftGroup}
-                data-reveal
-                style={{ "--i": i % 4 } as React.CSSProperties}
-              >
-                <h3 className={styles.kicker}>{g.label}</h3>
-                <ul className={styles.craftItems}>
-                  {g.items.map((item) => (
-                    <li key={item} className={styles.chip}>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
+          <SkillsMatrix showHeader={true} kicker="Craft & Capabilities" lead="Five core production disciplines architected, deployed, and maintained under load." />
         </section>
 
         {/* ---------------------------------------------- THE PDF */}
@@ -231,6 +210,13 @@ export function ResumeSheet() {
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-4">
             <DownloadResumeButton />
+            <Link
+              href="/"
+              className="group inline-flex items-center gap-2 rounded-full border border-[var(--accent)] bg-[var(--bg)] px-5 py-2.5 text-xs font-semibold text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg)] transition-all"
+            >
+              <span aria-hidden>&larr;</span>
+              <span>Return to Homepage Overview</span>
+            </Link>
             <Link
               href="/contact"
               className="inline-flex min-h-[44px] items-center text-sm text-[var(--text-subtle)] underline underline-offset-4 transition-colors hover:text-[var(--accent)]"

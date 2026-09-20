@@ -2,12 +2,12 @@ import Link from "next/link";
 import { HeroIntro } from "@/components/HeroIntro";
 import { MagicCircle } from "@/components/effects/MagicCircle";
 import { MagicReveal, BrushDivider } from "@/components/effects/MagicReveal";
+import { FeaturedWorkCarousel } from "@/components/FeaturedWorkCarousel";
+import { SkillsCarousel } from "@/components/SkillsCarousel";
 import { Currents } from "@/components/effects/Currents";
-import { HoverLift } from "@/components/effects/HoverLift";
-import { awards, caseStudies, profile } from "@/content";
+import { awards, profile, testimonials } from "@/content";
 
 export default function HomePage() {
-  const featured = caseStudies.filter((c) => c.featured);
   const [newest, previous] = awards;
 
   return (
@@ -30,69 +30,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FEATURED WORK */}
+      {/* FEATURED WORK CAROUSEL */}
       <section className="mx-auto max-w-7xl px-6 lg:px-12 pt-section">
-        <MagicReveal>
-          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-subtle)]">
-            Featured spells
-          </p>
-          <h2 className="font-display text-5xl md:text-6xl mt-2 text-[var(--text)]">
-            Things I shipped.
-          </h2>
-        </MagicReveal>
-
-        <div className="mt-stack grid gap-8 md:grid-cols-5">
-          {featured.map((c, i) => (
-            <MagicReveal key={c.slug} delay={0.1 + i * 0.15} className={i === 0 ? "md:col-span-3" : "md:col-span-2"}>
-              <HoverLift>
-                <Link href={`/work#${c.slug}`} className="block h-full">
-                  <article
-                    className={`group relative flex flex-col h-full overflow-hidden rounded-2xl border p-8 transition-all ${
-                      i === 0
-                        ? "border-[var(--border-strong)] bg-[var(--bg-elevated)] hover:border-[var(--accent)] hover:shadow-[0_20px_60px_-20px_var(--accent-glow)]"
-                        : "border-[var(--border)] bg-[var(--bg-elevated)] hover:border-[var(--accent)]"
-                    }`}
-                  >
-                    <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[var(--accent)] to-transparent opacity-70 group-hover:opacity-100 transition-opacity" />
-                    <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{c.kicker}</p>
-                    <h3 className="font-display text-3xl mt-3 text-[var(--text)]">{c.title}</h3>
-                    {/* Teaser only. The card is a headline: kicker, title, and two
-                        lines saying what the system was. The stack and the full
-                        write-up live at the destination this card links to, so
-                        nothing here is the only copy of anything. `line-clamp`
-                        hides the overflow visually but leaves the whole sentence
-                        in the DOM for screen readers and crawlers. */}
-                    <p className="mt-4 text-[var(--text-muted)] leading-relaxed line-clamp-2">{c.domain}</p>
-                    <div className="mt-auto pt-6 flex items-center text-sm font-medium text-[var(--accent)]">
-                      <span>Read case study</span>
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="ml-1 shrink-0 transition-transform group-hover:translate-x-1"
-                        aria-hidden
-                      >
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </article>
-                </Link>
-              </HoverLift>
-            </MagicReveal>
-          ))}
-        </div>
-
-        <div className="mt-stack text-center">
+        <FeaturedWorkCarousel />
+        <div className="mt-6 text-center">
           <Link
             href="/work"
-            className="group inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-7 py-3.5 text-sm font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:shadow-[0_0_20px_var(--accent-glow)]"
+            className="group inline-flex items-center gap-2 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
           >
-            <span>All work, full timeline</span>
+            <span>View all 7 case studies & architecture blueprints</span>
             <svg
               width="14"
               height="14"
@@ -111,12 +57,63 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* CORE DISCIPLINES / SKILLS CAROUSEL */}
+      <section className="mx-auto max-w-7xl px-6 lg:px-12 pt-section">
+        <SkillsCarousel />
+        <div className="mt-8 text-center">
+          <Link
+            href="/resume"
+            className="group inline-flex items-center gap-2 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+          >
+            <span>View full record & credentials in Resume</span>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="shrink-0 transition-transform group-hover:translate-x-1"
+              aria-hidden
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+      </section>
+
+      {/* PEER RECOGNITION / SOCIAL PROOF */}
+      <section className="mx-auto max-w-7xl px-6 lg:px-12 pt-section">
+        <div className="rounded-3xl border border-[var(--border)] bg-[var(--bg-elevated)] p-8 sm:p-12 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[var(--gold)] via-[var(--accent)] to-transparent" />
+          <div className="w-full">
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-[var(--gold)] font-semibold">
+              From OneIT Engineering Peers
+            </p>
+            <h2 className="font-display text-2xl sm:text-3xl mt-2 text-[var(--text)] leading-snug">
+              &ldquo;{testimonials[1].quote}&rdquo;
+            </h2>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] pt-4">
+              <p className="text-xs font-mono text-[var(--text-subtle)]">
+                {testimonials[1].attribution}
+              </p>
+              <Link
+                href="/about"
+                className="text-xs font-medium text-[var(--accent)] hover:underline inline-flex items-center gap-1"
+              >
+                <span>Read all peer nominations in About</span>
+                <span aria-hidden>&rarr;</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Currents />
 
-      {/* No pt-section here: the BrushDivider below already carries my-16, and it
-          is a visible reason for the gap. Adding a section step on top of it is
-          exactly the doubling this pass removed. No bottom padding either - the
-          footer owns the gap above itself. */}
+      {/* PHILOSOPHY & ABOUT HANDOFF */}
       <section className="mx-auto max-w-3xl px-6">
         <BrushDivider />
         <MagicReveal>

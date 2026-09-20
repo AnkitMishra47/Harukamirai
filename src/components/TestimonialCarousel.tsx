@@ -22,7 +22,7 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
 
   return (
     <div 
-      className="relative mx-auto max-w-2xl overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-8 md:p-12 transition-colors hover:border-[var(--accent)]"
+      className="relative mx-auto max-w-4xl overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-8 md:p-12 transition-colors hover:border-[var(--accent)]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

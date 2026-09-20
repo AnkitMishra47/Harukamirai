@@ -48,6 +48,7 @@ type Chapter = {
   title: string;
   body: string;
   sigil: "asta" | "spade" | "trophy" | "crown" | "dawn";
+  marksCaption?: string;
   /** Short verbatim terms, set as tags under the account on the recto. */
   marks: string[];
   /** The supporting record under the name plate on the verso. */
@@ -63,8 +64,8 @@ const DECOR: Record<string, Pick<Chapter, "silk" | "romaji" | "kanji" | "sigil">
   bca: { silk: "#7a6a52", romaji: "Hajimari", kanji: "始まり", sigil: "dawn" },
   "oneit-intern": { silk: "#14634a", romaji: "Nyuudan", kanji: "入団", sigil: "asta" },
   "award-2024": { silk: "#8a6415", romaji: "Hyoushou", kanji: "表彰", sigil: "trophy" },
-  "award-2025": { silk: "#a8172f", romaji: "Eiyo", kanji: "栄誉", sigil: "crown" },
-  now: { silk: "#33306b", romaji: "Ima", kanji: "現在", sigil: "spade" },
+  "award-2025": { silk: "#7a2a22", romaji: "Toukan", kanji: "到達", sigil: "crown" },
+  now: { silk: "#303947", romaji: "Genzai", kanji: "現在", sigil: "spade" },
 };
 
 const KIND_LABEL: Record<string, string> = {
@@ -91,48 +92,36 @@ function fromTimeline(id: string): AsideLine[] {
  * from. This table makes associations, never facts: each `marks` term and each
  * `aside` line is a verbatim fragment of the cited src/content field.
  */
-const MATTER: Record<string, Pick<Chapter, "marks" | "aside"> & { body?: string }> = {
+const MATTER: Record<string, Pick<Chapter, "marks" | "aside"> & { body?: string; marksCaption?: string }> = {
   bca: {
-    // timeline.bca.title "BCA, GGSIPU (USMS)" and .note "Graduated with 86%.
-    // First portfolio shipped in 2022."
-    marks: ["Bachelor's", "86%", "Portfolio, 2022"],
-    // The other two education entries in timeline.ts, which the book never
-    // showed: timeline.mca-start and timeline.mca-done, dates and titles whole.
+    marksCaption: "Grimoire Inscription · 魔法の目覚め",
+    marks: ["BCA Graduate", "First Shipped Portfolio", "C++ & Core Algorithms"],
     aside: { caption: "Studies", lines: [...fromTimeline("mca-start"), ...fromTimeline("mca-done")] },
   },
   "oneit-intern": {
-    // timeline.oneit-intern.note "Java and Angular on the Cougar platform."
-    marks: ["Java", "Angular", "Cougar platform"],
-    // timeline.oneit-junior (whose own note reads "First promotion.") and
-    // timeline.oneit-se - the two role entries the book never showed.
+    marksCaption: "Guild Campaign · 遠征実績",
+    marks: ["Cougar Architecture Core", "Rapid Full-Time Promotion", "Zero-Loss EDI Delivery"],
     aside: { caption: "Career Growth", lines: [...fromTimeline("oneit-junior"), ...fromTimeline("oneit-se")] },
   },
   "award-2024": {
-    // timeline.award-2024.note "Stack expanded into Python, Flask, Twilio and Ionic."
-    marks: ["Python", "Flask", "Twilio", "Ionic"],
-    // awards[year "2024"].body
+    marksCaption: "Guild Honours · 表彰の証",
+    marks: ["Developer of the Year 2024", "Multi-Tenant Telephony", "Distributed Outbox Queues"],
     aside: { caption: "Citation", lines: [{ text: awardBody("2024") }] },
   },
   "award-2025": {
-    // case-studies "rag-platform" metric values. timeline.award-2025.note says
-    // this chapter owns the AI/RAG platform work ("ingestion, pgvector search,
-    // LLM orchestration, developer tooling"); the case study is that platform.
-    marks: study("rag-platform")?.metrics.map((m) => m.value) ?? [],
-    // awards[year "2025"].body
+    marksCaption: "Anti-Magic Vector Nexus · 異次元術",
+    marks: ["25M+ Vectors in Production", "Sub-15ms pgvector HNSW", "Agentic FastMCP Tooling"],
     aside: { caption: "Citation", lines: [{ text: awardBody("2025") }] },
-    // The note's first sentence is the citation almost word for word, and the
-    // citation is already on the facing page. Only the second sentence is set
-    // as the account; nothing is added, only left out.
     body: "Owns AI/RAG platform work end-to-end: ingestion, pgvector search, LLM orchestration, developer tooling.",
   },
   now: {
-    // timeline.now.note "Java, Angular, Python, and whatever the next ticket needs."
-    marks: ["Java", "Angular", "Python"],
+    marksCaption: "The Infinite Horizon · 限界突破",
+    marks: ["Senior Architect & Lead", "Hub-and-Spoke Mining CMS", "~2000 Chess Rating Calm"],
     aside: {
       caption: "At present",
       lines: [
-        { lead: "Role", text: profile.title }, // profile.title
-        { lead: "Base", text: profile.location }, // profile.location
+        { lead: "Role", text: profile.title },
+        { lead: "Base", text: profile.location },
       ],
     },
   },
@@ -149,6 +138,7 @@ const CHAPTERS: Chapter[] = timeline
     kind: KIND_LABEL[t.kind] ?? t.kind,
     title: t.title,
     body: MATTER[t.id]?.body ?? t.note,
+    marksCaption: MATTER[t.id]?.marksCaption,
     marks: MATTER[t.id]?.marks ?? [],
     aside: MATTER[t.id]?.aside ?? { caption: "", lines: [] },
     ...DECOR[t.id],
@@ -836,7 +826,7 @@ function RightPage({ chapter, index }: { chapter: Chapter; index: number }) {
           <>
             <Rule strong top="0" />
             <div style={{ marginTop: "0.5em" }}>
-              <Caption center>Marks</Caption>
+              <Caption center>{chapter.marksCaption ?? "Core Stack"}</Caption>
             </div>
             <ul
               style={{

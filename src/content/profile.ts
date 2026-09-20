@@ -3,14 +3,14 @@ import type { Profile } from "./types";
 export const profile: Profile = {
   name: "Ankit Mishra",
   nameLines: ["ANKIT", "MISHRA"],
-  title: "Senior Software Engineer · AI & Automation",
+  title: "Senior Software Engineer · AI & Core Systems",
   location: "India",
   workingHours: { zone: "AWST", offset: "UTC+8" },
   employer: { name: "OneIT", href: "https://oneit.com.au", country: "Australia" },
   summary:
-    "Software engineer building enterprise-grade Java and Angular systems and AI-assisted engineering workflows for international clients at OneIT (Australia). Owns features end-to-end across REST APIs, PostgreSQL data modeling, PrimeNG front-ends and XML/EDI middleware, and has shipped production RAG pipelines on pgvector at multi-million-row scale. Promoted from Intern to Senior Software Engineer and named Developer of the Year for consistent technical impact, production ownership and cross-team delivery.",
+    "Senior software engineer building enterprise-grade Java and Angular systems, resilient middleware, and production AI workflows for international clients at OneIT (Australia). Owns features end-to-end across REST APIs, PostgreSQL data modeling, PrimeNG front-ends and XML/EDI middleware, and has shipped production RAG pipelines on pgvector at multi-million-row scale. Promoted from Intern to Senior Software Engineer and named Developer of the Year for consistent technical impact, production ownership and cross-team delivery.",
   heroLine:
-    "From Bachelor's in Computer Applications to Senior Software Engineer in three years, with a Master's earned in the cracks between deploys. I ship AI features - RAG on pgvector, AI-assisted code and test generation, MCP tooling - into Java, Angular and Python platforms at",
+    "From Bachelor's in Computer Applications to Senior Software Engineer in three years, with a Master's earned in the cracks between deploys. I architect high-scale backend platforms, enterprise integrations, and production AI workflows at",
   email: "ankitm17.2001@gmail.com",
   bio: [
     "I'm Ankit, a software engineer working remotely. I work full-time at **OneIT** - an Australian software firm - where I've moved from intern to **Senior Software Engineer** over three years, mostly on backend systems (Java, Spring Boot, Postgres), enterprise integrations (MYOB, CargoWise, Twilio, Xero) and AI in production (RAG on pgvector, MCP tooling, AI-assisted code and test generation). In 2024 I was named **Mid Developer of the Year**. In 2025, I placed **Runner-up for Employee of the Year** - company-wide, across all engineering tiers.",

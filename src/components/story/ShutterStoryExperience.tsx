@@ -92,10 +92,10 @@ const SCENES: StoryScene[] = [
     narrativeLead:
       "Every senior engineer begins as someone willing to sit with the problem when everyone else has logged off.",
     narrativeBody:
-      "In July 2022, I joined OneIT Australia as an intern right after completing my Bachelor's in Computer Applications with 86% distinction. Working remotely across Australian business hours meant diagnosing production deadlocks at 11 PM on a Tuesday, then sitting for university exams the next morning. It built my habit of staying calm and methodical under pressure.",
+      "In July 2022, I joined OneIT Australia as an intern right after completing my Bachelor's in Computer Applications. Working remotely across Australian business hours meant diagnosing production deadlocks at 11 PM on a Tuesday, then sitting for university exams the next morning. It built my habit of staying calm and methodical under pressure.",
     metricLabel: "Academic & Career Start",
-    metricValue: "86% Distinction · Intern to Jr SWE",
-    chips: ["OneIT Australia", "Bachelor's 86% Distinction", "Java & Angular Platforms"],
+    metricValue: "Intern to Junior SWE",
+    chips: ["OneIT Australia", "BCA Graduate", "Java & Angular Platforms"],
     figureRows: [
       { label: "IST", value: "23:14:02", note: "DEEP WORK", valueColor: "#fbbf24" },
       { label: "AWST", value: "01:44:02", note: "CLIENT SYNC", valueColor: "#38bdf8" },

@@ -1,4 +1,4 @@
-import type { SkillGroup } from "./types";
+import type { DisciplinePillar, SkillGroup } from "./types";
 
 export const skills: SkillGroup[] = [
   { id: "languages", label: "Languages", items: ["Java", "TypeScript", "JavaScript", "Python", "SQL", "Bash"] },
@@ -9,4 +9,67 @@ export const skills: SkillGroup[] = [
   { id: "integrations", label: "Integrations", items: ["MYOB", "CargoWise", "ERP and WMS", "XML/EDI", "SharePoint (Graph)", "Twilio", "HaloPSA"] },
   { id: "devops", label: "DevOps", items: ["Git/SmartGit", "Jenkins CI/CD", "Docker", "Linux", "Release management"] },
   { id: "practices", label: "Practices", items: ["Agile/Scrum", "Code review", "Root-cause analysis", "Production support", "Performance tuning"] },
+];
+
+export const disciplines: DisciplinePillar[] = [
+  {
+    id: "ai-retrieval",
+    numeral: "I",
+    title: "AI & Vector Retrieval Systems",
+    subtitle: "AI Systems",
+    scaleBadge: "25M+ Vectors · pgvector",
+    summary: "High-scale RAG pipelines, sub-15ms vector retrieval, and agentic LLM workflows.",
+    technologies: ["Python", "PostgreSQL / pgvector", "FastMCP", "OpenAI / Claude APIs"],
+    highlights: [
+      "Sub-15ms vector retrieval across 25M+ rows with automated vacuum & delta-sync reconciliation.",
+    ],
+  },
+  {
+    id: "enterprise-backend",
+    numeral: "II",
+    title: "Enterprise Backend & EDI Middleware",
+    subtitle: "Backend & Systems",
+    scaleBadge: "Java 21 · Zero-Loss EDI",
+    summary: "Mission-critical transactional services, asynchronous pipelines, and ERP integrations.",
+    technologies: ["Java 21 / Spring", "PostgreSQL", "XML / EDI X12", "Async Queues", "Docker"],
+    highlights: [
+      "Zero data-loss XML/EDI pipeline connecting MYOB accounting and CargoWise freight logistics.",
+    ],
+  },
+  {
+    id: "frontend-canvas",
+    numeral: "III",
+    title: "Modern Frontend & Canvas Workflows",
+    subtitle: "Frontend & Canvas",
+    scaleBadge: "Angular 19 · Paper.js",
+    summary: "High-density enterprise web apps, interactive vector canvas, and responsive UX.",
+    technologies: ["Angular 19", "TypeScript", "Paper.js", "PrimeNG", "Next.js", "Tailwind CSS"],
+    highlights: [
+      "Interactive construction takeoff canvas inside Angular 19 generating live BOQ estimates.",
+    ],
+  },
+  {
+    id: "distributed-data",
+    numeral: "IV",
+    title: "Distributed Data & Telemetry",
+    subtitle: "Data & Telemetry",
+    scaleBadge: "TimescaleDB · Multi-Site",
+    summary: "Hub-and-spoke multi-site replication, time-series telemetry, and database optimization.",
+    technologies: ["PostgreSQL", "TimescaleDB", "SymmetricDS", "Grafana", "Linux / Shell"],
+    highlights: [
+      "Hub-and-spoke offline-first database sync for remote mining operations with real-time alerting.",
+    ],
+  },
+  {
+    id: "integrations-compliance",
+    numeral: "V",
+    title: "Integrations & Regulatory Protocols",
+    subtitle: "Integrations & APIs",
+    scaleBadge: "National Compliance",
+    summary: "Automated billing gateways, telephony workflows, and national government registries.",
+    technologies: ["Xero API", "Eway Payments", "Australian USI Registry", "Twilio", "Chrome Extensions"],
+    highlights: [
+      "Two-way invoice reconciliation, recurring billing, and automated government identity validation.",
+    ],
+  },
 ];

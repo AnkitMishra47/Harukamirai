@@ -140,7 +140,13 @@ html { color-scheme: light; }
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
-* { border-color: var(--border); }
+/* Default border colour. This must live in `base`: an unlayered rule outranks
+   every layered one regardless of specificity, so writing it bare made this
+   `*` beat Tailwind's own `border-*` utilities (which ship in `@layer
+   utilities`) and quietly repainted every accent border on the site grey. */
+@layer base {
+  * { border-color: var(--border); }
+}
 
 html, body {
   background: var(--bg);

@@ -280,7 +280,7 @@ export function HeroIntro() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent("open-recruiter-brief"))}
-              className="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors pl-2 cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-4 py-3 text-sm font-medium text-[var(--accent)] transition-colors hover:border-[var(--accent)]/60 hover:bg-[var(--accent)]/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] cursor-pointer"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
@@ -315,7 +315,7 @@ export function HeroIntro() {
             </div>
             <div
               aria-hidden
-              className="hero-aura absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 rounded-full"
+              className="hero-aura pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 rounded-full"
               style={{
                 width: "calc(var(--grimoire-w) * 1.15)",
                 height: "calc(var(--grimoire-w) * 1.15)",

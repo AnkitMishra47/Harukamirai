@@ -198,9 +198,22 @@ export default function AboutPage() {
           </div>
           <Link
             href="/"
-            className="group inline-flex items-center gap-2 rounded-full border border-[var(--accent)] bg-[var(--bg)] px-5 py-2.5 text-xs font-semibold text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg)] transition-all whitespace-nowrap"
+            className="group inline-flex items-center gap-2 rounded-full border border-[var(--accent)] bg-[var(--bg)] px-5 py-2.5 text-xs font-semibold text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg)] transition-all whitespace-nowrap leading-none"
           >
-            <span aria-hidden>&larr;</span>
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="shrink-0 -translate-y-[0.5px] transition-transform group-hover:-translate-x-0.5"
+              aria-hidden
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
             <span>Return to Homepage Overview</span>
           </Link>
         </div>

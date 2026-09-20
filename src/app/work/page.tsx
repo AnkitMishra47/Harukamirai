@@ -126,17 +126,43 @@ export default function WorkPage() {
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link
                 href="/"
-                className="group inline-flex items-center gap-2 rounded-full border border-[var(--accent)] bg-[var(--bg)] px-6 py-3 text-sm font-semibold text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg)] transition-all"
+                className="group inline-flex items-center gap-2 rounded-full border border-[var(--accent)] bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-[var(--bg)] transition-all hover:opacity-95 leading-none"
               >
-                <span aria-hidden>&larr;</span>
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="shrink-0 -translate-y-[0.5px] transition-transform group-hover:-translate-x-0.5"
+                  aria-hidden
+                >
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
                 <span>Return to Homepage Overview</span>
               </Link>
               <Link
                 href="/about"
-                className="group inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg)] px-6 py-3 text-sm font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                className="group inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg)] px-6 py-3 text-sm font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] leading-none"
               >
                 <span>Read the personal arc & nominations</span>
-                <span aria-hidden>&rarr;</span>
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="shrink-0 -translate-y-[0.5px] transition-transform group-hover:translate-x-0.5"
+                  aria-hidden
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
               </Link>
               <Link
                 href="/resume"

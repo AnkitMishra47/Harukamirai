@@ -137,18 +137,18 @@ export default function WorkPage() {
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="shrink-0 -translate-y-[0.5px] transition-transform group-hover:-translate-x-0.5"
+                  className="shrink-0 transition-transform group-hover:-translate-x-0.5"
                   aria-hidden
                 >
                   <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
-                <span>Return to Homepage Overview</span>
+                <span className="cap-align">Return to Homepage Overview</span>
               </Link>
               <Link
                 href="/about"
                 className="group inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--bg)] px-6 py-3 text-sm font-medium text-[var(--text)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] leading-none"
               >
-                <span>Read the personal arc & nominations</span>
+                <span className="cap-align">Read the personal arc & nominations</span>
                 <svg
                   width="13"
                   height="13"
@@ -158,7 +158,7 @@ export default function WorkPage() {
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="shrink-0 -translate-y-[0.5px] transition-transform group-hover:translate-x-0.5"
+                  className="shrink-0 transition-transform group-hover:translate-x-0.5"
                   aria-hidden
                 >
                   <path d="M5 12h14M12 5l7 7-7 7" />

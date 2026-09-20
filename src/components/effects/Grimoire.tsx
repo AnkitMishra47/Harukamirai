@@ -523,12 +523,6 @@ function FrontCover() {
         <p className="font-display" style={{ color: "var(--foil-hi)", fontSize: "1em", letterSpacing: "0.4em" }}>
           GRIMOIRE
         </p>
-        <p
-          className="font-display"
-          style={{ color: "var(--foil)", fontSize: "0.72em", letterSpacing: "0.3em", marginTop: "0.3em", opacity: 0.8 }}
-        >
-          NO. 17
-        </p>
       </div>
 
       {/* Embossed clover, stamped in foil */}

@@ -275,6 +275,24 @@ html {
   letter-spacing: 0.04em;
 }
 
+/* Cap-height alignment for a label that sits beside an icon, badge or chip.
+
+   `align-items: center` centres BOXES, and a text box is taller than its
+   letters by the font's ascent/descent padding - a per-family amount. The
+   same markup therefore lands ~1px out in the Linux system mono and ~3px out
+   in the iOS one, which is why hand-tuned `-translate-y` nudges never held.
+   Trimming the box down to cap-height/baseline makes the box *be* the
+   letters, so centring is exact whatever font the device resolves.
+
+   Must sit on the element that directly contains the text: on a flex
+   container the text lives in an anonymous item and the trim is ignored.
+   Browsers without text-box-trim ignore it and keep the box-centred
+   behaviour we ship today. */
+.cap-align {
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
+}
+
 /* Background pulse */
 @keyframes pulse-slow {
   0%, 100% {

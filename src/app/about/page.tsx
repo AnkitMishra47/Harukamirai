@@ -209,12 +209,12 @@ export default function AboutPage() {
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="shrink-0 -translate-y-[0.5px] transition-transform group-hover:-translate-x-0.5"
+              className="shrink-0 transition-transform group-hover:-translate-x-0.5"
               aria-hidden
             >
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
-            <span>Return to Homepage Overview</span>
+            <span className="cap-align">Return to Homepage Overview</span>
           </Link>
         </div>
       </section>

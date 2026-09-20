@@ -172,10 +172,6 @@ export function HeroIntro() {
           </p>
           <p className="mt-2 flex flex-wrap items-center text-xs uppercase tracking-[0.18em] sm:tracking-[0.32em] text-[var(--text-subtle)]">
             <span className="hero-in-left hero-in-2 font-jp text-sm tracking-normal">遥か未来</span>
-            <span className="hero-in-right hero-in-3 inline-flex items-center">
-              <span className="mx-3 opacity-50">·</span>
-              <span>NO. 17</span>
-            </span>
           </p>
 
           {/* Title - ANKIT slides from left, MISHRA slides from right; they merge in the center. */}
@@ -217,7 +213,7 @@ export function HeroIntro() {
                 <span className="opacity-60">·</span>
                 <span>I</span>
               </span>
-              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text)] leading-none flex items-center">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text)] leading-none cap-align">
                 Senior Software Engineer
               </span>
             </div>

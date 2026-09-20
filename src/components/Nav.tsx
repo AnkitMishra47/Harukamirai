@@ -147,9 +147,11 @@ export function Nav() {
             className="hidden md:flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-1.5 text-sm text-[var(--text-muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--text)] hover:shadow-[0_0_12px_var(--accent-glow)] cursor-pointer lg:min-w-[160px]"
           >
             <SearchIcon />
-            <span className="hidden lg:inline text-xs font-mono tracking-wider">SEARCH</span>
-            <kbd className="rounded border border-[var(--border)] bg-[var(--bg)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--accent)]">
-              ⌘K
+            <span className="hidden lg:inline text-xs font-mono tracking-wider cap-align">SEARCH</span>
+            {/* ml-auto: at lg the capsule has a min width, and the shortcut
+                hint belongs on its trailing edge rather than floating mid-capsule. */}
+            <kbd className="ml-auto inline-flex h-[22px] items-center justify-center rounded border border-[var(--border)] bg-[var(--bg)] px-1.5 font-mono text-[11px] text-[var(--accent)]">
+              <span className="cap-align">⌘K</span>
             </kbd>
           </button>
 

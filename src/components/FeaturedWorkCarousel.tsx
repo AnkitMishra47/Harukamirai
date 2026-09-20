@@ -80,7 +80,10 @@ export function FeaturedWorkCarousel() {
             aria-hidden
           />
 
-          {/* Fixed-height container to eliminate vertical jitter */}
+          {/* Fixed-height container to eliminate vertical jitter. Slides differ
+              in length, so the short ones have slack: the inner block grows to
+              fill the card and centres its rows, which splits that slack evenly
+              above and below instead of pooling it under the last row. */}
           <div className="p-5 sm:p-7 md:p-8 min-h-[340px] sm:min-h-[300px] flex flex-col justify-between">
             <AnimatePresence mode="wait">
               <motion.div
@@ -89,7 +92,7 @@ export function FeaturedWorkCarousel() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: direction * -18 }}
                 transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                className="h-full flex flex-col justify-between text-center gap-2"
+                className="grow flex flex-col justify-center text-center gap-2"
               >
                 {/* Row 1: Tag at Top Center */}
                 <div className="flex items-center justify-center gap-1.5 sm:gap-2">

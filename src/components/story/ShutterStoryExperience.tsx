@@ -1629,7 +1629,7 @@ export function ShutterStoryExperience() {
                         onClick={exitToPortfolio}
                         className="inline-flex items-center justify-center gap-1.5 font-mono text-[11px] text-white/60 hover:text-white pt-0.5 transition-colors cursor-pointer group leading-none"
                       >
-                        <span>Explore Full Portfolio</span>
+                        <span className="cap-align">Explore Full Portfolio</span>
                         <svg
                           width="12"
                           height="12"
@@ -1639,7 +1639,7 @@ export function ShutterStoryExperience() {
                           strokeWidth="2.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="shrink-0 -translate-y-[0.5px] transition-transform group-hover:translate-x-0.5"
+                          className="shrink-0 transition-transform group-hover:translate-x-0.5"
                           aria-hidden
                         >
                           <path d="M5 12h14M12 5l7 7-7 7" />
@@ -1720,7 +1720,7 @@ export function ShutterStoryExperience() {
             onClick={exitToPortfolio}
             className="font-mono text-xs text-white/60 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1.5 group leading-none"
           >
-            <span>Skip to Portfolio</span>
+            <span className="cap-align">Skip to Portfolio</span>
             <svg
               width="12"
               height="12"
@@ -1730,7 +1730,7 @@ export function ShutterStoryExperience() {
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="shrink-0 -translate-y-[0.5px] transition-transform group-hover:translate-x-0.5"
+              className="shrink-0 transition-transform group-hover:translate-x-0.5"
               aria-hidden
             >
               <path d="M5 12h14M12 5l7 7-7 7" />
@@ -1794,7 +1794,7 @@ export function ShutterStoryExperience() {
             onClick={exitToPortfolio}
             className="font-mono text-xs text-white/50 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1.5 group leading-none"
           >
-            <span>Skip to index</span>
+            <span className="cap-align">Skip to index</span>
             <svg
               width="12"
               height="12"
@@ -1804,7 +1804,7 @@ export function ShutterStoryExperience() {
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="shrink-0 -translate-y-[0.5px] transition-transform group-hover:translate-x-0.5"
+              className="shrink-0 transition-transform group-hover:translate-x-0.5"
               aria-hidden
             >
               <path d="M5 12h14M12 5l7 7-7 7" />

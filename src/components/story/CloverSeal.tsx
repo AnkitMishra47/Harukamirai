@@ -14,8 +14,10 @@ import styles from "./story-scene.module.css";
  * of one drawing rather than two drawings: the halves cannot drift out of
  * register, and the tear falls exactly where the panels meet.
  *
- * The fifth leaf is the jagged one at the top left, carried at lower opacity
- * than the other four - present, but not yet the thing it becomes in leaf-5.
+ * The fifth leaf is the jagged one at the top left, and it is the only warm
+ * thing on the gate: four leaves in the katana's steel, one in the cigarette's
+ * ember. The palette is a pair, and the leaf that is not supposed to belong is
+ * where the other half of it earns its place.
  */
 export function CloverSeal() {
   return (
@@ -44,10 +46,14 @@ export function CloverSeal() {
         className={styles.emblemMark}
         d="M55 58 C50 74 39 81 28 77 C16 71 28 59 41 58 C28 57 16 45 28 39 C39 35 50 42 55 58 Z"
       />
+      {/*
+        The fifth leaf, in ember rather than steel. It is the leaf that does not
+        belong, so it does not get the colour the other four share. See
+        `.emblemFifth` in story-scene.module.css.
+      */}
       <path
-        className={styles.emblemMark}
+        className={styles.emblemFifth}
         d="M57 56 L43 43 L34 27 L48 35 L45 19 L57 34 L62 20 L63 42 Z"
-        opacity="0.74"
       />
     </svg>
   );

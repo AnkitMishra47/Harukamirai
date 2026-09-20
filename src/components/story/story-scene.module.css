@@ -702,6 +702,40 @@
   fill: rgba(102, 190, 188, 0.95);
 }
 
+/*
+ * THE FIFTH LEAF.
+ *
+ * The one warm thing on the gate, and the only one that should be.
+ *
+ * The Dark Cloaked palette is two accents, not one: the katana's steel and the
+ * cigarette's ember. The gate was built entirely out of the cold half, and a
+ * single cold accent glowing on black is the cyberpunk formula rather than this
+ * site's. Steel standing against ember is what makes it read as the palette.
+ *
+ * The fifth leaf is the right place for the warm note because it is the leaf
+ * that is not supposed to belong. Four leaves in katana steel and one in ember
+ * says anti-magic more directly than another teal spike ever could - it is the
+ * shape that looks wrong on purpose, so it gets the colour that looks wrong on
+ * purpose. #ee681f is leaf-5's own ember, taken literally, for the same reason
+ * everything else on this gate is: the gate is a fixed dark room.
+ *
+ * It breathes slowly rather than sitting still, at a low enough amplitude to
+ * read as an ember rather than a blinking light.
+ */
+.emblemFifth {
+  fill: rgba(238, 104, 31, 0.92);
+  stroke: rgba(36, 12, 3, 0.85);
+  stroke-width: 0.65;
+  filter: drop-shadow(0 0 5px rgba(238, 104, 31, 0.55));
+  animation: emberBreathe 5.2s ease-in-out infinite;
+}
+
+/* Under a hand it catches, the way an ember does when air moves over it. */
+.shutterCharged .emblemFifth {
+  fill: rgba(255, 138, 66, 0.98);
+  filter: drop-shadow(0 0 10px rgba(238, 104, 31, 0.8));
+}
+
 /* ---- seam, dust, flood ---- */
 
 .dust {
@@ -1180,6 +1214,10 @@
     animation: none;
     opacity: 0.8;
   }
+  .emblemFifth {
+    animation: none;
+    opacity: 1;
+  }
   /* The hinge still reads as lit, it just stops travelling. */
   .seamShine {
     animation: none;
@@ -1198,6 +1236,11 @@
   14% { opacity: 1; }
   86% { opacity: 1; }
   100% { transform: translate(-50%, 460%); opacity: 0; }
+}
+
+@keyframes emberBreathe {
+  0%, 100% { opacity: 0.82; }
+  50% { opacity: 1; }
 }
 
 @keyframes seamFlush {

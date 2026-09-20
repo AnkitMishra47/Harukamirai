@@ -43,7 +43,7 @@ const jp = localFont({
 export const metadata: Metadata = {
   title: `${profile.name} - Software Engineer`,
   description: `${profile.title} at ${profile.employer.name} (${profile.employer.country}). ${profile.summary.split(". ")[1]}.`,
-  metadataBase: new URL(`https://${profile.domain}`),
+  metadataBase: new URL(profile.siteUrl),
   openGraph: {
     title: `${profile.name} - ${profile.domain}`,
     description: profile.heroLine.split(". ")[0] + ".",

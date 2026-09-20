@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
+import { profile } from "@/content";
 
-const SITE = "https://harukamirai.engineer";
+// The host Vercel actually serves; the apex redirects here.
+const SITE = profile.siteUrl;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();

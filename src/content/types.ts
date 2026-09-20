@@ -33,7 +33,17 @@ export type Profile = {
   email: string;
   links: Link[];
   resumePdf: string;
+  /** Display form, used in copy. No scheme, no host prefix. */
   domain: string;
+  /**
+   * Canonical origin, used for metadataBase, robots and the sitemap.
+   *
+   * Separate from `domain` because they genuinely differ: the apex 307s to
+   * www on Vercel, so www is what Google resolves to, while the brand written
+   * across the site is the bare domain. Crawl signals naming the host that
+   * redirects away is noise we can simply not emit.
+   */
+  siteUrl: string;
 };
 
 export type TimelineKind = "education" | "role" | "award" | "milestone";

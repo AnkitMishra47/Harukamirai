@@ -1,8 +1,17 @@
 import { ImageResponse } from "next/og";
 
+/*
+ * 192, not 32.
+ *
+ * 32x32 is the legacy browser-tab size: browsers take it and the tab icon
+ * looked fine, but Google requires a square favicon whose side is a multiple
+ * of 48px and silently substitutes its generic globe otherwise - which is
+ * exactly what the search result showed while /icon returned a valid 200.
+ * 192 is 48x4 and doubles as a usable touch/PWA icon.
+ */
 export const size = {
-  width: 32,
-  height: 32,
+  width: 192,
+  height: 192,
 };
 export const contentType = "image/png";
 
@@ -21,8 +30,8 @@ export default function Icon() {
         <svg
           viewBox="0 0 100 100"
           xmlns="http://www.w3.org/2000/svg"
-          width="32"
-          height="32"
+          width="192"
+          height="192"
         >
           {/* Stem */}
           <path

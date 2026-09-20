@@ -26,4 +26,5 @@ export const profile: Profile = {
   ],
   resumePdf: "/docs/AnkitResume.pdf",
   domain: "harukamirai.engineer",
+  siteUrl: "https://www.harukamirai.engineer",
 };

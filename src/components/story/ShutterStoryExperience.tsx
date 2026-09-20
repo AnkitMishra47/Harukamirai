@@ -349,6 +349,13 @@ const DEFAULT_CROP_ANCHOR = 50;
  * pull than a short one.
  */
 const SHUTTER_LIFT_RATIO = 0.25; // share of the gate height that commits it
+
+/*
+ * Share of a panel's travel over which the light comes up to full. Below the
+ * commit threshold on purpose: the gate should look like it is about to give
+ * before it has been pushed far enough to actually open.
+ */
+const GATE_LIGHT_FULL_AT = 0.55;
 const SHUTTER_LIFT_MIN_PX = 90; // ceiling, so a tall screen is no harder to open
 /**
  * Upward speed that commits the gate on its own, in px/s so it reads against
@@ -640,6 +647,7 @@ export function ShutterStoryExperience() {
     requestAnimationFrame(() => {
       if (panelLeftRef.current) panelLeftRef.current.style.transform = "";
       if (panelRightRef.current) panelRightRef.current.style.transform = "";
+      shutterRef.current?.style.removeProperty("--gate-open");
     });
   };
 
@@ -649,6 +657,26 @@ export function ShutterStoryExperience() {
     }
     if (panelRightRef.current) {
       panelRightRef.current.style.transform = `translate3d(${distance}px, 0, 0)`;
+    }
+    /*
+     * How far open the gate is, 0..1, published for the stylesheet.
+     *
+     * The panels moved continuously under a drag and the light did not: it had
+     * a state for a hand resting on the gate and a state for open, and nothing
+     * in between. So the halves could stand a third of the way apart with the
+     * seam lit exactly as it was before they moved - a widening gap with no
+     * more light coming through it, which reads as a picture of a door instead
+     * of a door.
+     *
+     * Full light lands at GATE_LIGHT_FULL_AT of a panel's travel rather than at
+     * the end of it, so a drag far enough to commit is already at full and the
+     * open transition has nothing left to jump.
+     */
+    const shutter = shutterRef.current;
+    if (shutter) {
+      const travel = shutter.offsetWidth / 2;
+      const open = travel > 0 ? Math.min(1, distance / (travel * GATE_LIGHT_FULL_AT)) : 0;
+      shutter.style.setProperty("--gate-open", open.toFixed(3));
     }
   };
 
@@ -1804,11 +1832,15 @@ export function ShutterStoryExperience() {
           middle, so the panels carry a half each and parting them tears it.
         */}
         <div ref={panelLeftRef} className={`${styles.panel} ${styles.panelLeft}`} aria-hidden>
+          {/* Joinery. First child so the seam light (.panel::after) still falls
+              over the carving, and so the seal sits proud of it. */}
+          <div className={styles.carve} />
           <div className={styles.emblemHalf}>
             <CloverSeal />
           </div>
         </div>
         <div ref={panelRightRef} className={`${styles.panel} ${styles.panelRight}`} aria-hidden>
+          <div className={styles.carve} />
           <div className={styles.emblemHalf}>
             <CloverSeal />
           </div>

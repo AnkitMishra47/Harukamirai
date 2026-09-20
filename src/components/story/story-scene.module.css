@@ -630,6 +630,12 @@
 .panelLeft {
   left: 0;
   background-image:
+    /* The arris: a groove and then a lit edge in the last 3px, so the half has
+       a thickness where it meets its twin rather than ending at nothing. */
+    linear-gradient(90deg,
+      transparent calc(100% - 10px),
+      rgba(0, 0, 0, 0.55) calc(100% - 10px) calc(100% - 3px),
+      rgba(214, 176, 128, 0.20) calc(100% - 3px)),
     /* light from the seam, falling across the face towards the outer edge */
     linear-gradient(90deg, rgba(0,0,0,0.52), rgba(0,0,0,0.18) 54%, rgba(66,169,166,0.045) 78%, rgba(102,190,188,0.12) 96%, rgba(160,214,213,0.17)),
     radial-gradient(ellipse at 100% 46%, rgba(24,88,103,0.16), transparent 34%),
@@ -639,6 +645,10 @@
 .panelRight {
   right: 0;
   background-image:
+    linear-gradient(270deg,
+      transparent calc(100% - 10px),
+      rgba(0, 0, 0, 0.55) calc(100% - 10px) calc(100% - 3px),
+      rgba(214, 176, 128, 0.20) calc(100% - 3px)),
     linear-gradient(270deg, rgba(0,0,0,0.52), rgba(0,0,0,0.18) 54%, rgba(66,169,166,0.045) 78%, rgba(102,190,188,0.12) 96%, rgba(160,214,213,0.17)),
     radial-gradient(ellipse at 0% 46%, rgba(24,88,103,0.16), transparent 34%),
     var(--timber);
@@ -692,6 +702,74 @@
   background:
     linear-gradient(270deg, transparent 0%, rgba(24,88,103,0.05) 40%, rgba(66,169,166,0.1) 74%, rgba(150,208,207,0.2) 100%),
     radial-gradient(ellipse at 0% 48%, rgba(139,194,192,0.18), transparent 62%);
+}
+
+/* ---- joinery: the door has thickness ---- */
+
+/*
+ * DEPTH.
+ *
+ * The face was a flat plane: grain, a vignette and light from the seam, all
+ * painted on one surface. Grain tells you what a thing is made of; it does not
+ * tell you it was BUILT. A board gate is a frame of stiles and rails with the
+ * field sunk between them, and that sunken field is the only thing in the
+ * picture that has to be read as being at a different depth from everything
+ * else.
+ *
+ * So each half gets two recessed fields with bevelled walls, and the bevels are
+ * lit from the seam - the same direction as every other light on this gate.
+ * That is the whole trick: the wall of the recess that FACES the seam catches
+ * the light, the wall that turns away from it goes black, and the eye reads the
+ * difference as a step down into the wood.
+ *
+ * Nothing here moves and nothing here is interactive. It is additive paint over
+ * the existing material, so the drag and lift tuning above is untouched.
+ */
+.carve {
+  position: absolute;
+  inset: 5% 8%;
+  pointer-events: none;
+  display: grid;
+  /* Lower field taller than the upper one - a door is not split in half, and
+     an even split is the thing that reads as a supermarket shutter. */
+  grid-template-rows: 1fr 1.32fr;
+  gap: clamp(16px, 3vh, 34px);
+}
+
+.carve::before,
+.carve::after {
+  content: "";
+  border-radius: 1px;
+  /* The sunken field sits slightly darker than the stiles around it. */
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0.1) 42%, rgba(0, 0, 0, 0.3));
+}
+
+/*
+ * Bevel direction, per half. Light lives in the seam, so for the left panel it
+ * arrives from the right and for the right panel from the left; the inner wall
+ * facing it is umber, the wall turned away from it is black. Mirroring these
+ * offsets is what stops both halves looking lit from the same side, which is
+ * what makes a mirrored pair read as printed wallpaper.
+ */
+.panelLeft .carve::before,
+.panelLeft .carve::after {
+  box-shadow:
+    inset 3px 0 7px -2px rgba(196, 150, 96, 0.11),
+    inset -5px 0 13px -3px rgba(0, 0, 0, 0.62),
+    inset 0 5px 12px -4px rgba(0, 0, 0, 0.5),
+    inset 0 -3px 9px -4px rgba(176, 134, 88, 0.07),
+    0 1px 0 rgba(188, 144, 94, 0.05);
+}
+
+.panelRight .carve::before,
+.panelRight .carve::after {
+  box-shadow:
+    inset -3px 0 7px -2px rgba(196, 150, 96, 0.11),
+    inset 5px 0 13px -3px rgba(0, 0, 0, 0.62),
+    inset 0 5px 12px -4px rgba(0, 0, 0, 0.5),
+    inset 0 -3px 9px -4px rgba(176, 134, 88, 0.07),
+    0 1px 0 rgba(188, 144, 94, 0.05);
 }
 
 /* ---- the seal, cut down the seam ---- */
@@ -1165,9 +1243,19 @@
  * A hand on the gate. The seam widens and the haze swells, so the gate answers
  * the touch before it has moved at all.
  */
+/*
+ * Everything below blends the charged state toward fully-open with --gate-open,
+ * so the light tracks the hand continuously instead of stepping once when it
+ * lands and once when the gate commits. Transitions are shortened here: at the
+ * base durations the glow visibly trails a fast drag.
+ */
 .shutterCharged .hiddenLight {
   opacity: 1;
-  transform: scale(1.04);
+  transform: scale(calc(1.04 + 0.13 * var(--gate-open, 0)));
+  /* More of the room is exposed, so more of it reaches the eye. */
+  filter: brightness(calc(1 + 0.55 * var(--gate-open, 0)))
+          saturate(calc(1 + 0.25 * var(--gate-open, 0)));
+  transition-duration: 160ms;
 }
 
 .shutterCharged .lightAtmosphere {
@@ -1176,15 +1264,25 @@
 }
 
 .shutterCharged .centerLight {
-  width: 5px;
-  opacity: 0.92;
+  width: calc(5px + 34px * var(--gate-open, 0));
   box-shadow:
-    0 0 18px rgba(139, 194, 192, 0.48),
-    0 0 90px rgba(66, 169, 166, 0.34);
+    0 0 calc(18px + 58px * var(--gate-open, 0)) rgba(139, 194, 192, 0.48),
+    0 0 calc(90px + 210px * var(--gate-open, 0)) rgba(66, 169, 166, 0.34);
+  transition-duration: 120ms;
 }
 
+/* The inner edges sit right next to the source, so they take the most light. */
 .shutterCharged .panel::after {
   opacity: 1;
+  filter: brightness(calc(1 + 1.1 * var(--gate-open, 0)));
+  transition-duration: 130ms;
+}
+
+/* Light pooling wider on the floor as the gap grows. */
+.shutterCharged .floorSpill {
+  opacity: calc(0.42 + 0.52 * var(--gate-open, 0));
+  transform: scaleX(calc(1 + 0.5 * var(--gate-open, 0)));
+  transition-duration: 150ms;
 }
 
 /* The seal brightens under the hand, like metal catching the light. */
@@ -1291,14 +1389,29 @@
   100% { transform: translate(-50%, 460%); opacity: 0; }
 }
 
+/*
+ * The breathing carries --gate-open rather than being overridden by it.
+ *
+ * A running animation wins over a normal declaration, so the charged state's
+ * `opacity` on this layer never actually applied - only its `width` did.
+ * Lifting the keyframes instead means the haze keeps breathing while its whole
+ * range rises with the gap, which is the behaviour that was wanted all along.
+ */
 @keyframes shutterBreathe {
-  0%, 100% { opacity: 0.4; transform: translateX(-50%) scaleX(0.97); }
-  50% { opacity: 0.55; transform: translateX(-50%) scaleX(1.03); }
+  0%, 100% {
+    opacity: calc(0.4 + 0.5 * var(--gate-open, 0));
+    transform: translateX(-50%) scaleX(calc(0.97 + 1.5 * var(--gate-open, 0)));
+  }
+  50% {
+    opacity: calc(0.55 + 0.45 * var(--gate-open, 0));
+    transform: translateX(-50%) scaleX(calc(1.03 + 1.5 * var(--gate-open, 0)));
+  }
 }
 
+/* Same reason as shutterBreathe: the pulse owns opacity, so it carries the ratio. */
 @keyframes shutterSeamPulse {
-  0%, 100% { opacity: 0.56; }
-  52% { opacity: 0.72; }
+  0%, 100% { opacity: calc(0.56 + 0.44 * var(--gate-open, 0)); }
+  52% { opacity: calc(0.72 + 0.28 * var(--gate-open, 0)); }
 }
 
 @keyframes shutterLightFlood {

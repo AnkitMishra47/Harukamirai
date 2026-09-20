@@ -288,14 +288,25 @@ const SCENE_SLIDE_OFFSET_PCT = 105;
  * gate had finished moving: lift it and the act was already sitting there,
  * settled, having performed to nobody.
  *
- * 300ms is read off the gate's own transition - 550ms on
- * `cubic-bezier(0.16, 1, 0.3, 1)`, an ease-out that spends its distance early.
- * At 300ms it is 55% through its duration and about 95% through its travel, so
- * only a sliver at the top of the screen is still covered. Starting here means
- * the act is arriving as the last of the gate leaves, which reads as one motion,
- * where waiting for the full 550ms reads as two.
+ * The rule: start when the gate is about 95% out of the way, so the act is
+ * arriving as the last of it leaves. That reads as one motion; waiting for the
+ * gate to finish entirely reads as two.
+ *
+ * WHERE 700 COMES FROM. This number is a function of the gate's animation and
+ * has to be re-read whenever that changes - it was 300ms for the old single
+ * panel that lifted on a 550ms ease-out, and when the gate became two panels
+ * parting on `transform 880ms cubic-bezier(0.45, 0.05, 0.2, 1)` nobody moved
+ * it, so the entrance played out behind a shut door. Measured per frame on the
+ * running page, the panels are 24% open at 300ms and 95% open at 700ms:
+ *
+ *     300ms  24%      600ms  88%
+ *     400ms  54%      700ms  95%   <- here
+ *     500ms  76%      900ms  100%
+ *
+ * The scene slide takes SCENE_SLIDE_IN_S, so the act finishes arriving at about
+ * 1150ms, against a shell that has finished handing over at 1060ms.
  */
-const STAGE_REVEAL_DELAY_MS = 300;
+const STAGE_REVEAL_DELAY_MS = 700;
 /**
  * How long the theatre takes to leave once the story hands over - the gate's own
  * 550ms transition, read the same way STAGE_REVEAL_DELAY_MS reads it. The
@@ -1928,7 +1939,7 @@ export function ShutterStoryExperience() {
           </div>
 
           <span
-            className={`${styles.wordStack} font-mono text-[0.7rem] uppercase tracking-[0.15em] font-semibold text-[#e6e3ea]/70`}
+            className={`${styles.wordStack} font-mono text-[0.9rem] uppercase tracking-[0.2em] font-bold text-[#e6e3ea]`}
             aria-hidden
           >
             <span>Code</span>

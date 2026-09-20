@@ -881,15 +881,47 @@
 }
 
 /* Bottom-left mantra and the vertical line down the right edge. */
+/*
+ * CODE / LEARN / BUILD / REPEAT.
+ *
+ * It was four grey words at 11px in a corner, which is the look of something
+ * left behind rather than something meant. It is a mantra, so it gets the
+ * treatment a mantra gets: a rule down its left edge to say it is one block and
+ * not four strays, real size, and the accent on the initial of each word so the
+ * column reads down as well as across.
+ */
 .wordStack {
   position: absolute;
   top: 50%;
-  left: clamp(1rem, 2.5vw, 2rem);
+  left: clamp(1rem, 2.5vw, 2.25rem);
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  line-height: 2;
+  gap: 0.55rem;
+  padding-left: clamp(0.75rem, 1.2vw, 1.1rem);
+  line-height: 1.1;
+  border-left: 1px solid rgba(102, 190, 188, 0.45);
 }
+
+.wordStack span {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+/* The tick in front of each word, brightest on the first. */
+.wordStack span::before {
+  content: "";
+  width: 6px;
+  height: 1px;
+  background: rgba(139, 194, 192, 0.85);
+  transform: translateY(-0.3em);
+}
+
+.wordStack span:nth-child(1) { opacity: 1; }
+.wordStack span:nth-child(2) { opacity: 0.88; }
+.wordStack span:nth-child(3) { opacity: 0.76; }
+.wordStack span:nth-child(4) { opacity: 0.64; }
 
 .sideRail {
   position: absolute;

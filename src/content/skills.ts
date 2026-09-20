@@ -22,6 +22,7 @@ export const disciplines: DisciplinePillar[] = [
     technologies: ["Python", "PostgreSQL / pgvector", "FastMCP", "OpenAI / Claude APIs"],
     highlights: [
       "Sub-15ms vector retrieval across 25M+ rows with automated vacuum & delta-sync reconciliation.",
+      "Production RAG architectures with pgvector (HNSW) indexing and autonomous agentic workflows.",
     ],
   },
   {
@@ -34,6 +35,7 @@ export const disciplines: DisciplinePillar[] = [
     technologies: ["Java 21 / Spring", "PostgreSQL", "XML / EDI X12", "Async Queues", "Docker"],
     highlights: [
       "Zero data-loss XML/EDI pipeline connecting MYOB accounting and CargoWise freight logistics.",
+      "High-throughput transactional Java services with resilient retry policies and async event queues.",
     ],
   },
   {
@@ -46,6 +48,7 @@ export const disciplines: DisciplinePillar[] = [
     technologies: ["Angular 19", "TypeScript", "Paper.js", "PrimeNG", "Next.js", "Tailwind CSS"],
     highlights: [
       "Interactive construction takeoff canvas inside Angular 19 generating live BOQ estimates.",
+      "Pixel-precise SVG/vector rendering and stateful high-density enterprise UI suites.",
     ],
   },
   {
@@ -58,6 +61,7 @@ export const disciplines: DisciplinePillar[] = [
     technologies: ["PostgreSQL", "TimescaleDB", "SymmetricDS", "Grafana", "Linux / Shell"],
     highlights: [
       "Hub-and-spoke offline-first database sync for remote mining operations with real-time alerting.",
+      "Multi-node PostgreSQL optimization, query & index tuning, and automated health monitoring.",
     ],
   },
   {
@@ -70,6 +74,7 @@ export const disciplines: DisciplinePillar[] = [
     technologies: ["Xero API", "Eway Payments", "Australian USI Registry", "Twilio", "Chrome Extensions"],
     highlights: [
       "Two-way invoice reconciliation, recurring billing, and automated government identity validation.",
+      "Webhooks orchestration, SMS dispatch pipelines, and browser automation tools.",
     ],
   },
 ];

@@ -76,7 +76,7 @@ export function SkillsCarousel() {
           />
 
           {/* Fixed-height container to eliminate vertical jitter */}
-          <div className="p-5 sm:p-7 md:p-8 min-h-[340px] sm:min-h-[300px] flex flex-col justify-between">
+          <div className="p-5 sm:p-7 md:p-8 min-h-[380px] sm:min-h-[340px] flex flex-col justify-between">
             <AnimatePresence mode="wait">
               <motion.div
                 key={current.id}
@@ -84,7 +84,7 @@ export function SkillsCarousel() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: direction * -18 }}
                 transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                className="h-full flex flex-col justify-between text-center gap-2"
+                className="h-full flex flex-col justify-between text-center gap-3"
               >
                 {/* Row 1: Tag at Top Center */}
                 <div className="flex items-center justify-center gap-1.5 sm:gap-2">
@@ -124,7 +124,7 @@ export function SkillsCarousel() {
                 </div>
 
                 {/* Row 4: Full Technologies Chips */}
-                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 px-1 py-1">
+                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 px-1 py-0.5">
                   {current.technologies.map((t) => (
                     <span
                       key={t}
@@ -135,16 +135,20 @@ export function SkillsCarousel() {
                   ))}
                 </div>
 
-                {/* Row 5: Concrete Proof Point */}
-                <div className="border-t border-[var(--border)] flex items-center justify-center gap-1.5 px-2 pt-2.5 text-xs sm:text-sm text-[var(--text-subtle)]">
-                  <span
-                    className="font-bold select-none shrink-0"
-                    style={{ color: accentColor }}
-                    aria-hidden
-                  >
-                    ✦
-                  </span>
-                  <span className="max-w-2xl">{current.highlights[0]}</span>
+                {/* Row 5: Concrete Proof Points */}
+                <div className="border-t border-[var(--border)] flex flex-col items-center gap-1.5 px-2 pt-2.5 text-xs sm:text-sm text-[var(--text-subtle)]">
+                  {current.highlights.map((highlight, idx) => (
+                    <div key={idx} className="flex items-start justify-center gap-1.5 text-center">
+                      <span
+                        className="font-bold select-none shrink-0 mt-0.5"
+                        style={{ color: accentColor }}
+                        aria-hidden
+                      >
+                        ✦
+                      </span>
+                      <span className="max-w-2xl">{highlight}</span>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             </AnimatePresence>

@@ -325,14 +325,29 @@ export function Grimoire() {
             >
               <div className="relative flex-1 overflow-hidden" style={{ marginRight: 2 }}>
                 <PageBackground side="left" />
-                <AnimatePresence mode="wait">
+                {/*
+                  `sync`, not `wait`.
+
+                  `wait` holds the incoming page until the outgoing one has
+                  finished leaving, and both ends of this animation are
+                  `opacity: 0` - so between them the spread sat empty, showing
+                  nothing but ruled parchment. Recorded on a Galaxy S24 Ultra at
+                  60fps, that hole lasted about half a second on every turn, and
+                  it is what reads as a flicker at both pages.
+
+                  The pages are `absolute inset-0`, so they can occupy the same
+                  box at the same time without disturbing any layout: the old one
+                  rotates away while the new one rotates in, which is what a page
+                  turn is meant to look like.
+                */}
+                <AnimatePresence mode="sync">
                   <motion.div
                     key={`L-${chapter}`}
                     initial={{ rotateY: 90, opacity: 0 }}
                     animate={{ rotateY: 0, opacity: 1 }}
                     exit={{ rotateY: -90, opacity: 0 }}
                     transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }}
-                    style={{ transformOrigin: "right center", transformStyle: "preserve-3d" }}
+                    style={{ transformOrigin: "right center", backfaceVisibility: "hidden" }}
                     className="absolute inset-0 flex flex-col justify-between"
                   >
                     <LeftPage chapter={c} index={chapter} />
@@ -342,14 +357,14 @@ export function Grimoire() {
 
               <div className="relative flex-1 overflow-hidden" style={{ marginLeft: 2 }}>
                 <PageBackground side="right" />
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="sync">
                   <motion.div
                     key={`R-${chapter}`}
                     initial={{ rotateY: -90, opacity: 0 }}
                     animate={{ rotateY: 0, opacity: 1 }}
                     exit={{ rotateY: 90, opacity: 0 }}
                     transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1], delay: 0.05 }}
-                    style={{ transformOrigin: "left center", transformStyle: "preserve-3d" }}
+                    style={{ transformOrigin: "left center", backfaceVisibility: "hidden" }}
                     className="absolute inset-0 flex flex-col justify-between"
                   >
                     <RightPage chapter={c} index={chapter} />

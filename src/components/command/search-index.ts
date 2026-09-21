@@ -32,7 +32,7 @@ export const SUGGESTED_QUERIES: SuggestionChip[] = [
   { id: "sug-sprach", label: "1-Day Client Delivery", query: "Sprachkraft", icon: "🚀" },
   { id: "sug-resume", label: "Official Resume PDF", query: "Resume PDF", icon: "📄" },
   { id: "sug-email", label: "Send Direct Email", query: "Email Ankit", icon: "✉" },
-  { id: "sug-rag", label: "PostgreSQL 25M+ Vectors", query: "RAG Systems", icon: "⚡" },
+  { id: "sug-rag", label: "PostgreSQL 2.5M+ Vectors", query: "RAG Systems", icon: "⚡" },
   { id: "sug-story", label: "Storyline (6 Cinematic Acts)", query: "Storyline", icon: "📖" },
 ];
 
@@ -47,7 +47,7 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
         type: "action",
         title: "Executive Recruiter Brief",
         subtitle: "Executive Summary · 3 Career Milestones · OneIT",
-        description: "High-level overview of Ankit's career arc, 25M+ vector scale, awards, and direct download links.",
+        description: "High-level overview of Ankit's career arc, 2.5M+ vector scale, awards, and direct download links.",
         badge: "Executive Brief",
         actionId: "open-recruiter-brief",
       },
@@ -72,10 +72,10 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
       {
         id: "cs-rag",
         type: "case-study",
-        title: "RAG over 25M+ Embeddings on PostgreSQL",
+        title: "RAG over 2.5M+ Embeddings on PostgreSQL",
         subtitle: "Knowledge Retrieval · OneIT",
-        description: "HNSW index tuning, sub-15ms filtered cosine search, bloat and VACUUM stall mitigation in production.",
-        badge: "25M+ Vectors",
+        description: "HNSW index tuning, filtered cosine search, bloat and VACUUM stall mitigation in production.",
+        badge: "2.5M+ Vectors",
         url: "/work#rag-platform",
       },
       {

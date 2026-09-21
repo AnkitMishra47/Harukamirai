@@ -10,14 +10,14 @@ export const caseStudies: CaseStudy[] = [
     slug: "rag-platform",
     org: "oneit",
     kicker: "AI platform · Enterprise knowledge retrieval",
-    title: "RAG over 25M+ embeddings on PostgreSQL",
+    title: "RAG over 2.5M+ embeddings on PostgreSQL",
     domain:
       "Enterprise document search across OneIT's product family: SharePoint libraries, equipment manuals, internal documentation and historical tickets, served behind product-specific assistants.",
     problem:
       "Make LLM features accurate and cheap enough to ship inside products customers pay for, over corpora that keep changing, without the vector store drifting out of sync with the source documents.",
     approach: [
       "Ingestion and sync of enterprise documents from SharePoint (Microsoft Graph API) into a PostgreSQL embeddings store with chunking, filtered vector search and HNSW indexing on pgvector.",
-      "Store grew past 25 million rows; diagnosed and fixed index bloat, VACUUM stalls and orphaned-record drift.",
+      "Store grew past 2.5 million rows; diagnosed and fixed index bloat, VACUUM stalls and orphaned-record drift.",
       "Reconciliation tooling that keeps file state and vector state consistent so deleted or replaced documents never resurface in answers.",
       "MCP-style tool layer giving the LLM controlled access to live product APIs instead of free-form generation.",
       "AI-assisted engineering workflow: plain-English requirements become structured specs, code scaffolds and generated tests, with validation loops before anything reaches review.",
@@ -25,7 +25,7 @@ export const caseStudies: CaseStudy[] = [
     result:
       "RAG, tool access and AI-assisted code and test generation running against real product APIs in production, with a vector store that stays consistent with its sources at multi-million-row scale.",
     metrics: [
-      { label: "Scale", value: "25M+ embedding rows" },
+      { label: "Scale", value: "2.5M+ embedding rows" },
       { label: "Index", value: "pgvector · HNSW" },
       { label: "Stage", value: "In production" },
     ],

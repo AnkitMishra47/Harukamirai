@@ -134,16 +134,16 @@ const SCENES: StoryScene[] = [
     subtitle: "PostgreSQL · pgvector · Enterprise Integration",
     narrativeLead: "Scale is not a buzzword; it is a discipline of honest trade-offs.",
     narrativeBody:
-      "Stepping into Senior Software Engineer responsibilities meant owning core infrastructure end-to-end: tuning PostgreSQL HNSW vector indexes over 25 million embeddings to achieve filtered search in under 15 milliseconds, while maintaining fault-tolerant XML/EDI middleware routing enterprise logistics between CargoWise and MYOB with zero data loss.",
-    metricLabel: "Production Query Latency",
-    metricValue: "Sub-15ms · 25M+ Vectors",
-    chips: ["PostgreSQL & pgvector", "Sub-15ms Latency", "Enterprise Middleware"],
+      "Stepping into Senior Software Engineer responsibilities meant owning core infrastructure end-to-end: a 2.5M-row PostgreSQL vector store on pgvector and HNSW, where the hard part was never the row count. It was keeping the store honest against a live SharePoint that renames and re-syncs its files - deleted and replaced documents were resurfacing in answers, which I traced to duplicate handling in the ingest layer and fixed there, with reconciliation tooling that keeps file state and vector state consistent. Alongside it, fault-tolerant XML/EDI middleware routing enterprise logistics between CargoWise and MYOB.",
+    metricLabel: "Production Vector Store",
+    metricValue: "2.5M+ Rows · Source-Reconciled",
+    chips: ["PostgreSQL & pgvector", "Source Reconciliation", "Enterprise Middleware"],
     figureRows: [
-      { label: "INDEXED CORPUS", value: "25,000,000", note: "Embeddings", valueColor: "#ffffff" },
+      { label: "INDEXED CORPUS", value: "2,590,043", note: "Embeddings", valueColor: "#ffffff" },
       {
-        label: "P99 FILTERED LATENCY",
-        value: "14.8ms",
-        note: "PostgreSQL Engine",
+        label: "INDEX & RETRIEVAL",
+        value: "pgvector · HNSW",
+        note: "Filtered vector search",
         valueColor: "#34d399",
       },
     ],
@@ -206,7 +206,7 @@ const SCENES: StoryScene[] = [
       "A proven track record of shipping production AI and backend systems with calm ownership.",
     narrativeBody:
       "Three years. Three major milestones. A Master's degree earned alongside full-time production delivery. Fast ramp-up, clean code, and reliable communication across global timezones. Ready to step in and solve high-stakes challenges from day one.",
-    chips: ["Rapid Career Progression", "25M+ Vector Infrastructure", "Full-Time Remote (AWST)"],
+    chips: ["Rapid Career Progression", "2.5M+ Vector Infrastructure", "Full-Time Remote (AWST)"],
     type: "dossier",
   },
 ];
@@ -1577,7 +1577,7 @@ export function ShutterStoryExperience() {
                       <div className={`w-full max-w-md mx-auto rounded-2xl border border-sky-500/30 bg-[#070e1c]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md space-y-3 ${styles.touchFlat} ${styles.detail}`}>
                         <div className="flex items-center justify-between border-b border-white/10 pb-2.5 text-white/50">
                           <span className="text-sky-400 font-semibold text-xs">pgvector · HNSW Telemetry</span>
-                          <span className="text-emerald-400 text-[11px]">Sub-15ms Latency</span>
+                          <span className="text-emerald-400 text-[11px]">Source-Reconciled</span>
                         </div>
 
                         <div className="grid grid-cols-2 gap-2.5 text-left">
@@ -1647,7 +1647,7 @@ export function ShutterStoryExperience() {
                       </div>
                       <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
                         <span className="text-[10px] text-white/50 block font-mono">SCALE</span>
-                        <span className="font-semibold text-white">25M+ Vectors</span>
+                        <span className="font-semibold text-white">2.5M+ Vectors</span>
                       </div>
                       <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
                         <span className="text-[10px] text-white/50 block font-mono">HONOURS</span>

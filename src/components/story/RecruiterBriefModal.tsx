@@ -103,10 +103,10 @@ export function RecruiterBriefModal() {
               Scale & AI
             </span>
             <span className="mt-1 block font-display text-lg font-semibold text-[var(--text)]">
-              25M+ Vectors
+              2.5M+ Vectors
             </span>
             <span className="text-xs text-[var(--text-muted)]">
-              pgvector HNSW, sub-15ms, zero bloat
+              pgvector HNSW, source-reconciled
             </span>
           </div>
 
@@ -126,7 +126,7 @@ export function RecruiterBriefModal() {
         {/* Narrative Highlights */}
         <div className="mt-6 space-y-3 text-sm leading-relaxed text-[var(--text-muted)]">
           <p>
-            <strong className="text-[var(--text)]">What I do:</strong> I design and scale mission-critical AI systems, backend microservices, and enterprise data pipelines. At OneIT Australia, I run pgvector retrieval over 25M+ embeddings and build XML/EDI middleware connecting legacy ERPs with modern cloud logistics.
+            <strong className="text-[var(--text)]">What I do:</strong> I design and scale mission-critical AI systems, backend microservices, and enterprise data pipelines. At OneIT Australia, I run pgvector retrieval over 2.5M+ embeddings and build XML/EDI middleware connecting legacy ERPs with modern cloud logistics.
           </p>
           <p>
             <strong className="text-[var(--text)]">Primary Stack:</strong> Java 21 / Spring Boot, PostgreSQL / pgvector, Angular 19, Next.js / TypeScript, Python / FastMCP, Docker, and distributed replication engines.

@@ -22,7 +22,10 @@ clear call to action.
    trim the tail, crossfade-loop the body, fade under the end card.
 3. **Frame is 4:5 portrait (1080x1350)**, desktop-first, resolving to a
    desktop/phone side-by-side. 4:5 takes ~1.8x the mobile feed height of 16:9.
-4. **No fabricated claims.** Annotation copy is drawn from `src/content/*.ts`
+4. **No fabricated claims.** (The first cut shipped "25M embeddings, 14.8ms p99". The
+   corpus was overstated ~10x - `select count(1)` returned 2,590,043 - and the
+   p99 had no source at all. Both corrected 2026-09-21.)
+    Annotation copy is drawn from `src/content/*.ts`
    and `src/components/story/ShutterStoryExperience.tsx` only. Performance
    figures in memory were measured on `feature/Feature-GrimoireFast` before
    the story experience landed and are treated as stale: either re-measured
@@ -91,7 +94,7 @@ styled with `globals.css` tokens, screenshotted transparent, overlaid with
 | 0:00 | Gate closed. 遥か未来 / HARUKA MIRAI | Every visit opens on a gate. |
 | 0:05 | Gate lifts, Act 01 lands behind it | Lift it. A six-act story starts. |
 | 0:11 | Act 01, IST 23:14 / AWST 01:44 | Act 01 - 2022. Intern at OneIT Australia, on Perth hours. |
-| 0:20 | Act 03, 25,000,000 / 14.8ms | Act 03 - 25M embeddings, 14.8ms p99. |
+| 0:20 | Act 03, 2,590,043 / pgvector HNSW | Act 03 - 2,590,043 embeddings, kept honest against their sources. |
 | 0:29 | Act 04, trophy photo | Act 04 - Developer of the Year 2024. Runner-up EOTY 2025. |
 | 0:36 | Act 06, dossier | Act 06 - the executive summary, at a glance. |
 | 0:43 | Exit to site. Hero, magic circle, scroll | Behind the story: the portfolio itself. |

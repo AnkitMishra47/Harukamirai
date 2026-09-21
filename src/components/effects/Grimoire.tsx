@@ -110,7 +110,7 @@ const MATTER: Record<string, Pick<Chapter, "marks" | "aside"> & { body?: string;
   },
   "award-2025": {
     marksCaption: "Anti-Magic Vector Nexus · 異次元術",
-    marks: ["25M+ Vectors in Production", "Sub-15ms pgvector HNSW", "Agentic FastMCP Tooling"],
+    marks: ["2.5M+ Vectors in Production", "pgvector HNSW Retrieval", "Agentic FastMCP Tooling"],
     aside: { caption: "Citation", lines: [{ text: awardBody("2025") }] },
     body: "Owns AI/RAG platform work end-to-end: ingestion, pgvector search, LLM orchestration, developer tooling.",
   },

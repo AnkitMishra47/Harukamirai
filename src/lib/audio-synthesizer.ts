@@ -24,7 +24,7 @@
  * rather than to process around it here.
  */
 
-const BASE_VOLUME = 0.7;
+const BASE_VOLUME = 0.28;
 
 class SuccessionThemeEngine {
   private audioEl: HTMLAudioElement | null = null;

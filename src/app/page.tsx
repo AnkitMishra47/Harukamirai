@@ -5,7 +5,7 @@ import { MagicReveal, BrushDivider } from "@/components/effects/MagicReveal";
 import { FeaturedWorkCarousel } from "@/components/FeaturedWorkCarousel";
 import { SkillsCarousel } from "@/components/SkillsCarousel";
 import { Currents } from "@/components/effects/Currents";
-import { awards, profile, testimonials } from "@/content";
+import { awards, caseStudies, profile, testimonials } from "@/content";
 
 export default function HomePage() {
   const [newest, previous] = awards;
@@ -38,7 +38,7 @@ export default function HomePage() {
             href="/work"
             className="group inline-flex items-center gap-2 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
           >
-            <span>View all 7 case studies & architecture blueprints</span>
+            <span>View all {caseStudies.length} case studies & architecture blueprints</span>
             <svg
               width="14"
               height="14"

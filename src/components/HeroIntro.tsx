@@ -217,11 +217,12 @@ export function HeroIntro() {
                 Senior Software Engineer
               </span>
             </div>
-            <span className="hero-in-right hero-in-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)] leading-none">
-              <span className="size-1 rounded-full bg-[var(--accent)] shrink-0" aria-hidden />
-              <span>Not a coincidence</span>
+            <span className="hero-in-right hero-in-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--gold)] font-medium leading-none">
+              <span>★ Mid Developer of the Year 2024</span>
             </span>
           </div>
+
+          <CheekyLine />
 
           {/*
             Lede. It carries the gap to the pill row itself (mt-8 / sm:mt-10),
@@ -270,6 +271,26 @@ export function HeroIntro() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   className="shrink-0 transition-transform group-hover:translate-x-1"
+                  aria-hidden
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </Link>
+
+              <Link
+                href="/resume"
+                className="inline-flex items-center gap-1.5 px-4 py-3.5 text-sm font-medium text-[var(--text-subtle)] hover:text-[var(--accent)] transition-colors"
+              >
+                <span>Verified Resume</span>
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   aria-hidden
                 >
                   <path d="M5 12h14M12 5l7 7-7 7" />
@@ -330,5 +351,55 @@ export function HeroIntro() {
           invitation from the same place on the screen, and at some viewport
           widths the two overlapped. One nudge, one control. */}
     </section>
+  );
+}
+
+/*
+ * The A and the I in ANKIT glow, and the pill spells them out. This is the
+ * punchline. The lines rotate on a timer and stay on the first under reduced
+ * motion. Screen readers get the first line once, not a live region that
+ * talks every few seconds.
+ */
+const CHEEKY_LINES = [
+  "A·I - Ankit's Intelligence. Not a coincidence.",
+  "Not artificial. Hand-written, and hand-debugged.",
+  "Trained on production incidents, not the internet.",
+  "Hallucination rate: I count the rows before I quote them.",
+  "Context window: three years of prod, and a Master's.",
+  "Runs on coffee, not GPUs.",
+];
+
+function CheekyLine() {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let swap: number | undefined;
+    const tick = window.setInterval(() => {
+      setVisible(false);
+      swap = window.setTimeout(() => {
+        setIndex((i) => (i + 1) % CHEEKY_LINES.length);
+        setVisible(true);
+      }, 350);
+    }, 4200);
+    return () => {
+      window.clearInterval(tick);
+      window.clearTimeout(swap);
+    };
+  }, []);
+
+  return (
+    <p className="hero-in hero-in-4 mt-3 flex items-start gap-2 min-h-[2.75em] sm:min-h-0 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)] leading-snug">
+      <span className="mt-[0.5em] size-1 rounded-full bg-[var(--accent)] shrink-0" aria-hidden />
+      <span className="sr-only">{CHEEKY_LINES[0]}</span>
+      <span
+        aria-hidden
+        className="transition-opacity duration-300"
+        style={{ opacity: visible ? 1 : 0 }}
+      >
+        {CHEEKY_LINES[index]}
+      </span>
+    </p>
   );
 }

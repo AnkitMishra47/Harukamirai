@@ -84,7 +84,7 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
         title: "Safe Work Instructions Generated from Field Audio",
         subtitle: "Applied AI · OneIT",
         description: "Transcript segmentation, rule-driven step classification with a coverage check, and GPT-4o vision cropping figures out of OEM manuals.",
-        badge: "Audio -> SWI",
+        badge: "Audio → SWI",
         url: "/work#swi-generation",
       },
       {
@@ -93,7 +93,7 @@ export function searchCareerIndex(rawQuery: string): SearchResultItem[] {
         title: "Emailed Dockets to Optimised Routes",
         subtitle: "Operations Automation · OneIT",
         description: "IMAP docket intake with PDF template extraction, Google Directions waypoint optimisation, and drag-and-drop labour scheduling on FullCalendar.",
-        badge: "Email -> Route",
+        badge: "Email → Route",
         url: "/work#delivery-logistics",
       },
       {

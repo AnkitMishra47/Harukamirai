@@ -23,9 +23,9 @@ export const caseStudies: CaseStudy[] = [
       "Parallel suites with an isolated browser per test, and reports carrying screenshots, HTML snapshots and a run history.",
     ],
     result:
-      "Plans come from the prototype, suites run in parallel, and every failure arrives already sorted into 'the screen changed' or 'the product broke', with the screenshot and HTML to prove it.",
+      "Plans come from the prototype, suites run in parallel, and every failure arrives already sorted into 'the screen changed' or 'the product broke', with the screenshot and HTML to prove it. The committed suites cover 400 test cases and 4,783 steps across nine client applications (counted September 2026).",
     metrics: [
-      { label: "Input", value: "Plain-English steps" },
+      { label: "Scale", value: "400 test cases · 9 client apps" },
       { label: "Engine", value: "LLM agents + Selenium" },
       { label: "My role", value: "Primary engineer" },
     ],
@@ -104,7 +104,7 @@ export const caseStudies: CaseStudy[] = [
     result:
       "Dockets turn into tasks straight from the inbox, routes come back in an optimised order, and labour is allocated by dragging on a calendar.",
     metrics: [
-      { label: "Intake", value: "Email PDF -> task" },
+      { label: "Intake", value: "Email PDF → task" },
       { label: "Routing", value: "Google Directions · optimised" },
       { label: "My role", value: "Built and led" },
     ],

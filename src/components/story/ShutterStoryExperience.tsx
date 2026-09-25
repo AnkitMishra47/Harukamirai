@@ -86,8 +86,9 @@ const CHESS_PROFILE = profile.links.find((l) => l.label === "Chess.com");
    skills review, or the repo's own history - nothing here is a guess. */
 const LED_SYSTEMS = [
   ["Test automation", "1iT-TestRobot, primary engineer"],
-  ["Applied AI", "Field audio -> Safe Work Instructions"],
-  ["Logistics", "Emailed dockets -> optimised routes"],
+  ["Team", "12 client platforms · 4 engineers led"],
+  ["Applied AI", "Field audio → Safe Work Instructions"],
+  ["Logistics", "Emailed dockets → optimised routes"],
   ["Accounting", "Xero two-way sync, reconciled"],
   ["Retrieval", "SharePoint RAG, source-reconciled"],
 ] as const;
@@ -95,7 +96,7 @@ const LED_SYSTEMS = [
 /* Act 06's at-a-glance tiles. Six, not four, so the summary card is filled
    with facts on a desktop instead of spreading four tiles across air. */
 const DOSSIER_TILES = [
-  ["TRAJECTORY", "Intern -> Senior, 3 yrs"],
+  ["TRAJECTORY", "Intern → Senior, 3 yrs"],
   ["FLAGSHIP", "1iT-TestRobot"],
   ["PLATFORMS", "12 Built & Led"],
   ["HONOURS", "Double Honoree"],
@@ -165,14 +166,14 @@ const SCENES: StoryScene[] = [
     narrativeBody:
       "Across twelve client platforms - mining, logistics, construction, training - I'm in the code every day, and I lead the engineers building alongside me: splitting the work, reviewing every change, fixing what comes back. The systems I've built and led: field audio turned into validated Safe Work Instructions; customer dockets read straight from the inbox into optimised delivery routes; two-way Xero sync with payment reconciliation; a multi-million-row vector store kept honest against a SharePoint that never stops renaming files; and 1iT-TestRobot, the test runner I became the primary engineer on.",
     metricLabel: "Developer & Lead",
-    metricValue: "12 Platforms Built On · 4 Engineers Led",
+    metricValue: "400 Test Cases · 4,783 Steps · 12 Platforms",
     chips: ["Hands-On Engineering", "Technical Leadership", "Applied AI"],
     figureRows: [
-      { label: "CLIENT PLATFORMS BUILT ON", value: "12", note: "Hands-on in the code", valueColor: "#ffffff" },
+      { label: "TEST CASES ON 1IT-TESTROBOT", value: "400", note: "Committed suites · 9 client apps", valueColor: "#ffffff" },
       {
-        label: "AND LEADING",
-        value: "4",
-        note: "Engineers: delegated, reviewed, fixed",
+        label: "AUTOMATED TEST STEPS",
+        value: "4,783",
+        note: "Each one a real browser action",
         valueColor: "#34d399",
       },
     ],

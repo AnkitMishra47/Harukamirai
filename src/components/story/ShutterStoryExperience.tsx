@@ -167,14 +167,14 @@ const SCENES: StoryScene[] = [
     narrativeBody:
       "Across twelve client platforms - mining, logistics, construction, training - I'm in the code every day, and I lead the engineers building alongside me: splitting the work, reviewing every change, fixing what comes back. The systems I've built and led: field audio turned into validated Safe Work Instructions; customer dockets read straight from the inbox into optimised delivery routes; two-way Xero sync with payment reconciliation; a multi-million-row vector store kept honest against a SharePoint that never stops renaming files; and 1iT-TestRobot, the test runner I became the primary engineer on.",
     metricLabel: "Developer & Lead",
-    metricValue: "400 Test Cases · 4,783 Steps · 12 Platforms",
+    metricValue: "Test Engine Owner · AI & Ops Systems",
     chips: ["Hands-On Engineering", "Technical Leadership", "Applied AI"],
     figureRows: [
-      { label: "TEST CASES ON 1IT-TESTROBOT", value: "400", note: "Committed suites · 9 client apps", valueColor: "#ffffff" },
+      { label: "WHAT I OWN", value: "Test engine", note: "1iT-TestRobot · primary engineer", valueColor: "#ffffff" },
       {
-        label: "AUTOMATED TEST STEPS",
-        value: "4,783",
-        note: "Each one a real browser action",
+        label: "AND BUILT",
+        value: "AI & ops",
+        note: "Speech → SWI · dockets → routes · Xero sync",
         valueColor: "#34d399",
       },
     ],
@@ -473,7 +473,7 @@ function CompactFigure({
               {displayValue}
             </span>
             <span className={`uppercase tracking-[0.14em] text-white/55 ${styles.figureNote}`}>
-              {row.note}
+              <ArrowText text={row.note} />
             </span>
           </div>
         );
@@ -1642,7 +1642,7 @@ export function ShutterStoryExperience() {
                               >
                                 {row.value}
                               </span>
-                              <span className="text-[10px] text-white/50 block pt-0.5">{row.note}</span>
+                              <span className="text-[10px] text-white/50 block pt-0.5"><ArrowText text={row.note} /></span>
                             </div>
                           ))}
                         </div>

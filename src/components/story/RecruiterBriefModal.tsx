@@ -100,13 +100,13 @@ export function RecruiterBriefModal() {
 
           <div className="rounded-xl border border-[var(--border)] bg-[var(--bg)] p-3.5">
             <span className="font-mono text-[11px] uppercase tracking-wider text-[var(--text-subtle)] font-semibold block">
-              Scale & AI
+              Build &amp; Lead
             </span>
             <span className="mt-1 block font-display text-lg font-semibold text-[var(--text)]">
-              2.5M+ Vectors
+              12 Client Platforms
             </span>
             <span className="text-xs text-[var(--text-muted)]">
-              pgvector HNSW, source-reconciled
+              Hands-on code · 4 engineers led
             </span>
           </div>
 
@@ -126,7 +126,7 @@ export function RecruiterBriefModal() {
         {/* Narrative Highlights */}
         <div className="mt-6 space-y-3 text-sm leading-relaxed text-[var(--text-muted)]">
           <p>
-            <strong className="text-[var(--text)]">What I do:</strong> I design and scale mission-critical AI systems, backend microservices, and enterprise data pipelines. At OneIT Australia, I run pgvector retrieval over 2.5M+ embeddings and build XML/EDI middleware connecting legacy ERPs with modern cloud logistics.
+            <strong className="text-[var(--text)]">What I do:</strong> I design and scale mission-critical AI systems, backend microservices, and enterprise data pipelines. At OneIT Australia, I build and lead delivery across twelve client platforms - applied AI, logistics, accounting sync - including XML/EDI middleware connecting legacy ERPs with modern cloud logistics.
           </p>
           <p>
             <strong className="text-[var(--text)]">Primary Stack:</strong> Java 21 / Spring Boot, PostgreSQL / pgvector, Angular 19, Next.js / TypeScript, Python / FastMCP, Docker, and distributed replication engines.

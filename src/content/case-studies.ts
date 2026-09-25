@@ -10,7 +10,7 @@ export const caseStudies: CaseStudy[] = [
     slug: "rag-platform",
     org: "oneit",
     kicker: "AI platform · Enterprise knowledge retrieval",
-    title: "RAG over 2.5M+ embeddings on PostgreSQL",
+    title: "Enterprise RAG that stays in sync with its sources",
     domain:
       "Enterprise document search across OneIT's product family: SharePoint libraries, equipment manuals, internal documentation and historical tickets, served behind product-specific assistants.",
     problem:
@@ -25,9 +25,9 @@ export const caseStudies: CaseStudy[] = [
     result:
       "RAG, tool access and AI-assisted code and test generation running against real product APIs in production, with a vector store that stays consistent with its sources at multi-million-row scale.",
     metrics: [
-      { label: "Scale", value: "2.5M+ embedding rows" },
-      { label: "Index", value: "pgvector · HNSW" },
       { label: "Stage", value: "In production" },
+      { label: "Sync", value: "Source-reconciled" },
+      { label: "Scale", value: "Multi-million rows" },
     ],
     stack: ["Python", "PostgreSQL", "pgvector", "SharePoint Graph API", "LLM APIs", "MCP tooling", "Java integration"],
     featured: true,
@@ -72,14 +72,14 @@ export const caseStudies: CaseStudy[] = [
       "Rule-driven classification into steps: step grouping and edit directives, then a coverage validator that has to pass before the instruction is saved.",
       "OEM manuals ingested as PDFs, OCR'd to Markdown with a vision model, and a GPT-4o vision tool that finds and crops the relevant figures out of manual pages.",
       "Runs as queued jobs on the Java platform: the instruction is saved as a CMS record and rendered to a client PDF with Apache PDFBox.",
-      "Led it as the senior on the project: split the work across the team, reviewed every change and fixed what came back.",
+      "Hands-on in the code and leading the team around it: built core pieces myself, split the rest across the team, reviewed every change and fixed what came back.",
     ],
     result:
       "A recording goes in and a validated Safe Work Instruction comes out, stored in the platform and rendered as a PDF, with the manual's own figures cropped into place.",
     metrics: [
       { label: "Input", value: "Field audio + manuals" },
       { label: "Output", value: "Validated SWI · PDF" },
-      { label: "My role", value: "Senior · led and reviewed" },
+      { label: "My role", value: "Built and led" },
     ],
     stack: ["Java", "OpenAI GPT-4o (vision)", "Python (OCR)", "Apache PDFBox", "Message queues"],
     featured: true,
@@ -122,14 +122,14 @@ export const caseStudies: CaseStudy[] = [
       "Route optimisation on the Google Directions API with waypoint optimisation, plus a non-optimising recompute for when a dispatcher reorders stops by hand.",
       "Google Places autocomplete on task addresses, so the stops being routed are real places.",
       "Labour allocation and transport scheduling on a reusable FullCalendar v6 harness: drag-and-drop, calendar drops and multi-day allocation.",
-      "Led it as the senior on the project: split the work across the team, reviewed every change and fixed what came back.",
+      "Hands-on in the code and leading the team around it: built core pieces myself, split the rest across the team, reviewed every change and fixed what came back.",
     ],
     result:
       "Dockets turn into tasks straight from the inbox, routes come back in an optimised order, and labour is allocated by dragging on a calendar.",
     metrics: [
       { label: "Intake", value: "Email PDF -> task" },
       { label: "Routing", value: "Google Directions · optimised" },
-      { label: "My role", value: "Senior · led and reviewed" },
+      { label: "My role", value: "Built and led" },
     ],
     stack: ["Java", "Angular 19", "Apache PDFBox", "IMAP", "Google Maps Platform", "FullCalendar v6"],
   },

@@ -217,7 +217,7 @@ export function HeroIntro() {
                 Senior Software Engineer
               </span>
             </div>
-            <span className="hero-in-right hero-in-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--gold)] font-medium leading-none">
+            <span className="hero-in-right hero-in-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--gold)] font-bold leading-none">
               <span>★ Mid Developer of the Year 2024</span>
             </span>
           </div>
@@ -356,9 +356,21 @@ export function HeroIntro() {
 
 /*
  * The A and the I in ANKIT glow, and the pill spells them out. This is the
- * punchline. The lines rotate on a timer and stay on the first under reduced
- * motion. Screen readers get the first line once, not a live region that
- * talks every few seconds.
+ * punchline, and it keeps talking.
+ *
+ * The lines sit on a four-sided drum that turns a quarter each beat, so the
+ * next line rolls up from below while the current one tips away over the top:
+ *
+ *        face k-1   (tipping away, top)
+ *   ---> face k     (front, readable)
+ *        face k+1   (waiting underneath)
+ *        face k+2   (behind the drum, hidden)
+ *
+ * Six lines, four faces: each face is given the line for the beat at which it
+ * next comes round, so the text is swapped while that face is out of sight.
+ * The face height is a CSS variable (two lines on a phone, one from sm up) and
+ * the drum radius is half of it. Under reduced motion the drum stays on the
+ * first line; screen readers get that line once, not a live region.
  */
 const CHEEKY_LINES = [
   "A·I - Ankit's Intelligence. Not a coincidence.",
@@ -369,36 +381,46 @@ const CHEEKY_LINES = [
   "Runs on coffee, not GPUs.",
 ];
 
+const FACES = [0, 1, 2, 3];
+
 function CheekyLine() {
-  const [index, setIndex] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let swap: number | undefined;
-    const tick = window.setInterval(() => {
-      setVisible(false);
-      swap = window.setTimeout(() => {
-        setIndex((i) => (i + 1) % CHEEKY_LINES.length);
-        setVisible(true);
-      }, 350);
-    }, 4200);
-    return () => {
-      window.clearInterval(tick);
-      window.clearTimeout(swap);
-    };
+    const tick = window.setInterval(() => setStep((n) => n + 1), 3800);
+    return () => window.clearInterval(tick);
   }, []);
 
+  /* The beat in [step - 1, step + 2] at which face k is (or next will be) in
+     front: that is the line it has to carry now. */
+  const lineFor = (k: number) => {
+    const beat = step - 1 + ((((k - (step - 1)) % 4) + 4) % 4);
+    return CHEEKY_LINES[beat % CHEEKY_LINES.length];
+  };
+
   return (
-    <p className="hero-in hero-in-4 mt-3 flex items-start gap-2 min-h-[2.75em] sm:min-h-0 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)] leading-snug">
-      <span className="mt-[0.5em] size-1 rounded-full bg-[var(--accent)] shrink-0" aria-hidden />
+    <p className="hero-in hero-in-4 mt-3.5 flex items-start gap-2.5 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text)] leading-snug [--face:2.9em] sm:[--face:1.45em]">
+      <span className="mt-[0.45em] size-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_8px_var(--accent-glow)] shrink-0" aria-hidden />
       <span className="sr-only">{CHEEKY_LINES[0]}</span>
       <span
         aria-hidden
-        className="transition-opacity duration-300"
-        style={{ opacity: visible ? 1 : 0 }}
+        className="relative block flex-1 h-[var(--face)] [perspective:420px]"
       >
-        {CHEEKY_LINES[index]}
+        <span
+          className="absolute inset-0 block [transform-style:preserve-3d] transition-transform duration-700 ease-[cubic-bezier(0.22,0.9,0.24,1)]"
+          style={{ transform: `translateZ(calc(var(--face) / -2)) rotateX(${step * 90}deg)` }}
+        >
+          {FACES.map((k) => (
+            <span
+              key={k}
+              className="absolute inset-0 block [backface-visibility:hidden]"
+              style={{ transform: `rotateX(${-k * 90}deg) translateZ(calc(var(--face) / 2))` }}
+            >
+              {lineFor(k)}
+            </span>
+          ))}
+        </span>
       </span>
     </p>
   );

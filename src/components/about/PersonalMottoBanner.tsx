@@ -38,7 +38,7 @@ export function PersonalMottoBanner() {
             </p>
             <span className="text-white/30 hidden sm:inline">|</span>
             <p className="font-sans text-xs text-white/70">
-              The mindset behind rapid career growth, 2.5M+ vectors, and sustained remote execution.
+              The mindset behind rapid career growth, twelve client platforms, and sustained remote execution.
             </p>
           </div>
         </div>

@@ -80,6 +80,16 @@ interface StoryScene {
  */
 const CHESS_PROFILE = profile.links.find((l) => l.label === "Chess.com");
 
+/* Act 03's detail panel: one line per system built and led. Each traces to a case study,
+   the skills review, or the repo's own history - nothing here is a guess. */
+const LED_SYSTEMS: [string, string][] = [
+  ["Applied AI", "Field audio -> Safe Work Instructions"],
+  ["Logistics", "Emailed dockets -> optimised routes"],
+  ["Accounting", "Xero two-way sync, reconciled"],
+  ["Retrieval", "SharePoint RAG, source-reconciled"],
+  ["Test automation", "1iT-TestRobot, primary engineer"],
+];
+
 const SCENES: StoryScene[] = [
   {
     id: 1,
@@ -126,24 +136,24 @@ const SCENES: StoryScene[] = [
   {
     id: 3,
     actShort: "Act 03",
-    actLabel: "Act 03 · Engineering at Scale",
+    actLabel: "Act 03 · Build It, Lead It",
     themeClass: "from-[#060e1a] via-[#091526] to-[#040911]",
     accentColor: "#38bdf8",
     ambientGlow: "rgba(56, 189, 248, 0.25)",
-    title: "Engineering at Scale",
-    subtitle: "PostgreSQL · pgvector · 1iT-TestRobot",
-    narrativeLead: "Scale is not a buzzword; it is a discipline of honest trade-offs.",
+    title: "Build It, Lead It",
+    subtitle: "Applied AI · Logistics · Accounting · Test Automation",
+    narrativeLead: "I still write the hard parts myself - and lead the engineers building the rest.",
     narrativeBody:
-      "Stepping into Senior Software Engineer responsibilities meant owning core systems end-to-end. One is a 2.5M-row PostgreSQL vector store on pgvector and HNSW, where the hard part was never the row count. It was keeping the store honest against a live SharePoint that renames and re-syncs its files - deleted and replaced documents were resurfacing in answers, which I traced to duplicate handling in the ingest layer and fixed there, with reconciliation tooling that keeps file state and vector state consistent. The other is 1iT-TestRobot, our LLM-driven test runner: it turns plain-English steps, planned from a screen's prototype, into Selenium actions, reaches for pt-* semantic classes before brittle selectors, and triages every failure as design drift or a real defect.",
-    metricLabel: "Vector Store & Test Runner",
-    metricValue: "2.5M+ Rows · Source-Reconciled",
-    chips: ["PostgreSQL & pgvector", "Source Reconciliation", "1iT-TestRobot"],
+      "Across twelve client platforms - mining, logistics, construction, training - I'm in the code every day, and I lead the engineers building alongside me: splitting the work, reviewing every change, fixing what comes back. The systems I've built and led: field audio turned into validated Safe Work Instructions; customer dockets read straight from the inbox into optimised delivery routes; two-way Xero sync with payment reconciliation; a multi-million-row vector store kept honest against a SharePoint that never stops renaming files; and 1iT-TestRobot, the test runner I became the primary engineer on.",
+    metricLabel: "Developer & Lead",
+    metricValue: "12 Platforms Built On · 4 Engineers Led",
+    chips: ["Hands-On Engineering", "Technical Leadership", "Applied AI"],
     figureRows: [
-      { label: "INDEXED CORPUS", value: "2,590,043", note: "Embeddings", valueColor: "#ffffff" },
+      { label: "CLIENT PLATFORMS BUILT ON", value: "12", note: "Hands-on in the code", valueColor: "#ffffff" },
       {
-        label: "1IT-TESTROBOT",
-        value: "548 / 615",
-        note: "Commits, primary engineer",
+        label: "AND LEADING",
+        value: "4",
+        note: "Engineers: delegated, reviewed, fixed",
         valueColor: "#34d399",
       },
     ],
@@ -206,7 +216,7 @@ const SCENES: StoryScene[] = [
       "A proven track record of shipping production AI and backend systems with calm ownership.",
     narrativeBody:
       "Three years. Three major milestones. A Master's degree earned alongside full-time production delivery. Fast ramp-up, clean code, and reliable communication across global timezones. Ready to step in and solve high-stakes challenges from day one.",
-    chips: ["Rapid Career Progression", "2.5M+ Vector Infrastructure", "Full-Time Remote (AWST)"],
+    chips: ["Rapid Career Progression", "12 Client Platforms", "Full-Time Remote (AWST)"],
     type: "dossier",
   },
 ];
@@ -1576,8 +1586,8 @@ export function ShutterStoryExperience() {
                     {isDetailOpen && (
                       <div className={`w-full max-w-md mx-auto rounded-2xl border border-sky-500/30 bg-[#070e1c]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md space-y-3 ${styles.touchFlat} ${styles.detail}`}>
                         <div className="flex items-center justify-between border-b border-white/10 pb-2.5 text-white/50">
-                          <span className="text-sky-400 font-semibold text-xs">pgvector · HNSW Telemetry</span>
-                          <span className="text-emerald-400 text-[11px]">Source-Reconciled</span>
+                          <span className="text-sky-400 font-semibold text-xs">Built &amp; led</span>
+                          <span className="text-emerald-400 text-[11px]">Hands-on · reviewed</span>
                         </div>
 
                         <div className="grid grid-cols-2 gap-2.5 text-left">
@@ -1599,18 +1609,12 @@ export function ShutterStoryExperience() {
                         </div>
 
                         <div className="rounded-xl border border-white/5 bg-black/40 p-2.5 sm:p-3 text-[11px] text-white/75 space-y-1">
-                          <div className="flex justify-between">
-                            <span className="text-white/50">HNSW Parameters:</span>
-                            <span className="text-sky-300 font-medium">m=16, ef_construction=64</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-white/50">Index Bloat:</span>
-                            <span className="text-emerald-400 font-medium">0.0% (Automated VACUUM)</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-white/50">Enterprise Middleware:</span>
-                            <span className="text-white/90 font-medium">CargoWise, MYOB, ERP EDI</span>
-                          </div>
+                          {LED_SYSTEMS.map(([area, what]) => (
+                            <div key={area} className="flex justify-between gap-3">
+                              <span className="text-white/50">{area}</span>
+                              <span className="text-white/90 font-medium text-right">{what}</span>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -1646,8 +1650,8 @@ export function ShutterStoryExperience() {
                         <span className="font-semibold text-white">Rapid Progression</span>
                       </div>
                       <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                        <span className="text-[10px] text-white/50 block font-mono">SCALE</span>
-                        <span className="font-semibold text-white">2.5M+ Vectors</span>
+                        <span className="text-[10px] text-white/50 block font-mono">PLATFORMS</span>
+                        <span className="font-semibold text-white">12 Built &amp; Led</span>
                       </div>
                       <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
                         <span className="text-[10px] text-white/50 block font-mono">HONOURS</span>

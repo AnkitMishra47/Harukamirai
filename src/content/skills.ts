@@ -17,7 +17,7 @@ export const disciplines: DisciplinePillar[] = [
     numeral: "I",
     title: "AI & Vector Retrieval Systems",
     subtitle: "AI Systems",
-    scaleBadge: "2.5M+ Vectors · pgvector",
+    scaleBadge: "RAG · Applied AI",
     summary: "Production RAG pipelines, source-consistent vector retrieval, and agentic LLM workflows.",
     technologies: ["Python", "PostgreSQL / pgvector", "FastMCP", "OpenAI / Claude APIs"],
     highlights: [

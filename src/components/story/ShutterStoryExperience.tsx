@@ -170,7 +170,7 @@ const SCENES: StoryScene[] = [
     metricValue: "Test Engine Owner · AI & Ops Systems",
     chips: ["Hands-On Engineering", "Technical Leadership", "Applied AI"],
     figureRows: [
-      { label: "WHAT I OWN", value: "Test engine", note: "1iT-TestRobot · primary engineer", valueColor: "#ffffff" },
+      { label: "RECENT CRAFT", value: "Test engine", note: "1iT-TestRobot · primary engineer", valueColor: "#ffffff" },
       {
         label: "AND BUILT",
         value: "AI & ops",

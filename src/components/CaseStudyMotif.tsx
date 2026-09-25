@@ -20,7 +20,7 @@ import styles from "./case-study.module.css";
  *   |  kicker                          |
  *   |  Title                           |
  *
- * GEOMETRY. One 400x89 viewBox for all seven, rendered `meet` so the mark is
+ * GEOMETRY. One 400x89 viewBox for every card, rendered `meet` so the mark is
  * scaled to fit and centred rather than cropped: a card is 342px wide on a
  * phone and 580px on a wide screen, and `slice` would have eaten a different
  * part of every drawing. The CSS rule grid fills whatever margin `meet` leaves.
@@ -103,6 +103,31 @@ const MARKS: Record<string, React.ReactElement> = {
     </g>
   ),
 
+  /* SWI generation: the field recording cut into segments, a manual page with
+     its figure cropped out, both feeding a numbered instruction.
+     approach[0]-[2]. */
+  "swi-generation": (
+    <g>
+      <path
+        className={ink}
+        d="M30 40v10M40 34v22M50 28v34M60 37v16M78 30v30M88 24v42M98 34v22M116 36v18M126 26v38M136 32v26"
+      />
+      <path className={`${gilt} ${dash}`} d="M69 18v54M107 18v54" />
+      <rect className={ink} x="164" y="14" width="52" height="62" rx="4" />
+      <path className={`${ink} ${styles.faint}`} d="M172 24h36M172 32h28" />
+      <path className={gilt} d="M172 42v-4h4M204 38h4v4M208 64v4h-4M176 68h-4v-4" />
+      <path className={ink} d="M178 60 188 48 196 56 202 50" />
+      <path className={gilt} d="M146 45h10M226 45h26M244 40l8 5-8 5" />
+      <rect className={ink} x="266" y="12" width="104" height="66" rx="6" />
+      {[28, 45, 62].map((y) => (
+        <g key={y}>
+          <circle className={dotGilt} cx="282" cy={y} r="3" />
+          <path className={ink} d={`M294 ${y}h${y === 45 ? 52 : 64}`} />
+        </g>
+      ))}
+    </g>
+  ),
+
   /* XML/EDI middleware: documents from two systems through a mapping gate to
      two more, with the retry path looping back. approach[0]-[2]. */
   "integration-middleware": (
@@ -118,6 +143,26 @@ const MARKS: Record<string, React.ReactElement> = {
       <path className={gilt} d="M192 34 208 54M192 44h16M192 54 208 34" />
       <path className={`${ink} ${dash}`} d="M198 70C172 84 112 84 78 72" />
       <path className={ink} d="M84 68 76 71.6 83 76" />
+    </g>
+  ),
+
+  /* Delivery logistics: a docket envelope, the optimised route out of the
+     depot through its stops, and the roster it lands on with one allocation
+     spanning two days. approach[0], [1], [3]. */
+  "delivery-logistics": (
+    <g>
+      <rect className={ink} x="30" y="28" width="52" height="34" rx="4" />
+      <path className={ink} d="M30 32 56 50 82 32" />
+      <path className={gilt} d="M92 45h26M110 40l8 5-8 5" />
+      <path className={ink} d="M140 64 170 28 204 52 232 20 258 60" />
+      {[[170, 28], [204, 52], [232, 20], [258, 60]].map(([x, y]) => (
+        <circle key={x} className={dot} cx={x} cy={y} r="3" />
+      ))}
+      <circle className={gilt} cx="140" cy="64" r="7" />
+      <circle className={dotGilt} cx="140" cy="64" r="2.6" />
+      <rect className={ink} x="282" y="16" width="92" height="58" rx="5" />
+      <path className={`${ink} ${styles.faint}`} d="M282 30h92M305 30v44M328 30v44M351 30v44M282 52h92" />
+      <rect className={gilt} x="309" y="36" width="38" height="11" rx="2.5" />
     </g>
   ),
 

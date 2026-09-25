@@ -59,6 +59,32 @@ export const caseStudies: CaseStudy[] = [
     featured: true,
   },
   {
+    slug: "swi-generation",
+    org: "oneit",
+    kicker: "Applied AI · Safety documentation",
+    title: "Safe Work Instructions generated from field audio",
+    domain:
+      "Maintenance and safety teams at a mining contractor, who document how a task is done as a Safe Work Instruction: ordered steps, with the right figure from the OEM manual beside them.",
+    problem:
+      "Get from an audio recording of a task being performed, plus the OEM manual and reference photos, to a Safe Work Instruction that is structured and complete - without the model quietly dropping or reshuffling steps along the way.",
+    approach: [
+      "A transcript segmenter that splits the recording into task segments, with spoken formatting cues normalised before anything is classified.",
+      "Rule-driven classification into steps: step grouping and edit directives, then a coverage validator that has to pass before the instruction is saved.",
+      "OEM manuals ingested as PDFs, OCR'd to Markdown with a vision model, and a GPT-4o vision tool that finds and crops the relevant figures out of manual pages.",
+      "Runs as queued jobs on the Java platform: the instruction is saved as a CMS record and rendered to a client PDF with Apache PDFBox.",
+      "Led it as the senior on the project: split the work across the team, reviewed every change and fixed what came back.",
+    ],
+    result:
+      "A recording goes in and a validated Safe Work Instruction comes out, stored in the platform and rendered as a PDF, with the manual's own figures cropped into place.",
+    metrics: [
+      { label: "Input", value: "Field audio + manuals" },
+      { label: "Output", value: "Validated SWI · PDF" },
+      { label: "My role", value: "Senior · led and reviewed" },
+    ],
+    stack: ["Java", "OpenAI GPT-4o (vision)", "Python (OCR)", "Apache PDFBox", "Message queues"],
+    featured: true,
+  },
+  {
     slug: "integration-middleware",
     org: "oneit",
     kicker: "Enterprise integration · Accounting and logistics",
@@ -81,6 +107,31 @@ export const caseStudies: CaseStudy[] = [
       { label: "Failure mode", value: "Retry + dead-letter" },
     ],
     stack: ["Java", "XML/EDI", "JSON", "REST", "Async messaging", "PostgreSQL"],
+  },
+  {
+    slug: "delivery-logistics",
+    org: "oneit",
+    kicker: "Operations automation · Delivery & labour scheduling",
+    title: "From emailed dockets to optimised routes and a drag-and-drop roster",
+    domain:
+      "A multi-branch delivery operation: transport tasks raised from customer PDF dockets, routed between depots and branches, with labour scheduled alongside.",
+    problem:
+      "Customer dockets arrive as PDF attachments. They needed to become transport tasks without being retyped, and the day's routes and crews needed planning on screens a dispatcher can drag around, not forms.",
+    approach: [
+      "An IMAP fetch batch that filters inbound mail by subject, pulls customer, shipping, branch and depot details and item weights out of the docket PDF with template extraction on PDFBox, matches or creates the customer, and raises the transport task with its return leg planned.",
+      "Route optimisation on the Google Directions API with waypoint optimisation, plus a non-optimising recompute for when a dispatcher reorders stops by hand.",
+      "Google Places autocomplete on task addresses, so the stops being routed are real places.",
+      "Labour allocation and transport scheduling on a reusable FullCalendar v6 harness: drag-and-drop, calendar drops and multi-day allocation.",
+      "Led it as the senior on the project: split the work across the team, reviewed every change and fixed what came back.",
+    ],
+    result:
+      "Dockets turn into tasks straight from the inbox, routes come back in an optimised order, and labour is allocated by dragging on a calendar.",
+    metrics: [
+      { label: "Intake", value: "Email PDF -> task" },
+      { label: "Routing", value: "Google Directions · optimised" },
+      { label: "My role", value: "Senior · led and reviewed" },
+    ],
+    stack: ["Java", "Angular 19", "Apache PDFBox", "IMAP", "Google Maps Platform", "FullCalendar v6"],
   },
   {
     slug: "rto-lms",

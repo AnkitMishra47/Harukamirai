@@ -2,7 +2,7 @@ import type { DisciplinePillar, SkillGroup } from "./types";
 
 export const skills: SkillGroup[] = [
   { id: "languages", label: "Languages", items: ["Java", "TypeScript", "JavaScript", "Python", "SQL", "Bash"] },
-  { id: "ai", label: "AI / LLM", items: ["RAG", "Vector embeddings", "pgvector (HNSW)", "Prompt engineering", "LLM API integration", "Agentic code-gen and test-gen pipelines"] },
+  { id: "ai", label: "AI / LLM", items: ["LLM test automation (1iT-TestRobot)", "Multi-agent LLM pipelines", "RAG", "Vector embeddings", "pgvector (HNSW)", "LLM API integration", "Agentic code-gen and test-gen pipelines"] },
   { id: "backend", label: "Backend", items: ["Java enterprise framework", "Spring Boot", "REST API design", "XML/JSON processing", "Middleware", "Async and retry patterns"] },
   { id: "frontend", label: "Frontend", items: ["Angular", "PrimeNG", "HTML5/CSS3", "Paper.js canvas", "React", "Responsive UI"] },
   { id: "data", label: "Data", items: ["PostgreSQL", "MySQL", "Schema design", "Query and index tuning", "VACUUM and bloat management"] },
@@ -15,12 +15,13 @@ export const disciplines: DisciplinePillar[] = [
   {
     id: "ai-retrieval",
     numeral: "I",
-    title: "AI & Vector Retrieval Systems",
+    title: "Applied AI & Test Automation",
     subtitle: "AI Systems",
-    scaleBadge: "RAG · Applied AI",
-    summary: "Production RAG pipelines, source-consistent vector retrieval, and agentic LLM workflows.",
-    technologies: ["Python", "PostgreSQL / pgvector", "FastMCP", "OpenAI / Claude APIs"],
+    scaleBadge: "Test Automation · RAG",
+    summary: "LLM-driven test automation, production RAG pipelines, source-consistent vector retrieval, and agentic LLM workflows.",
+    technologies: ["Python", "Selenium", "PostgreSQL / pgvector", "FastMCP", "OpenAI / Claude APIs"],
     highlights: [
+      "1iT-TestRobot: plain-English test plans turned into Selenium actions by LLM agents, with every failure triaged as design drift or a real defect.",
       "Filtered vector retrieval across 2.5M+ rows with automated vacuum & delta-sync reconciliation.",
       "Production RAG architectures with pgvector (HNSW) indexing and autonomous agentic workflows.",
     ],

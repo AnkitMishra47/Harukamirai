@@ -103,6 +103,33 @@ const MARKS: Record<string, React.ReactElement> = {
     </g>
   ),
 
+  /* TestRobot: a plain-English plan, the agent gate that turns it into actions,
+     the browser it drives, and the triage fork into drift or defect.
+     approach[0]-[3]. */
+  "test-robot": (
+    <g>
+      <rect className={ink} x="26" y="18" width="78" height="54" rx="5" />
+      {[30, 42, 54].map((y) => (
+        <g key={y}>
+          <circle className={dotGilt} cx="36" cy={y} r="2.4" />
+          <path className={ink} d={`M44 ${y}h${y === 42 ? 40 : 50}`} />
+        </g>
+      ))}
+      <path className={gilt} d="M110 45h22M124 40l8 5-8 5" />
+      <path className={gilt} d="M162 20 186 32 186 58 162 70 138 58 138 32Z" />
+      <circle className={`${gilt} ${dash}`} cx="162" cy="45" r="11" />
+      <circle className={dotGilt} cx="162" cy="45" r="3" />
+      <path className={gilt} d="M192 45h20M204 40l8 5-8 5" />
+      <rect className={ink} x="220" y="16" width="92" height="58" rx="5" />
+      <path className={`${ink} ${styles.faint}`} d="M220 28h92" />
+      <path className={dot} d="M226 20h4v4h-4zM234 20h4v4h-4z" />
+      <path className={ink} d="M232 40h40M232 52h56M232 64h28" />
+      <path className={`${ink} ${dash}`} d="M316 45C330 45 334 28 346 28M316 45C330 45 334 62 346 62" />
+      <path className={gilt} d="M352 23l5 5 9-10" />
+      <path className={ink} d="M353 57l10 10m0-10-10 10" />
+    </g>
+  ),
+
   /* SWI generation: the field recording cut into segments, a manual page with
      its figure cropped out, both feeding a numbered instruction.
      approach[0]-[2]. */

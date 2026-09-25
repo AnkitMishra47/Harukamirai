@@ -88,6 +88,8 @@ export type CaseStudy = {
   stack: string[];
   links?: Link[];
   featured?: boolean;
+  /** The one study the Work page leads with: full width, marked in gold. */
+  flagship?: boolean;
 };
 
 export type Photo = {

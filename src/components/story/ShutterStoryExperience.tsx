@@ -62,6 +62,8 @@ interface StoryScene {
   chips?: string[];
   /** The two readouts that carry this scene's figure. Terminal and vector only. */
   figureRows?: [FigureRow, FigureRow];
+  /** Short label/value lines under the figure, so the card carries facts rather than air. */
+  figureList?: readonly (readonly [string, string])[];
   /**
    * One external profile belonging to this scene, shown with the chips once the
    * detail is open. Supplied by the site owner, never inferred.
@@ -80,15 +82,26 @@ interface StoryScene {
  */
 const CHESS_PROFILE = profile.links.find((l) => l.label === "Chess.com");
 
-/* Act 03's detail panel: one line per system built and led. Each traces to a case study,
-   the skills review, or the repo's own history - nothing here is a guess. */
-const LED_SYSTEMS: [string, string][] = [
+/* Act 03: one line per system built and led. Each traces to a case study, the
+   skills review, or the repo's own history - nothing here is a guess. */
+const LED_SYSTEMS = [
+  ["Test automation", "1iT-TestRobot, primary engineer"],
   ["Applied AI", "Field audio -> Safe Work Instructions"],
   ["Logistics", "Emailed dockets -> optimised routes"],
   ["Accounting", "Xero two-way sync, reconciled"],
   ["Retrieval", "SharePoint RAG, source-reconciled"],
-  ["Test automation", "1iT-TestRobot, primary engineer"],
-];
+] as const;
+
+/* Act 06's at-a-glance tiles. Six, not four, so the summary card is filled
+   with facts on a desktop instead of spreading four tiles across air. */
+const DOSSIER_TILES = [
+  ["TRAJECTORY", "Intern -> Senior, 3 yrs"],
+  ["FLAGSHIP", "1iT-TestRobot"],
+  ["PLATFORMS", "12 Built & Led"],
+  ["HONOURS", "Double Honoree"],
+  ["DEGREES", "BCA + MCA"],
+  ["LOCATION", "Remote AWST"],
+] as const;
 
 const SCENES: StoryScene[] = [
   {
@@ -110,6 +123,12 @@ const SCENES: StoryScene[] = [
     figureRows: [
       { label: "IST", value: "23:14:02", note: "DEEP WORK", valueColor: "#fbbf24" },
       { label: "AWST", value: "01:44:02", note: "CLIENT SYNC", valueColor: "#38bdf8" },
+    ],
+    figureList: [
+      ["Joined", "OneIT Australia · Jul 2022"],
+      ["Role", "Intern, fully remote"],
+      ["Degree", "BCA done · MCA alongside"],
+      ["Stack", "Java & Angular platforms"],
     ],
     type: "terminal",
   },
@@ -157,6 +176,7 @@ const SCENES: StoryScene[] = [
         valueColor: "#34d399",
       },
     ],
+    figureList: LED_SYSTEMS,
     type: "vector",
   },
   {
@@ -421,7 +441,13 @@ function useLiveTimezones() {
  * it, not a summary of it. The card takes the same height budget as a photograph
  * (`--frame-h`, set on the column) so the six scenes fill a comparable envelope.
  */
-function CompactFigure({ rows }: { rows: readonly FigureRow[] }) {
+function CompactFigure({
+  rows,
+  list,
+}: {
+  rows: readonly FigureRow[];
+  list?: readonly (readonly [string, string])[];
+}) {
   const liveTimes = useLiveTimezones();
 
   return (
@@ -450,6 +476,17 @@ function CompactFigure({ rows }: { rows: readonly FigureRow[] }) {
           </div>
         );
       })}
+      {list && list.length > 0 && (
+        <dl className={styles.figureList}>
+          <span className={styles.figureRule} aria-hidden />
+          {list.map(([term, detail]) => (
+            <div key={term} className={styles.figureListRow}>
+              <dt className="uppercase text-white/45">{term}</dt>
+              <dd className="text-white/85">{detail}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
     </div>
   );
 }
@@ -1451,7 +1488,7 @@ export function ShutterStoryExperience() {
                 {activeScene.type === "terminal" && activeScene.figureRows && (
                   <div className="w-full">
                     {!isDetailOpen && (
-                      <CompactFigure rows={activeScene.figureRows} />
+                      <CompactFigure rows={activeScene.figureRows} list={activeScene.figureList} />
                     )}
                     {isDetailOpen && (
                       <div className={`w-full max-w-md mx-auto rounded-2xl border border-white/15 bg-[#0b0f17]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md ${styles.touchFlat} ${styles.detail}`}>
@@ -1581,7 +1618,7 @@ export function ShutterStoryExperience() {
                 {activeScene.type === "vector" && activeScene.figureRows && (
                   <div className="w-full">
                     {!isDetailOpen && (
-                      <CompactFigure rows={activeScene.figureRows} />
+                      <CompactFigure rows={activeScene.figureRows} list={activeScene.figureList} />
                     )}
                     {isDetailOpen && (
                       <div className={`w-full max-w-md mx-auto rounded-2xl border border-sky-500/30 bg-[#070e1c]/95 shadow-2xl p-4 sm:p-5 font-mono text-xs backdrop-blur-md space-y-3 ${styles.touchFlat} ${styles.detail}`}>
@@ -1645,22 +1682,15 @@ export function ShutterStoryExperience() {
                       something to read.
                     */}
                     <div className={`grid grid-cols-2 gap-2 text-left text-xs ${styles.dossierTiles}`}>
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                        <span className="text-[10px] text-white/50 block font-mono">TRAJECTORY</span>
-                        <span className="font-semibold text-white">Rapid Progression</span>
-                      </div>
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                        <span className="text-[10px] text-white/50 block font-mono">PLATFORMS</span>
-                        <span className="font-semibold text-white">12 Built &amp; Led</span>
-                      </div>
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                        <span className="text-[10px] text-white/50 block font-mono">HONOURS</span>
-                        <span className="font-semibold text-white">Double Honoree</span>
-                      </div>
-                          <div className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5">
-                        <span className="text-[10px] text-white/50 block font-mono">LOCATION</span>
-                        <span className="font-semibold text-white">Remote AWST</span>
-                      </div>
+                      {DOSSIER_TILES.map(([label, value]) => (
+                        <div
+                          key={label}
+                          className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5"
+                        >
+                          <span className="text-[10px] text-white/50 block font-mono">{label}</span>
+                          <span className="font-semibold text-white">{value}</span>
+                        </div>
+                      ))}
                     </div>
 
                     <div className="flex flex-col gap-2">

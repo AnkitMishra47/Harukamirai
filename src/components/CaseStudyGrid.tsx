@@ -13,7 +13,10 @@ export function CaseStudyGrid({ studies }: { studies: CaseStudy[] }) {
     <>
       <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
         {studies.map((study, i) => (
-          <div key={study.slug} className="flex flex-1 flex-col">
+          <div
+            key={study.slug}
+            className={`flex flex-1 flex-col ${study.flagship ? "md:col-span-2" : ""}`}
+          >
             <MagicReveal
               direction={i % 2 === 0 ? "left" : "right"}
               delay={i * 0.08}

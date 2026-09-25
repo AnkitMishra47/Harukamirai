@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowText } from "@/components/ArrowText";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "motion/react";
@@ -483,7 +484,7 @@ function CompactFigure({
           {list.map(([term, detail]) => (
             <div key={term} className={styles.figureListRow}>
               <dt className="uppercase text-white/45">{term}</dt>
-              <dd className="text-white/85">{detail}</dd>
+              <dd className="text-white/85"><ArrowText text={detail} /></dd>
             </div>
           ))}
         </dl>
@@ -1650,7 +1651,7 @@ export function ShutterStoryExperience() {
                           {LED_SYSTEMS.map(([area, what]) => (
                             <div key={area} className="flex justify-between gap-3">
                               <span className="text-white/50">{area}</span>
-                              <span className="text-white/90 font-medium text-right">{what}</span>
+                              <span className="text-white/90 font-medium text-right"><ArrowText text={what} /></span>
                             </div>
                           ))}
                         </div>
@@ -1689,7 +1690,7 @@ export function ShutterStoryExperience() {
                           className="rounded-lg border border-white/10 bg-white/5 p-2 sm:p-2.5"
                         >
                           <span className="text-[10px] text-white/50 block font-mono">{label}</span>
-                          <span className="font-semibold text-white">{value}</span>
+                          <span className="font-semibold text-white"><ArrowText text={value} /></span>
                         </div>
                       ))}
                     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowText } from "@/components/ArrowText";
 import type { CaseStudy } from "@/content";
 import { CaseStudyMotif } from "@/components/CaseStudyMotif";
 import styles from "@/components/case-study.module.css";
@@ -68,7 +69,7 @@ export function CaseStudyCard({
               <dt className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--text-subtle)]">
                 {m.label}
               </dt>
-              <dd className="mt-1 font-display text-base text-[var(--text)]">{m.value}</dd>
+              <dd className="mt-1 font-display text-base text-[var(--text)]"><ArrowText text={m.value} /></dd>
             </div>
           ))}
         </dl>

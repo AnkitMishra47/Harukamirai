@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowText } from "@/components/ArrowText";
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import type { CaseStudy } from "@/content";
@@ -137,7 +138,7 @@ export function CaseStudyModal({ study, onClose }: CaseStudyModalProps) {
                         {m.label}
                       </p>
                       <p className="font-display text-lg mt-0.5 text-[var(--text)] font-semibold">
-                        {m.value}
+                        <ArrowText text={m.value} />
                       </p>
                     </div>
                   ))}

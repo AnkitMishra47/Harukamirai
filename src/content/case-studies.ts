@@ -111,32 +111,6 @@ export const caseStudies: CaseStudy[] = [
     stack: ["Java", "Angular 19", "Apache PDFBox", "IMAP", "Google Maps Platform", "FullCalendar v6"],
   },
   {
-    slug: "mining-cms",
-    org: "oneit",
-    kicker: "Multi-site platform · Industrial operations",
-    title: "Hub-and-spoke CMS for a national mining-services operator",
-    domain:
-      "An Australian mining-services operator running independent site instances of the same Java platform across geographically distributed locations.",
-    problem:
-      "Each site needed to run autonomously - collecting equipment telemetry, alerts, and operational events into its own database - while feeding a central server for cross-site analytics, executive dashboards, and disaster-recovery backup.",
-    approach: [
-      "Java + Angular application deployed as independent site instances, each with a local PostgreSQL/TimescaleDB store for time-series equipment data.",
-      "SymmetricDS hub-and-spoke replication: sites act as leaf nodes, replicating writes to a master server asynchronously with conflict resolution and staged onboarding for new sites.",
-      "Ingestion pipeline for device-generated JSON payloads - alerts, telemetry samples, event history - with unit conversions, custom alert-threshold evaluation, and email notifications.",
-      "Grafana dashboards over the central database for cross-site fleet analytics; periodic sync from a secondary MS SQL Server for machine metadata.",
-      "RAG conversational agent on top of live metrics + a PDF manuals knowledge base (embeddings) so on-site staff can ask natural-language questions over equipment history.",
-    ],
-    result:
-      "Sites run autonomously and survive WAN drops; replicated state catches up to the central server when connectivity returns. New-site onboarding became a staged checklist, not a one-off engineering project.",
-    metrics: [
-      { label: "Pattern", value: "Hub-and-spoke" },
-      { label: "Data model", value: "Time-series + replication" },
-      { label: "My role", value: "Backend + integrations" },
-    ],
-    stack: ["Java", "Angular", "PostgreSQL · TimescaleDB", "SymmetricDS", "Grafana", "Docker", "RAG · Embeddings", "Python"],
-    featured: true,
-  },
-  {
     slug: "construction-takeoff",
     org: "oneit",
     kicker: "Interactive canvas · Construction takeoff",

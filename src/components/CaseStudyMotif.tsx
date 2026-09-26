@@ -85,24 +85,6 @@ const MARKS: Record<string, React.ReactElement> = {
     </g>
   ),
 
-  /* SymmetricDS hub and spoke: six site instances on a master, two of the
-     spokes dashed for the asynchronous catch-up. approach[1]. */
-  "mining-cms": (
-    <g>
-      <ellipse className={`${gilt} ${dash}`} cx="200" cy="44" rx="150" ry="33" />
-      <path className={ink} d="M220 44H338M180 44H62" />
-      <path className={ink} d="M218.7 36.9 263.8 19.7M181.3 36.9 136.2 19.7" />
-      <path className={`${ink} ${dash}`} d="M218.7 51.1 263.8 68.3M181.3 51.1 136.2 68.3" />
-      <circle className={gilt} cx="200" cy="44" r="18" />
-      <circle className={dotGilt} cx="200" cy="44" r="6" />
-      {[
-        [350, 44], [275, 72.6], [125, 72.6], [50, 44], [125, 15.4], [275, 15.4],
-      ].map(([x, y]) => (
-        <rect key={`${x}-${y}`} className={ink} x={x - 8} y={y - 6} width="16" height="12" rx="2.5" />
-      ))}
-    </g>
-  ),
-
   /* TestRobot: a plain-English plan, the agent gate that turns it into actions,
      the browser it drives, and the triage fork into drift or defect.
      approach[0]-[3]. */

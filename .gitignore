@@ -25,3 +25,6 @@ src/content/.env
 
 # Rendered video deliverables - the pipeline in scripts/video/ rebuilds them
 Documentation/video/*.mp4
+
+## Dev Storm Ignores !!
+Documentation/dev-scratchpad

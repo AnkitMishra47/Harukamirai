@@ -116,7 +116,7 @@ const MATTER: Record<string, Pick<Chapter, "marks" | "aside"> & { body?: string;
   },
   now: {
     marksCaption: "The Infinite Horizon · 限界突破",
-    marks: ["Senior Architect & Lead", "Hub-and-Spoke Mining CMS", "~2000 Chess Rating Calm"],
+    marks: ["Senior Architect & Lead", "~2000 Chess Rating Calm"],
     aside: {
       caption: "At present",
       lines: [

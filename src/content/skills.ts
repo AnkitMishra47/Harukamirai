@@ -61,7 +61,6 @@ export const disciplines: DisciplinePillar[] = [
     summary: "Hub-and-spoke multi-site replication, time-series telemetry, and database optimization.",
     technologies: ["PostgreSQL", "TimescaleDB", "SymmetricDS", "Grafana", "Linux / Shell"],
     highlights: [
-      "Hub-and-spoke offline-first database sync for remote mining operations with real-time alerting.",
       "Multi-node PostgreSQL optimization, query & index tuning, and automated health monitoring.",
     ],
   },

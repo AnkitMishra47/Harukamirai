@@ -10,7 +10,7 @@ export const caseStudies: CaseStudy[] = [
     slug: "test-robot",
     org: "oneit",
     kicker: "AI test automation · Developer tooling",
-    title: "1iT-TestRobot: an LLM-driven test runner for enterprise web apps",
+    title: "An LLM-driven test runner for enterprise web apps",
     domain:
       "Test automation across OneIT's enterprise client platforms: test plans written as plain-English steps, run in a real browser, and reported with evidence.",
     problem:
@@ -25,7 +25,7 @@ export const caseStudies: CaseStudy[] = [
     result:
       "Plans come from the prototype, suites run in parallel, and every failure arrives already sorted into 'the screen changed' or 'the product broke', with the screenshot and HTML to prove it. The committed suites cover 400 test cases and 4,783 steps across nine client applications (counted September 2026).",
     metrics: [
-      { label: "Scale", value: "400 test cases · 9 client apps" },
+      { label: "Repeat runs", value: "Cold run once, then cached" },
       { label: "Engine", value: "LLM agents + Selenium" },
       { label: "My role", value: "Primary engineer" },
     ],

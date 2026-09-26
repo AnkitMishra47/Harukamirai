@@ -86,7 +86,7 @@ const CHESS_PROFILE = profile.links.find((l) => l.label === "Chess.com");
 /* Act 03: one line per system built and led. Each traces to a case study, the
    skills review, or the repo's own history - nothing here is a guess. */
 const LED_SYSTEMS = [
-  ["Test automation", "1iT-TestRobot, primary engineer"],
+  ["Test automation", "AI test engine, primary engineer"],
   ["Team", "12 client platforms · 4 engineers led"],
   ["Applied AI", "Field audio → Safe Work Instructions"],
   ["Logistics", "Emailed dockets → optimised routes"],
@@ -98,7 +98,7 @@ const LED_SYSTEMS = [
    with facts on a desktop instead of spreading four tiles across air. */
 const DOSSIER_TILES = [
   ["TRAJECTORY", "Intern → Senior, 3 yrs"],
-  ["FLAGSHIP", "1iT-TestRobot"],
+  ["FLAGSHIP", "AI test engine"],
   ["PLATFORMS", "12 Built & Led"],
   ["HONOURS", "Double Honoree"],
   ["DEGREES", "BCA + MCA"],
@@ -165,12 +165,12 @@ const SCENES: StoryScene[] = [
     subtitle: "Applied AI · Logistics · Accounting · Test Automation",
     narrativeLead: "I still write the hard parts myself - and lead the engineers building the rest.",
     narrativeBody:
-      "Across twelve client platforms - mining, logistics, construction, training - I'm in the code every day, and I lead the engineers building alongside me: splitting the work, reviewing every change, fixing what comes back. The systems I've built and led: field audio turned into validated Safe Work Instructions; customer dockets read straight from the inbox into optimised delivery routes; two-way Xero sync with payment reconciliation; a multi-million-row vector store kept honest against a SharePoint that never stops renaming files; and 1iT-TestRobot, the test runner I became the primary engineer on.",
+      "Across twelve client platforms - mining, logistics, construction, training - I'm in the code every day, and I lead the engineers building alongside me: splitting the work, reviewing every change, fixing what comes back. The systems I've built and led: field audio turned into validated Safe Work Instructions; customer dockets read straight from the inbox into optimised delivery routes; two-way Xero sync with payment reconciliation; a multi-million-row vector store kept honest against a SharePoint that never stops renaming files; and an AI test engine I became the primary engineer on.",
     metricLabel: "Developer & Lead",
     metricValue: "Test Engine Owner · AI & Ops Systems",
     chips: ["Hands-On Engineering", "Technical Leadership", "Applied AI"],
     figureRows: [
-      { label: "RECENT CRAFT", value: "Test engine", note: "1iT-TestRobot · primary engineer", valueColor: "#ffffff" },
+      { label: "RECENT CRAFT", value: "Test engine", note: "LLM test runner · primary engineer", valueColor: "#ffffff" },
       {
         label: "AND BUILT",
         value: "AI & ops",

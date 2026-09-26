@@ -87,7 +87,7 @@ const CHESS_PROFILE = profile.links.find((l) => l.label === "Chess.com");
    skills review, or the repo's own history - nothing here is a guess. */
 const LED_SYSTEMS = [
   ["Test automation", "AI test engine, primary engineer"],
-  ["Team", "12 client platforms · 4 engineers led"],
+  ["Team", "12 client platforms · Leading engineers"],
   ["Applied AI", "Field audio → Safe Work Instructions"],
   ["Logistics", "Emailed dockets → optimised routes"],
   ["Accounting", "Xero two-way sync, reconciled"],

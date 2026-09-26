@@ -106,7 +106,7 @@ export function RecruiterBriefModal() {
               12 Client Platforms
             </span>
             <span className="text-xs text-[var(--text-muted)]">
-              Hands-on code · 4 engineers led
+              Hands-on code · Leading engineers
             </span>
           </div>
 
